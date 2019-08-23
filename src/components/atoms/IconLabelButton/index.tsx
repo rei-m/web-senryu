@@ -1,15 +1,14 @@
-import React, { ComponentType, FC } from 'react';
-import makeStyles from '@material-ui/styles/makeStyles';
+import React from 'react';
 import { SvgIconProps } from '@material-ui/core/SvgIcon';
+import makeStyles from '@src/styles/makeStyles';
 import Button, { Props as ButtonProps } from '@src/components/atoms/Button';
-import { ThemeInterface } from '@src/styles/theme';
 
 export type Props = {
-  Icon: ComponentType<SvgIconProps>;
+  Icon: React.ComponentType<SvgIconProps>;
   iconSize?: string;
 } & ButtonProps;
 
-const useStyles = makeStyles<ThemeInterface>(theme => ({
+const useStyles = makeStyles(theme => ({
   icon: {
     marginRight: theme.spacing(1),
   },
@@ -23,7 +22,7 @@ const useStyles = makeStyles<ThemeInterface>(theme => ({
   },
 }));
 
-const IconLabelButton: FC<Props> = ({
+const IconLabelButton: React.FC<Props> = ({
   children,
   color,
   iconSize = '2rem',

@@ -6,10 +6,12 @@ import NoIndexPageTemplate from '@src/components/templates/NoIndexPageTemplate';
 export type Props = {};
 
 export type PresenterProps = {
-  referrer: string;
+  signInSuccessUrl: string;
 };
 
-export type ContainerProps = Props & { presenter: React.FC<PresenterProps> };
+export type ContainerProps = Props & {
+  presenter: (props: PresenterProps) => React.ReactElement;
+};
 
 const uiConfig = {
   // Will use popup for IDP Providers sign-in flow instead of the default, redirect.
@@ -24,17 +26,17 @@ const uiConfig = {
     // firebase.auth.PhoneAuthProvider.PROVIDER_ID,
   ],
   // Terms of service url.
-  tosUrl: '<your-tos-url>', // あとで作る
+  tosUrl: '<your-tos-url>', // TODO: あとで作る
   // Privacy policy url.
-  privacyPolicyUrl: '<your-privacy-policy-url>', // あとで作る
+  privacyPolicyUrl: '<your-privacy-policy-url>', // TODO: あとで作る
 };
 
-export const AuthPagePresenter = ({ referrer }: PresenterProps) => (
+export const AuthPagePresenter = ({ signInSuccessUrl }: PresenterProps) => (
   <NoIndexPageTemplate
     title={`認証`}
     content={
       <StyledFirebaseAuth
-        uiConfig={{ ...uiConfig, signInSuccessUrl: referrer }}
+        uiConfig={{ ...uiConfig, signInSuccessUrl }}
         firebaseAuth={firebase.auth()}
       />
     }
@@ -42,7 +44,9 @@ export const AuthPagePresenter = ({ referrer }: PresenterProps) => (
 );
 
 export const AuthPageContainer = ({ presenter }: ContainerProps) => {
-  return presenter({ referrer: document ? document.referrer : '/' });
+  return presenter({
+    signInSuccessUrl: document.referrer ? document.referrer : '/',
+  });
 };
 
 const AuthPage = (props: Props) => (

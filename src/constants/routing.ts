@@ -1,5 +1,7 @@
 export const ROUTING = {
   root: '/',
+  senryu: '/senryu/',
+  senryuShow: '/senryu/:id/',
   search: '/search/',
   about: '/about/',
   privacyPolicy: '/privacy/',

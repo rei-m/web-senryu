@@ -1,12 +1,9 @@
-import React, { FC } from 'react';
-import { ThemeProvider } from 'emotion-theming';
-import { ThemeProvider as MuiThemeProvider } from '@material-ui/styles';
+import React from 'react';
+import { ThemeProvider } from '@material-ui/styles';
 import { theme } from '@src/styles/theme';
 
-const AppThemeProvider: FC<{}> = ({ children }) => (
-  <ThemeProvider theme={theme}>
-    <MuiThemeProvider theme={theme}>{children}</MuiThemeProvider>
-  </ThemeProvider>
+const AppThemeProvider: React.FC<{}> = ({ children }) => (
+  <ThemeProvider theme={theme}>{children}</ThemeProvider>
 );
 
 export default AppThemeProvider;

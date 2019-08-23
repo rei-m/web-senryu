@@ -1,22 +1,26 @@
-// import * as functions from 'firebase-functions';
-// import * as algoliasearch from 'algoliasearch';
+import * as functions from 'firebase-functions';
+import * as admin from 'firebase-admin';
 
-// const ALGOLIA_ID = functions.config().algolia.app_id;
-// const ALGOLIA_ADMIN_KEY = functions.config().algolia.api_key;
-// // const ALGOLIA_SEARCH_KEY = functions.config().algolia.search_key;
+admin.initializeApp();
 
-// const ALGOLIA_INDEX_NAME = 'dev_recipes';
-// const client = algoliasearch(ALGOLIA_ID, ALGOLIA_ADMIN_KEY);
+export const onSenryuCreated = functions.firestore
+  .document('senryu/{senryuId}')
+  .onCreate(async (_snap, _context) => {
+    const FieldValue = admin.firestore.FieldValue;
+    const collection = admin.firestore().collection('aggregate');
+    const docRef = collection.doc('count');
+    return await docRef.update({
+      senryu: FieldValue.increment(1),
+    });
+  });
 
-// export const onRecipeCreated = functions.firestore
-//   .document('recipes/{recipeId}')
-//   .onCreate((snap, context) => {
-//     const recipe = snap.data()!;
-
-//     // Add an 'objectID' field which Algolia requires
-//     recipe.objectID = context.params.recipeId;
-
-//     // Write to the algolia index
-//     const index = client.initIndex(ALGOLIA_INDEX_NAME);
-//     return index.saveObject(recipe);
-//   });
+export const onSenryuDeleted = functions.firestore
+  .document('senryu/{senryuId}')
+  .onDelete(async (_snap, _context) => {
+    const FieldValue = admin.firestore.FieldValue;
+    const collection = admin.firestore().collection('aggregate');
+    const docRef = collection.doc('count');
+    return await docRef.update({
+      senryu: FieldValue.increment(-1),
+    });
+  });

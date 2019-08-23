@@ -26,19 +26,11 @@ typography.injectStyles()
 
 import AppThemeProvider from '@src/contexts/AppThemeProvider';
 
-// MUIが生成するClassNameの差分をなくす対応
-// @see https://github.com/mui-org/material-ui/issues/9492#issuecomment-410443974
-import { StylesProvider } from '@material-ui/styles';
-
-const generateClassName = (rule, styleSheet) => `${styleSheet.options.classNamePrefix}-${rule.key}`;
-
 addDecorator(story =>
   <AppThemeProvider>
-    <StylesProvider generateClassName={generateClassName}>
-      <div style={{ margin: 16 }}>
-        {story()}
-      </div>
-    </StylesProvider>
+    <div style={{ margin: 16 }}>
+      {story()}
+    </div>
   </AppThemeProvider>
 );
 

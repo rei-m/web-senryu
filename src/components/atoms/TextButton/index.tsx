@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React from 'react';
 import MuiButton from '@material-ui/core/Button';
 
 export type Props = {
@@ -9,7 +9,7 @@ export type Props = {
   onClick?: () => void;
 };
 
-const TextButton: FC<Props> = ({
+const TextButton: React.FC<Props> = ({
   children,
   color,
   size = `medium`,

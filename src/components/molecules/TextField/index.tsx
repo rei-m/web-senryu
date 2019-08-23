@@ -1,4 +1,4 @@
-import React, { ReactNode, ChangeEventHandler } from 'react';
+import React from 'react';
 import MuiTextField, { TextFieldProps } from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Txt from '@src/components/atoms/Txt';
@@ -8,15 +8,15 @@ export type Props = {
   value: string;
   label: string;
   placeholder?: string;
-  helperText?: ReactNode;
+  helperText?: React.ReactNode;
   fullWidth?: boolean;
   changed?: boolean;
   error?: string;
   required?: boolean;
   disabled?: boolean;
-  onChange: ChangeEventHandler<HTMLInputElement>;
-  startAdornment?: ReactNode;
-  endAdornment?: ReactNode;
+  onChange: React.ChangeEventHandler<HTMLInputElement>;
+  startAdornment?: React.ReactNode;
+  endAdornment?: React.ReactNode;
   className?: string;
 } & Pick<TextFieldProps, 'FormHelperTextProps'>;
 

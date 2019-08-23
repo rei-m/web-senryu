@@ -1,9 +1,12 @@
-import React, { useState, ReactElement, ChangeEvent, FormEvent } from 'react';
+import React, { useState } from 'react';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import TextField from '@src/components/molecules/TextField';
+import ConfirmTextField from '@src/components/molecules/ConfirmTextField';
 import EditButton from '@src/components/molecules/EditButton';
-import { Senryu, SenryuDraft } from '@src/domain';
+import { Senryu, SenryuDraft, User } from '@src/domain';
 
 export type Props = {
+  user: User | null;
   initialSenryu?: Senryu;
   onSubmit: (senryu: SenryuDraft) => void;
   className?: string;
@@ -11,14 +14,20 @@ export type Props = {
 
 export type PresenterProps = {
   senryu: SenryuDraft;
-  onChangeField: (e: ChangeEvent<HTMLInputElement>) => void;
-  onSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  onChangeField: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   className?: string;
 };
 
 export type ContainerProps = Props & {
-  presenter: (props: PresenterProps) => ReactElement;
+  presenter: (props: PresenterProps) => React.ReactElement;
 };
+
+const useStyles = makeStyles(theme => ({
+  fieldMargin: {
+    marginTop: theme.spacing(2),
+  },
+}));
 
 export const Presenter = ({
   senryu,
@@ -26,6 +35,7 @@ export const Presenter = ({
   onSubmit,
   className,
 }: PresenterProps) => {
+  const classes = useStyles();
   return (
     <form method="post" onSubmit={onSubmit} className={className}>
       <TextField
@@ -49,19 +59,16 @@ export const Presenter = ({
         fullWidth={true}
         onChange={onChangeField}
       />
-      <TextField
-        id="ryugou"
-        value={senryu.ryugou}
-        label="柳号（ペンネーム）"
-        fullWidth={true}
-        onChange={onChangeField}
-      />
-      <EditButton color="primary">投稿を確認</EditButton>
+      <ConfirmTextField label="柳号" value={senryu.ryugou} />
+      <EditButton color="primary" className={classes.fieldMargin}>
+        投稿を確認
+      </EditButton>
     </form>
   );
 };
 
 export const Container = ({
+  user,
   initialSenryu,
   onSubmit,
   className,
@@ -70,16 +77,23 @@ export const Container = ({
   const [state, setState] = useState<{ senryu: SenryuDraft }>({
     senryu: initialSenryu
       ? { ...initialSenryu }
-      : { id: null, jouku: '', chuuku: '', geku: '', ryugou: '詠み人知らず' },
+      : {
+          id: null,
+          jouku: '',
+          chuuku: '',
+          geku: '',
+          ryugou: user ? user.ryugou : `詠み人知らず`,
+          userId: user ? user.id : null,
+        },
   });
 
-  const handleChangeField = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChangeField = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.currentTarget;
     const updated = { ...state.senryu, [name]: value };
     setState({ ...state, senryu: updated });
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.stopPropagation();
     e.preventDefault();
     onSubmit(state.senryu);

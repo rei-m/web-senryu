@@ -5,15 +5,15 @@ export type FontSize = 'sss' | 'ss' | 's' | 'm' | 'l' | 'll';
 
 const palette = createPalette({
   primary: {
-    light: '#fff350',
-    main: '#ffc107',
-    dark: '#c79100',
-    contrastText: '#4a4a4a',
+    light: '#e1ffb1',
+    main: '#aed581',
+    dark: '#7da453',
+    contrastText: '#424242',
   },
   secondary: {
-    light: '#9c786c',
-    main: '#6d4c41',
-    dark: '#40241a',
+    light: '#48a999',
+    main: '#00796b',
+    dark: '#004c40',
     contrastText: '#fff',
   },
 });
@@ -27,6 +27,8 @@ export const appTheme = {
     l: '1.8rem',
     ll: '2rem',
   },
+  elevation: (level: 1 | 2) =>
+    `0 ${level}px ${level * 3}px rgba(0, 0, 0, 0.26)`,
 };
 
 export const muiTheme = createMuiTheme({

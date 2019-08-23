@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React from 'react';
 import EditIcon from '@material-ui/icons/Edit';
 import IconLabelButton, {
   Props as IconLabelButtonProps,
@@ -6,7 +6,7 @@ import IconLabelButton, {
 
 export type Props = Omit<IconLabelButtonProps, 'Icon'>;
 
-const EditButton: FC<Props> = props => (
+const EditButton: React.FC<Props> = props => (
   <IconLabelButton Icon={EditIcon} {...props} />
 );
 

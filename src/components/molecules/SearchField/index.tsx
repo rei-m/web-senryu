@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler } from 'react';
+import React from 'react';
 import SearchIcon from '@material-ui/icons/Search';
 import TextField from '@src/components/molecules/TextField';
 
@@ -9,7 +9,7 @@ export type Props = {
   placeholder?: string;
   helperText?: string;
   fullWidth?: boolean;
-  onChange: ChangeEventHandler<HTMLInputElement>;
+  onChange: React.ChangeEventHandler<HTMLInputElement>;
   className?: string;
 };
 

@@ -12,7 +12,7 @@ const IndexPage = () => {
       title={site.siteMetadata.title}
       description={site.siteMetadata.description}
       keywords={[]}
-      content={<div>test</div>}
+      content={<div>川柳を投稿するサイトだよ</div>}
     />
   );
 };
