@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import makeStyles from '@src/styles/makeStyles';
 import TextField from '@src/components/molecules/TextField';
 import ConfirmTextField from '@src/components/molecules/ConfirmTextField';
 import EditButton from '@src/components/molecules/EditButton';
@@ -13,7 +13,10 @@ export type Props = {
 };
 
 export type PresenterProps = {
-  senryu: SenryuDraft;
+  jouku: string;
+  chuuku: string;
+  geku: string;
+  ryugou: string;
   onChangeField: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   className?: string;
@@ -23,14 +26,23 @@ export type ContainerProps = Props & {
   presenter: (props: PresenterProps) => React.ReactElement;
 };
 
+export type State = {
+  senryu: Pick<SenryuDraft, 'jouku' | 'chuuku' | 'geku'>;
+};
+
 const useStyles = makeStyles(theme => ({
   fieldMargin: {
     marginTop: theme.spacing(2),
   },
 }));
 
+const UNKNOWN_RYUGOU = `詠み人知らず`;
+
 export const Presenter = ({
-  senryu,
+  jouku,
+  chuuku,
+  geku,
+  ryugou,
   onChangeField,
   onSubmit,
   className,
@@ -40,26 +52,26 @@ export const Presenter = ({
     <form method="post" onSubmit={onSubmit} className={className}>
       <TextField
         id="jouku"
-        value={senryu.jouku}
+        value={jouku}
         label="上句（上五）"
         fullWidth={true}
         onChange={onChangeField}
       />
       <TextField
         id="chuuku"
-        value={senryu.chuuku}
+        value={chuuku}
         label="中句（中七）"
         fullWidth={true}
         onChange={onChangeField}
       />
       <TextField
         id="geku"
-        value={senryu.geku}
+        value={geku}
         label="下句（下五）"
         fullWidth={true}
         onChange={onChangeField}
       />
-      <ConfirmTextField label="柳号" value={senryu.ryugou} />
+      <ConfirmTextField label="柳号" value={ryugou} />
       <EditButton color="primary" className={classes.fieldMargin}>
         投稿を確認
       </EditButton>
@@ -74,16 +86,17 @@ export const Container = ({
   className,
   presenter,
 }: ContainerProps) => {
-  const [state, setState] = useState<{ senryu: SenryuDraft }>({
+  const [state, setState] = useState<State>({
     senryu: initialSenryu
-      ? { ...initialSenryu }
+      ? {
+          jouku: initialSenryu.jouku,
+          chuuku: initialSenryu.chuuku,
+          geku: initialSenryu.geku,
+        }
       : {
-          id: null,
           jouku: '',
           chuuku: '',
           geku: '',
-          ryugou: user ? user.ryugou : `詠み人知らず`,
-          userId: user ? user.id : null,
         },
   });
 
@@ -96,11 +109,25 @@ export const Container = ({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.stopPropagation();
     e.preventDefault();
-    onSubmit(state.senryu);
+    const value = initialSenryu
+      ? {
+          id: initialSenryu.id,
+        }
+      : {
+          id: null,
+        };
+    const userValue =
+      user === null
+        ? { userId: null, ryugou: UNKNOWN_RYUGOU }
+        : { userId: user.id, ryugou: user.ryugou };
+    onSubmit({ ...value, ...userValue, ...state.senryu });
   };
 
   return presenter({
-    senryu: state.senryu,
+    jouku: state.senryu.jouku,
+    chuuku: state.senryu.chuuku,
+    geku: state.senryu.geku,
+    ryugou: user ? user.ryugou : UNKNOWN_RYUGOU,
     onChangeField: handleChangeField,
     onSubmit: handleSubmit,
     className,

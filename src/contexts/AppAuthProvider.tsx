@@ -8,7 +8,7 @@ export const AppAuthContext = React.createContext<{
 }>({});
 
 const AppAuthProvider: React.FC<{}> = ({ children }) => {
-  const { user, initializeUser, isAuthorizing } = useFirebaseUser();
+  const { user, initializeUser } = useFirebaseUser();
   const initializedUser = user ? (user.ryugou === null ? null : user) : null;
   const handleClickPost = (user: User) => {
     initializeUser(user);
@@ -19,7 +19,7 @@ const AppAuthProvider: React.FC<{}> = ({ children }) => {
         user: initializedUser,
       }}
     >
-      {isAuthorizing ? <div>unko</div> : children}
+      {children}
       {user && user.ryugou === null && (
         <UserSettingDialog
           open={initializedUser === null}

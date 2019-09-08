@@ -1,6 +1,15 @@
+import firebase from 'firebase/app';
 import { SenryuDraft, SenryuId, Senryu } from '@src/domain';
 import { SenryuRepository } from '@src/domain/repositories';
 import { senryuCollection, aggregateCollection } from '../firestore';
+
+const dataToModel: (
+  id: string,
+  data: firebase.firestore.DocumentData
+) => Senryu = (id, data) => {
+  const createdAt = data.createdAt.toDate().getTime();
+  return { ...data, id, createdAt } as Senryu;
+};
 
 export class SenryuRepositoryData implements SenryuRepository {
   async findById(id: SenryuId) {
@@ -9,7 +18,7 @@ export class SenryuRepositoryData implements SenryuRepository {
       .get();
     const data = snap.data();
     if (data !== undefined) {
-      return Promise.resolve({ ...data, id } as Senryu);
+      return Promise.resolve(dataToModel(id, data));
     } else {
       return Promise.reject('Not Found');
     }
@@ -25,9 +34,10 @@ export class SenryuRepositoryData implements SenryuRepository {
     if (base === undefined) {
       const senryuSnap = await senryuCollection()
         .limit(26)
+        .orderBy('createdAt', 'desc')
         .get();
-      const senryuData = senryuSnap.docs.map(
-        doc => ({ ...doc.data(), id: doc.id } as Senryu)
+      const senryuData = senryuSnap.docs.map(doc =>
+        dataToModel(doc.id, doc.data())
       );
       const hasNextPage = senryuData.length === 26;
       return {
@@ -71,7 +81,10 @@ export class SenryuRepositoryData implements SenryuRepository {
         },
         {} as { [key: string]: any }
       );
-      const docRef = await senryuCollection().add(data);
+      const docRef = await senryuCollection().add({
+        ...data,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
       return docRef.id;
     } catch (e) {
       console.error(e);

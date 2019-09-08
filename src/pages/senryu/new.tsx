@@ -85,7 +85,7 @@ export const Container = ({ navigate, presenter }: ContainerProps) => {
   };
 
   const handleClickPost = async (value: SenryuDraft) => {
-    setState({ ...state, openConfirm: false });
+    // setState({ ...state, openConfirm: false });
     // TODO: エラーハンドリング
     const id = await createSenryu(value);
     if (navigate) {

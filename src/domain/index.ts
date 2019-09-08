@@ -26,6 +26,7 @@ export type Senryu = Readonly<{
   geku: string;
   ryugou: string;
   userId: UserId | null;
+  createdAt: number;
 }>;
 
-export type SenryuDraft = Draft<Senryu, 'id'>;
+export type SenryuDraft = Draft<Senryu, 'id' | 'createdAt'>;
