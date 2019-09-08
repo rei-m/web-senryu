@@ -1,6 +1,6 @@
-import React, { ReactElement } from 'react';
+import React from 'react';
 import clsx from 'clsx';
-import styled from '@src/styles/styled';
+import makeStyles from '@src/styles/makeStyles';
 import Txt from '@src/components/atoms/Txt';
 
 export type Props = {
@@ -27,18 +27,19 @@ export type PresenterProps = {
 };
 
 export type ContainerProps = Props & {
-  presenter: (props: PresenterProps) => ReactElement;
+  presenter: (props: PresenterProps) => React.ReactElement;
 };
 
-const Container = styled.div(props => ({
-  '& :nth-of-type(n+1)': {
-    marginLeft: props.theme.spacing(0.5),
-    marginRight: props.theme.spacing(0.5),
+const useStyles = makeStyles(theme => ({
+  root: {
+    '& :nth-of-type(n+1)': {
+      marginLeft: theme.spacing(0.5),
+      marginRight: theme.spacing(0.5),
+    },
   },
-}));
-
-const CurrentPageNo = styled(Txt)(props => ({
-  color: props.theme.palette.text.secondary,
+  currentPageNo: {
+    color: theme.palette.text.secondary,
+  },
 }));
 
 export const PagenationPresenter = ({
@@ -51,8 +52,9 @@ export const PagenationPresenter = ({
   classes,
   className,
 }: PresenterProps) => {
+  const ownClasses = useStyles(0);
   return (
-    <Container className={clsx(className, classes && classes.root)}>
+    <div className={clsx(ownClasses.root, className, classes && classes.root)}>
       {canMovePrev && (
         <a
           href={pageUrl(currentPageNo - 1)}
@@ -64,13 +66,13 @@ export const PagenationPresenter = ({
       {Array.from({ length: pageCnt }).map((_, i) => {
         const pageNo = i + fromPageNo;
         return currentPageNo === pageNo ? (
-          <CurrentPageNo
+          <Txt
             key={pageNo}
             size={'l'}
-            className={clsx(classes && classes.page)}
+            className={clsx(ownClasses.currentPageNo, classes && classes.page)}
           >
             {pageNo}
-          </CurrentPageNo>
+          </Txt>
         ) : (
           <a
             key={pageNo}
@@ -89,7 +91,7 @@ export const PagenationPresenter = ({
           次へ
         </a>
       )}
-    </Container>
+    </div>
   );
 };
 

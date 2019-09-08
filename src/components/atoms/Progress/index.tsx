@@ -1,6 +1,6 @@
 import React from 'react';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { useTheme } from '@material-ui/core';
+import useTheme from '@material-ui/core/styles/useTheme';
 
 export type Props = {
   size?: number;

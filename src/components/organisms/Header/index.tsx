@@ -1,11 +1,12 @@
 import React from 'react';
+import { Link } from 'gatsby';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Note from '@material-ui/icons/Note';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import Favorite from '@material-ui/icons/Favorite';
-import styled from '@src/styles/styled';
+import makeStyles from '@src/styles/makeStyles';
 import Heading from '@src/components/atoms/Heading';
 
 export type Props = {
@@ -13,39 +14,56 @@ export type Props = {
   login?: boolean;
 };
 
-const StyledHeading = styled(Heading)({
-  flexGrow: 1,
-  textAlign: 'left',
-});
-
-const LoginLink = styled.a(({ theme }) => ({
-  fontSize: theme.fontSize.l,
-  color: theme.palette.text.secondary,
-  padding: '5px 16px',
+const useStyles = makeStyles(theme => ({
+  root: {
+    color: `#424242 !important`,
+    backgroundColor: `${theme.palette.primary.main} !important`,
+  },
+  heading: {
+    flexGrow: 1,
+    textAlign: 'left',
+  },
+  button: {
+    width: 45,
+    height: 45,
+  },
+  loginLink: {
+    fontSize: theme.fontSize.l,
+    color: theme.palette.text.secondary,
+    padding: '5px 16px',
+  },
 }));
 
 const Header = ({ title, login }: Props) => {
+  const classes = useStyles();
   return (
     <>
-      <AppBar position="static">
+      <AppBar position="static" className={classes.root}>
         <Toolbar>
-          <StyledHeading level={6} visualLevel={1}>
+          <Heading level={6} visualLevel={1} className={classes.heading}>
             {title}
-          </StyledHeading>
+          </Heading>
           {login ? (
             <div>
-              <IconButton aria-label="Show favorite">
+              <IconButton aria-label="Show favorite" className={classes.button}>
                 <Favorite />
               </IconButton>
-              <IconButton aria-label="Show list of menu">
+              <IconButton
+                aria-label="Show list of menu"
+                className={classes.button}
+              >
                 <Note />
               </IconButton>
-              <IconButton aria-label="Show personal">
+              <IconButton aria-label="Show personal" className={classes.button}>
                 <AccountCircle />
               </IconButton>
             </div>
           ) : (
-            <LoginLink href="/auth/">Login</LoginLink>
+            <div>
+              <Link to={`/auth/`} className={classes.loginLink}>
+                Login
+              </Link>
+            </div>
           )}
         </Toolbar>
       </AppBar>

@@ -7,12 +7,11 @@ export type SiteMetaData = Readonly<{
   author: string;
 }>;
 
-/**
- * ユーザー
- */
-export type UserId = string;
-
-export type User = Readonly<{
-  id: UserId;
-  name: string;
-}>;
+export type Page<T> = {
+  currentPage: number;
+  totalPages: number;
+  itemList: Array<T>;
+  totalCount: number;
+  listPerPage: number;
+  hasNextPage: boolean;
+};

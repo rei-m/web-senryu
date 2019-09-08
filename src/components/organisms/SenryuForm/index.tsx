@@ -1,62 +1,141 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState } from 'react';
+import makeStyles from '@src/styles/makeStyles';
 import TextField from '@src/components/molecules/TextField';
-import { Senryu, SenryuDraft } from '@src/domain';
+import ConfirmTextField from '@src/components/molecules/ConfirmTextField';
+import EditButton from '@src/components/molecules/EditButton';
+import { Senryu, SenryuDraft, User } from '@src/domain';
 
 export type Props = {
+  user: User | null;
   initialSenryu?: Senryu;
+  onSubmit: (senryu: SenryuDraft) => void;
+  className?: string;
 };
 
-const SenryuForm = ({ initialSenryu }: Props) => {
-  const [state, setState] = useState<{ senryu: SenryuDraft }>({
-    senryu: initialSenryu
-      ? { ...initialSenryu }
-      : { id: null, jouku: '', chuuku: '', geku: '', ryugou: '詠み人知らず' },
-  });
-  const handleChangeJouku = (e: ChangeEvent<HTMLInputElement>) => {
-    const updated = { ...state.senryu, jouku: e.currentTarget.value };
-    setState({ ...state, senryu: updated });
-  };
-  const handleChangeChuuku = (e: ChangeEvent<HTMLInputElement>) => {
-    const updated = { ...state.senryu, chuuku: e.currentTarget.value };
-    setState({ ...state, senryu: updated });
-  };
-  const handleChangeGeku = (e: ChangeEvent<HTMLInputElement>) => {
-    const updated = { ...state.senryu, geku: e.currentTarget.value };
-    setState({ ...state, senryu: updated });
-  };
+export type PresenterProps = {
+  jouku: string;
+  chuuku: string;
+  geku: string;
+  ryugou: string;
+  onChangeField: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  className?: string;
+};
 
+export type ContainerProps = Props & {
+  presenter: (props: PresenterProps) => React.ReactElement;
+};
+
+export type State = {
+  senryu: Pick<SenryuDraft, 'jouku' | 'chuuku' | 'geku'>;
+};
+
+const useStyles = makeStyles(theme => ({
+  fieldMargin: {
+    marginTop: theme.spacing(2),
+  },
+}));
+
+const UNKNOWN_RYUGOU = `詠み人知らず`;
+
+export const Presenter = ({
+  jouku,
+  chuuku,
+  geku,
+  ryugou,
+  onChangeField,
+  onSubmit,
+  className,
+}: PresenterProps) => {
+  const classes = useStyles();
   return (
-    <form>
+    <form method="post" onSubmit={onSubmit} className={className}>
       <TextField
         id="jouku"
-        value={state.senryu.jouku}
+        value={jouku}
         label="上句（上五）"
         fullWidth={true}
-        onChange={handleChangeJouku}
+        onChange={onChangeField}
       />
       <TextField
         id="chuuku"
-        value={state.senryu.chuuku}
+        value={chuuku}
         label="中句（中七）"
         fullWidth={true}
-        onChange={handleChangeChuuku}
+        onChange={onChangeField}
       />
       <TextField
         id="geku"
-        value={state.senryu.geku}
+        value={geku}
         label="下句（下五）"
         fullWidth={true}
-        onChange={handleChangeGeku}
+        onChange={onChangeField}
       />
-      <TextField
-        id="ryugou"
-        value={state.senryu.geku}
-        label="柳号（ペンネーム）"
-        fullWidth={true}
-        onChange={handleChangeGeku}
-      />
+      <ConfirmTextField label="柳号" value={ryugou} />
+      <EditButton color="primary" className={classes.fieldMargin}>
+        投稿を確認
+      </EditButton>
     </form>
   );
 };
+
+export const Container = ({
+  user,
+  initialSenryu,
+  onSubmit,
+  className,
+  presenter,
+}: ContainerProps) => {
+  const [state, setState] = useState<State>({
+    senryu: initialSenryu
+      ? {
+          jouku: initialSenryu.jouku,
+          chuuku: initialSenryu.chuuku,
+          geku: initialSenryu.geku,
+        }
+      : {
+          jouku: '',
+          chuuku: '',
+          geku: '',
+        },
+  });
+
+  const handleChangeField = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.currentTarget;
+    const updated = { ...state.senryu, [name]: value };
+    setState({ ...state, senryu: updated });
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const value = initialSenryu
+      ? {
+          id: initialSenryu.id,
+        }
+      : {
+          id: null,
+        };
+    const userValue =
+      user === null
+        ? { userId: null, ryugou: UNKNOWN_RYUGOU }
+        : { userId: user.id, ryugou: user.ryugou };
+    onSubmit({ ...value, ...userValue, ...state.senryu });
+  };
+
+  return presenter({
+    jouku: state.senryu.jouku,
+    chuuku: state.senryu.chuuku,
+    geku: state.senryu.geku,
+    ryugou: user ? user.ryugou : UNKNOWN_RYUGOU,
+    onChangeField: handleChangeField,
+    onSubmit: handleSubmit,
+    className,
+  });
+};
+
+const SenryuForm = (props: Props) => (
+  <Container {...props} presenter={Presenter} />
+);
 
 export default SenryuForm;

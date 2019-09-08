@@ -1,8 +1,7 @@
-import React, { FC } from 'react';
+import React from 'react';
 import clsx from 'clsx';
 import MuiButton from '@material-ui/core/Button';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import { ThemeInterface } from '@src/styles/theme';
+import makeStyles from '@src/styles/makeStyles';
 
 export type Props = {
   color?: 'primary' | 'secondary';
@@ -14,13 +13,13 @@ export type Props = {
   onClick?: () => void;
 };
 
-const useStyles = makeStyles<ThemeInterface, { elevation: number }>(theme => ({
+const useStyles = makeStyles<{ elevation: number }>(theme => ({
   root: {
     boxShadow: props => theme.shadows[props.elevation],
   },
 }));
 
-const Button: FC<Props> = ({
+const Button: React.FC<Props> = ({
   children,
   color,
   size = `medium`,

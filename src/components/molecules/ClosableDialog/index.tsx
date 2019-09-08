@@ -1,11 +1,10 @@
-import React, { FC } from 'react';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import React from 'react';
 import Dialog, { DialogProps } from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
-import { ThemeInterface } from '@src/styles/theme';
+import makeStyles from '@src/styles/makeStyles';
 
 export type Props = {
   title?: string;
@@ -13,7 +12,7 @@ export type Props = {
   onClose: () => void;
 } & Pick<DialogProps, 'PaperProps'>;
 
-const useStyles = makeStyles<ThemeInterface>(theme => ({
+const useStyles = makeStyles(theme => ({
   title: {
     padding: theme.spacing(2),
     height: 64,
@@ -36,7 +35,7 @@ const useStyles = makeStyles<ThemeInterface>(theme => ({
   },
 }));
 
-const ClosableDialog: FC<Props> = ({
+const ClosableDialog: React.FC<Props> = ({
   children,
   title,
   open,

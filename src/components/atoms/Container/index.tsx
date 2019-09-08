@@ -1,14 +1,26 @@
-import React, { FC } from 'react';
+import React from 'react';
+import clsx from 'clsx';
 import MuiContainer from '@material-ui/core/Container';
-import styled from '@src/styles/styled';
+import makeStyles from '@src/styles/makeStyles';
 
-const StyledMuiContainer = styled(MuiContainer)(({ theme }) => ({
-  paddingTop: theme.spacing(4),
-  paddingBottom: theme.spacing(4),
+export type Props = {
+  className?: string;
+};
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(4),
+  },
 }));
 
-const Container: FC<{}> = ({ children }) => (
-  <StyledMuiContainer component={`main`}>{children}</StyledMuiContainer>
-);
+const Container: React.FC<Props> = ({ className, children }) => {
+  const classes = useStyles();
+  return (
+    <MuiContainer component={`main`} className={clsx(classes.root, className)}>
+      {children}
+    </MuiContainer>
+  );
+};
 
 export default Container;

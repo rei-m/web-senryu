@@ -1,6 +1,6 @@
-import React, { FC } from 'react';
+import React from 'react';
 import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@src/styles/makeStyles';
 import Txt from '@src/components/atoms/Txt';
 
 export type Props = {
@@ -17,7 +17,12 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const CiteLink: FC<Props> = ({ children, href, citeProps, className }) => {
+const CiteLink: React.FC<Props> = ({
+  children,
+  href,
+  citeProps,
+  className,
+}) => {
   const classes = useStyles();
   return (
     <a
