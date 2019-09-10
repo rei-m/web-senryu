@@ -13,7 +13,6 @@ const IndexPage = () => {
       login={!!user}
       title={site.siteMetadata.title}
       description={site.siteMetadata.description}
-      keywords={[]}
       content={
         <div>
           <div>川柳を投稿するサイトだよ</div>

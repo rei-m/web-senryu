@@ -112,9 +112,11 @@ export const Container = ({
     const value = initialSenryu
       ? {
           id: initialSenryu.id,
+          createdAt: initialSenryu.createdAt,
         }
       : {
           id: null,
+          createdAt: null,
         };
     const userValue =
       user === null
