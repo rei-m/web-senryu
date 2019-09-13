@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Senryu } from '@src/domain';
+import { Senryu, UserId } from '@src/domain';
 import { SenryuRepository } from '@src/domain/repositories';
 import { useDiContainer } from './useDiContainer';
 
@@ -17,7 +17,8 @@ type State = {
   error?: Error;
 };
 
-export const useSenryuList = (
+export const useUserSenryuList = (
+  userId: UserId,
   { senryuRepository }: Deps = useDiContainer()
 ) => {
   const [state, setState] = useState<State>({
@@ -30,7 +31,7 @@ export const useSenryuList = (
 
   useEffect(() => {
     senryuRepository
-      .findAllPerPage(1)
+      .findByUserPerPage(userId, 1)
       .then(page => {
         setState({
           currentPage: page.currentPage,
@@ -53,7 +54,11 @@ export const useSenryuList = (
     setState({ ...state, isMoreLoading: true });
 
     senryuRepository
-      .findAllPerPage(state.currentPage + 1, state.senryuList.slice(-1)[0])
+      .findByUserPerPage(
+        userId,
+        state.currentPage + 1,
+        state.senryuList.slice(-1)[0]
+      )
       .then(page => {
         setState({
           currentPage: page.currentPage,

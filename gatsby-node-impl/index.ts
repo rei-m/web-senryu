@@ -13,5 +13,9 @@ export const onCreatePage: GatsbyOnCreatePage<{}> = async ({
     page.matchPath = '/senryu/:id';
 
     createPage(page);
+  } else if (page.path.match(/^\/users\/.*/)) {
+    page.matchPath = '/users/:id';
+
+    createPage(page);
   }
 };

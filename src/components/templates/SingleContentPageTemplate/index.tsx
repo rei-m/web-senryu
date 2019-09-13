@@ -9,7 +9,6 @@ export interface Props {
   login?: boolean;
   title: string;
   description: string;
-  keywords: string[];
 }
 
 const SingleContentPageTemplate = ({
@@ -17,10 +16,9 @@ const SingleContentPageTemplate = ({
   login,
   title,
   description,
-  keywords,
 }: Props) => (
   <>
-    <SEO title={title} description={description} keywords={keywords} />
+    <SEO title={title} description={description} />
     <Header title={title} login={login} />
     <Container>{content}</Container>
     <Footer />

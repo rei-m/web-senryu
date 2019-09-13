@@ -1,7 +1,11 @@
 import firebase from 'firebase/app';
-import { SenryuDraft, SenryuId, Senryu } from '@src/domain';
+import { SenryuDraft, SenryuId, Senryu, UserId } from '@src/domain';
 import { SenryuRepository } from '@src/domain/repositories';
-import { senryuCollection, aggregateCollection } from '../firestore';
+import {
+  senryuCollection,
+  aggregateCollection,
+  userCollection,
+} from '../firestore';
 
 const dataToModel: (
   id: string,
@@ -10,6 +14,8 @@ const dataToModel: (
   const createdAt = data.createdAt.toDate().getTime();
   return { ...data, id, createdAt } as Senryu;
 };
+
+const COUNT_MAX = 20;
 
 export class SenryuRepositoryData implements SenryuRepository {
   async findById(id: SenryuId) {
@@ -24,47 +30,66 @@ export class SenryuRepositoryData implements SenryuRepository {
     }
   }
 
+  async findByUserPerPage(userId: UserId, pageNo: number, base?: Senryu) {
+    const userSnap = await userCollection()
+      .doc(userId)
+      .get();
+    const userData = userSnap.data();
+    const count = userData !== undefined ? userData.senryuCount : 0;
+    const totalPages = Math.ceil(count / COUNT_MAX);
+    const query =
+      base === undefined
+        ? senryuCollection()
+            .where('userId', '==', userId)
+            .orderBy('createdAt', 'desc')
+            .limit(COUNT_MAX)
+        : senryuCollection()
+            .where('userId', '==', userId)
+            .orderBy('createdAt', 'desc')
+            .startAfter(new Date(base.createdAt))
+            .limit(COUNT_MAX);
+    const senryuSnap = await query.get();
+    const senryuData = senryuSnap.docs.map(doc =>
+      dataToModel(doc.id, doc.data())
+    );
+    const hasNextPage = COUNT_MAX * pageNo < count;
+    return {
+      currentPage: pageNo,
+      totalPages,
+      itemList: senryuData,
+      totalCount: count,
+      listPerPage: COUNT_MAX,
+      hasNextPage,
+    };
+  }
+
   async findAllPerPage(pageNo: number, base?: Senryu) {
     const countSnap = await aggregateCollection()
       .doc(`count`)
       .get();
     const countData = countSnap.data();
     const count = countData !== undefined ? countData.senryu : 0;
-    const totalPages = Math.ceil(count / 25);
-    if (base === undefined) {
-      const senryuSnap = await senryuCollection()
-        .limit(26)
-        .orderBy('createdAt', 'desc')
-        .get();
-      const senryuData = senryuSnap.docs.map(doc =>
-        dataToModel(doc.id, doc.data())
-      );
-      const hasNextPage = senryuData.length === 26;
-      return {
-        currentPage: 1,
-        totalPages,
-        itemList: senryuData,
-        totalCount: count,
-        listPerPage: 25,
-        hasNextPage,
-      };
-    }
-
-    const senryuSnap = await senryuCollection()
-      .startAfter(base)
-      .limit(26)
-      .get();
-
-    const senryuData = senryuSnap.docs.map(doc => doc.data() as Senryu);
-
-    const hasNextPage = senryuData.length === 26;
-
+    const totalPages = Math.ceil(count / COUNT_MAX);
+    const query =
+      base === undefined
+        ? senryuCollection()
+            .orderBy('createdAt', 'desc')
+            .limit(COUNT_MAX)
+        : senryuCollection()
+            .orderBy('createdAt', 'desc')
+            .startAfter(new Date(base.createdAt))
+            .limit(COUNT_MAX);
+    const senryuSnap = await query.get();
+    const senryuData = senryuSnap.docs.map(doc =>
+      dataToModel(doc.id, doc.data())
+    );
+    const hasNextPage = COUNT_MAX * pageNo < count;
     return {
       currentPage: pageNo,
       totalPages,
       itemList: senryuData,
       totalCount: count,
-      listPerPage: 25,
+      listPerPage: COUNT_MAX,
       hasNextPage,
     };
   }

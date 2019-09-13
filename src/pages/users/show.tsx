@@ -7,11 +7,13 @@ import MoreButton from '@src/components/molecules/MoreButton';
 import Progress from '@src/components/atoms/Progress';
 import Txt from '@src/components/atoms/Txt';
 import { useAppUser } from '@src/hooks/useAppUser';
-import { useSenryuList } from '@src/hooks/useSenryuList';
+import { useUserSenryuList } from '@src/hooks/useUserSenryuList';
 import { SenryuId } from '@src/domain';
 import { ROUTING } from '@src/constants/routing';
 
-export type Props = RouteComponentProps;
+export type Props = {
+  id: string;
+} & RouteComponentProps;
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -25,7 +27,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const SenryuPage = ({ navigate }: Props) => {
+const UsersShowPage = ({ id, navigate }: Props) => {
   const user = useAppUser();
   const {
     senryuList,
@@ -34,7 +36,7 @@ const SenryuPage = ({ navigate }: Props) => {
     error,
     fetchNextPage,
     isMoreLoading,
-  } = useSenryuList();
+  } = useUserSenryuList(id);
   const classes = useStyles();
 
   const handleClickSenryu = (senryuId: SenryuId) => {
@@ -80,4 +82,4 @@ const SenryuPage = ({ navigate }: Props) => {
   );
 };
 
-export default SenryuPage;
+export default UsersShowPage;

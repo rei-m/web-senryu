@@ -19,13 +19,11 @@ export type Props = {
 
 const useStyles = makeStyles(theme => ({
   fudaWrapper: {
-    display: `flex`,
-    justifyContent: `center`,
-    alignItems: `center`,
     padding: theme.spacing(4),
   },
   fuda: {
     boxShadow: theme.elevation(1),
+    margin: 'auto',
   },
 }));
 
@@ -55,7 +53,9 @@ const SenryuConfirmDialog = ({ open, senryu, onClickPost, onClose }: Props) => {
           以下の内容で川柳を投稿します。よろしければ「投稿する」を押してください
         </DialogContentText>
         <div className={classes.fudaWrapper}>
-          {senryu && <SenryuFuda senryu={senryu} size={`m`} />}
+          {senryu && (
+            <SenryuFuda senryu={senryu} size={`m`} className={classes.fuda} />
+          )}
         </div>
       </DialogContent>
       <DialogActions>

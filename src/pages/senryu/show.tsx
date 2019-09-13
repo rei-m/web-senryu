@@ -37,7 +37,6 @@ const SenryuShowPage = ({ id }: Props) => {
       login={!!user}
       title={`川柳`}
       description={''}
-      keywords={[]}
       content={
         <div className={classes.root}>
           {error ? (

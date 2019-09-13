@@ -2,7 +2,7 @@ import React, { useRef, useState, useLayoutEffect } from 'react';
 import clsx from 'clsx';
 import useTheme from '@material-ui/core/styles/useTheme';
 import makeStyles from '@src/styles/makeStyles';
-import VerticalTxt from '@src/components/atoms/VerticalTxt';
+import Txt from '@src/components/atoms/Txt';
 import { Senryu as SenryuType, SenryuDraft, SenryuId } from '@src/domain';
 
 export type Props = {
@@ -31,9 +31,6 @@ const marginBase = {
 const useStyles = makeStyles<{ width: number; size: `s` | `m` | `l` | `ll` }>(
   theme => ({
     root: props => ({
-      display: `flex`,
-      flexDirection: `row-reverse`,
-      alignItems: `start`,
       border: `${theme.spacing(1)}px solid ${theme.palette.primary.dark}`,
       backgroundColor: `#fafafa`,
       borderRadius: 4,
@@ -43,17 +40,28 @@ const useStyles = makeStyles<{ width: number; size: `s` | `m` | `l` | `ll` }>(
       paddingRight: theme.spacing(2),
       width: props.width,
       minHeight: props.width / 0.7,
+      writingMode: `vertical-rl`,
+      textOrientation: 'upright',
+    }),
+    first: () => ({
+      textAlign: 'start',
+      display: `block`,
     }),
     second: props => ({
+      textAlign: 'start',
+      display: `block`,
       marginRight: theme.spacing(0.5),
       paddingTop: `${marginBase[props.size ? props.size : `m`] * 1.5}rem`,
     }),
     third: props => ({
+      textAlign: 'start',
+      display: `block`,
       marginRight: theme.spacing(0.5),
       paddingTop: `${marginBase[props.size ? props.size : `m`] * 3}rem`,
     }),
     fourth: {
-      alignSelf: `flex-end`,
+      textAlign: 'end',
+      display: `block`,
       marginRight: theme.spacing(1.5),
     },
   })
@@ -90,24 +98,24 @@ const SenryuFuda = ({ senryu, size = `m`, onClick, className }: Props) => {
 
   return (
     <p onClick={handleClick} className={clsx(classes.root, className)}>
-      <VerticalTxt ref={ref1} size={size}>
+      <Txt ref={ref1} size={size} className={classes.first}>
         {senryu.jouku}
-      </VerticalTxt>
-      <VerticalTxt ref={ref2} size={size} className={classes.second}>
+      </Txt>
+      <Txt ref={ref2} size={size} className={classes.second}>
         {senryu.chuuku}
-      </VerticalTxt>
-      <VerticalTxt ref={ref3} size={size} className={classes.third}>
+      </Txt>
+      <Txt ref={ref3} size={size} className={classes.third}>
         {senryu.geku}
-      </VerticalTxt>
-      <VerticalTxt
+      </Txt>
+      <Txt
         ref={ref4}
         size={ryugouSize[size]}
         className={clsx(classes.txt, classes.fourth)}
       >
         {senryu.ryugou}
-      </VerticalTxt>
+      </Txt>
     </p>
   );
 };
 
-export default SenryuFuda;
+export default React.memo(SenryuFuda);

@@ -27,6 +27,6 @@ export class AuthenticationServiceData implements AuthenticationService {
 
   async initialize(user: User) {
     const userDocRef = userCollection().doc(user.id);
-    return await userDocRef.set({ ryugou: user.ryugou });
+    return await userDocRef.set({ ryugou: user.ryugou, senryuCount: 0 });
   }
 }

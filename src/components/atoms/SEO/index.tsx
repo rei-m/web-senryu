@@ -10,7 +10,6 @@ export type Props = {
     name: string;
     content: string;
   }>;
-  keywords?: string[];
   noIndex?: boolean;
 };
 
@@ -19,7 +18,6 @@ const SEO = ({
   description,
   lang = 'ja',
   meta = [],
-  keywords = [],
   noIndex = false,
 }: Props) => {
   const { site } = useStaticQuery(
@@ -71,16 +69,7 @@ const SEO = ({
       name: `twitter:description`,
       content: metaDescription,
     },
-  ]
-    .concat(
-      keywords.length > 0
-        ? {
-            name: `keywords`,
-            content: keywords.join(`, `),
-          }
-        : []
-    )
-    .concat(meta);
+  ].concat(meta);
 
   if (noIndex) {
     metaData.push({ name: `robots`, content: `noindex` });
