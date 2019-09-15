@@ -1,4 +1,4 @@
-import { SenryuDraft, SenryuId, Senryu, UserId } from '..';
+import { SenryuDraft, SenryuId, Senryu, UserId, User } from '..';
 import { Page } from '@src/types';
 
 export interface SenryuRepository {
@@ -10,4 +10,8 @@ export interface SenryuRepository {
   ): Promise<Page<Senryu>>;
   findAllPerPage(pageNo: number, base?: Senryu): Promise<Page<Senryu>>;
   add(senryu: SenryuDraft): Promise<SenryuId>;
+}
+
+export interface UserRepository {
+  findById(id: UserId): Promise<User>;
 }

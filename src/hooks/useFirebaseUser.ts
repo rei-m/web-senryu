@@ -9,7 +9,6 @@ type Deps = {
 
 type State = {
   user: User | UninitializedUser | null;
-  isAuthorizing: boolean;
 };
 
 export const useFirebaseUser = (
@@ -17,13 +16,11 @@ export const useFirebaseUser = (
 ) => {
   const [state, setState] = useState<State>({
     user: null,
-    isAuthorizing: true,
   });
 
   useEffect(() => {
     const callback = (user: User | UninitializedUser | null) => {
-      const isAuthorizing = user && user.ryugou === null ? true : false;
-      setState({ user, isAuthorizing });
+      setState({ user });
     };
     const unsubscribe = authenticationService.onAuthStateChanged(callback);
 
@@ -37,7 +34,7 @@ export const useFirebaseUser = (
     authenticationService
       .initialize(newUser)
       .then(() => {
-        setState({ user: newUser, isAuthorizing: false });
+        setState({ user: newUser });
       })
       .catch(reason => {
         console.error(reason);

@@ -6,7 +6,7 @@ import SenryuList from '@src/components/organisms/SenryuList';
 import MoreButton from '@src/components/molecules/MoreButton';
 import Progress from '@src/components/atoms/Progress';
 import Txt from '@src/components/atoms/Txt';
-import { useAppUser } from '@src/hooks/useAppUser';
+import { useAuthUser } from '@src/hooks/useAuthUser';
 import { useSenryuList } from '@src/hooks/useSenryuList';
 import { SenryuId } from '@src/domain';
 import { ROUTING } from '@src/constants/routing';
@@ -26,7 +26,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const SenryuPage = ({ navigate }: Props) => {
-  const user = useAppUser();
+  const user = useAuthUser();
   const {
     senryuList,
     totalCount,
@@ -47,7 +47,7 @@ const SenryuPage = ({ navigate }: Props) => {
   // TODO: メタ情報見直す
   return (
     <SingleContentPageTemplate
-      login={!!user}
+      user={user}
       title={`川柳`}
       description={''}
       content={

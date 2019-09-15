@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
-import { Senryu, UserId } from '@src/domain';
-import { SenryuRepository } from '@src/domain/repositories';
+import { Senryu, UserId, User } from '@src/domain';
+import { SenryuRepository, UserRepository } from '@src/domain/repositories';
 import { useDiContainer } from './useDiContainer';
 
 type Deps = {
+  userRepository: UserRepository;
   senryuRepository: SenryuRepository;
 };
 
 type State = {
+  user?: User;
   currentPage: number;
   hasNextPage: boolean;
   senryuList?: Array<Senryu>;
@@ -19,7 +21,7 @@ type State = {
 
 export const useUserSenryuList = (
   userId: UserId,
-  { senryuRepository }: Deps = useDiContainer()
+  { userRepository, senryuRepository }: Deps = useDiContainer()
 ) => {
   const [state, setState] = useState<State>({
     currentPage: 0,
@@ -30,10 +32,13 @@ export const useUserSenryuList = (
   });
 
   useEffect(() => {
-    senryuRepository
-      .findByUserPerPage(userId, 1)
-      .then(page => {
+    Promise.all([
+      userRepository.findById(userId),
+      senryuRepository.findByUserPerPage(userId, 1),
+    ])
+      .then(([user, page]) => {
         setState({
+          user,
           currentPage: page.currentPage,
           hasNextPage: page.hasNextPage,
           totalPages: page.totalPages,
@@ -61,6 +66,7 @@ export const useUserSenryuList = (
       )
       .then(page => {
         setState({
+          user: state.user,
           currentPage: page.currentPage,
           hasNextPage: page.hasNextPage,
           totalPages: page.totalPages,

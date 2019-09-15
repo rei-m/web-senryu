@@ -7,6 +7,7 @@ export type Props = {
   id: string;
   value: string;
   label: string;
+  rows?: number;
   placeholder?: string;
   helperText?: React.ReactNode;
   fullWidth?: boolean;
@@ -24,6 +25,7 @@ const TextField = ({
   id,
   value,
   label,
+  rows,
   placeholder,
   helperText,
   fullWidth,
@@ -47,6 +49,9 @@ const TextField = ({
       fullWidth={fullWidth}
       required={required}
       disabled={disabled}
+      multiline={rows !== undefined && 0 < rows}
+      rows={rows}
+      rowsMax={rows}
       error={!!error}
       onChange={onChange}
       InputProps={{

@@ -6,7 +6,7 @@ import SenryuForm from '@src/components/organisms/SenryuForm';
 import SenryuConfirmDialog from '@src/components/organisms/SenryuConfirmDialog';
 import Progress from '@src/components/atoms/Progress';
 import { SenryuDraft, User } from '@src/domain';
-import { useAppUser } from '@src/hooks/useAppUser';
+import { useAuthUser } from '@src/hooks/useAuthUser';
 import { useCreateSenryu } from '@src/hooks/useCreateSenryu';
 import { ROUTING } from '@src/constants/routing';
 
@@ -52,7 +52,7 @@ export const Presenter = ({
   const classes = useStyles();
   return (
     <NoIndexPageTemplate
-      login={!!user}
+      user={user}
       title={`投稿`}
       content={
         user !== undefined && !isLoading ? (
@@ -76,7 +76,7 @@ export const Presenter = ({
 };
 
 export const Container = ({ navigate, presenter }: ContainerProps) => {
-  const user = useAppUser();
+  const user = useAuthUser();
   const { isCreating, createSenryu } = useCreateSenryu();
   const [state, setState] = useState<State>({ openConfirm: false });
 

@@ -2531,6 +2531,13 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-image-crop@^8.1.2":
+  version "8.1.2"
+  resolved "https://registry.yarnpkg.com/@types/react-image-crop/-/react-image-crop-8.1.2.tgz#9c16d6b0b577a63a854a1a895180cc76800e2988"
+  integrity sha512-K6mbw1Bj/CeePnRa78E3v3gIn/EeqlCof5IVU9IPLdzMjOsf+ccn3Qv/vagsH/6eANGgoDz4hG41eJ2kggiuuw==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-test-renderer@^16.9.0":
   version "16.9.0"
   resolved "https://registry.yarnpkg.com/@types/react-test-renderer/-/react-test-renderer-16.9.0.tgz#d60f530ecf4c906721511603cca711b4fa830d41"
@@ -5249,7 +5256,7 @@ core-js-pure@^3.0.1:
   resolved "https://registry.yarnpkg.com/core-js-pure/-/core-js-pure-3.2.1.tgz#879a23699cff46175bfd2d09158b5c50645a3c45"
   integrity sha512-+qpvnYrsi/JDeQTArB7NnNc2VoMYLE1YSkziCDHgjexC2KH7OFiGhLUd3urxfyWmNjSwSW7NYXPWHMhuIJx9Ow==
 
-core-js@3.2.1, core-js@^3.0.1, core-js@^3.0.4:
+core-js@3.2.1, core-js@^3.0.1, core-js@^3.0.4, core-js@^3.2.1:
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.2.1.tgz#cd41f38534da6cc59f7db050fe67307de9868b09"
   integrity sha512-Qa5XSVefSVPRxy2XfUC13WbvqkxhkwB3ve+pgCQveNgYzbM/UxZeu1dcOX/xr4UmfUd+muuvsaxilQzCyUurMw==
@@ -13682,6 +13689,15 @@ react-hotkeys@2.0.0-pre4:
   integrity sha512-oa+UncSWyOwMK3GExt+oELXaR7T3ItgcMolsupQFdKvwkEhVAluJd5rYczsRSQpQlVkdNoHG46De2NUeuS+88Q==
   dependencies:
     prop-types "^15.6.1"
+
+react-image-crop@^8.3.0:
+  version "8.3.0"
+  resolved "https://registry.yarnpkg.com/react-image-crop/-/react-image-crop-8.3.0.tgz#a0642dd3daafd77f142bac01887628cb967876b7"
+  integrity sha512-iC6Soqkf588WvEHc4EpKWNaiw4YQe0UbXziBpC8KRPKyaccakmWf7MewDFnYiPfPNEWxj96S390q7BUJz8LGZg==
+  dependencies:
+    clsx "^1.0.4"
+    core-js "^3.2.1"
+    prop-types "^15.7.2"
 
 react-inspector@^3.0.2:
   version "3.0.2"

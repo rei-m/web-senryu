@@ -1,4 +1,5 @@
 import firebase from 'firebase/app';
+import axios from 'axios';
 import { SenryuDraft, SenryuId, Senryu, UserId } from '@src/domain';
 import { SenryuRepository } from '@src/domain/repositories';
 import {
@@ -6,6 +7,7 @@ import {
   aggregateCollection,
   userCollection,
 } from '../firestore';
+import { senryuStorageRef } from '../storage';
 
 const dataToModel: (
   id: string,
@@ -16,6 +18,14 @@ const dataToModel: (
 };
 
 const COUNT_MAX = 20;
+
+const POST_KEY_LIST: Array<keyof Senryu> = [
+  'jouku',
+  'chuuku',
+  'geku',
+  'ryugou',
+  'userId',
+];
 
 export class SenryuRepositoryData implements SenryuRepository {
   async findById(id: SenryuId) {
@@ -99,17 +109,33 @@ export class SenryuRepositoryData implements SenryuRepository {
       const data = Object.entries(senryu).reduce(
         (prev, current) => {
           const [key, value] = current;
-          if (key !== 'id') {
+          if (POST_KEY_LIST.includes(key as keyof Senryu)) {
             prev[key] = value;
           }
           return prev;
         },
-        {} as { [key: string]: any }
+        {} as { [key: string]: unknown }
       );
       const docRef = await senryuCollection().add({
         ...data,
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       });
+
+      if (senryu.imageUrl) {
+        const response = await axios.get(senryu.imageUrl, {
+          responseType: 'blob',
+        });
+        const blob = new Blob([response.data], { type: 'image/jpeg' });
+        const storageRef = senryuStorageRef(`${docRef.id}.jpg`);
+        const fileSnapshot = await storageRef.put(blob);
+        const imageUrl = await fileSnapshot.ref.getDownloadURL();
+
+        await docRef.update({
+          imageUrl,
+          storageUri: fileSnapshot.metadata.fullPath,
+        });
+      }
+
       return docRef.id;
     } catch (e) {
       console.error(e);

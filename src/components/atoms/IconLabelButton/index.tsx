@@ -26,6 +26,7 @@ const IconLabelButton: React.FC<Props> = ({
   children,
   color,
   iconSize = '2rem',
+  size,
   Icon,
   elevation,
   className,
@@ -34,6 +35,7 @@ const IconLabelButton: React.FC<Props> = ({
   const classes = useStyles();
   return (
     <Button
+      size={size}
       color={color}
       className={className}
       elevation={elevation}

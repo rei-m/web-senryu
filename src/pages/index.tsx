@@ -1,16 +1,16 @@
 import React from 'react';
 import { Link } from 'gatsby';
 import SingleContentPageTemplate from '@src/components/templates/SingleContentPageTemplate';
-import { useAppUser } from '@src/hooks/useAppUser';
+import { useAuthUser } from '@src/hooks/useAuthUser';
 import { useSiteMetaData } from '@src/hooks/useSiteMetaData';
 import { ROUTING } from '@src/constants/routing';
 
 const IndexPage = () => {
-  const user = useAppUser();
+  const user = useAuthUser();
   const { site } = useSiteMetaData();
   return (
     <SingleContentPageTemplate
-      login={!!user}
+      user={user}
       title={site.siteMetadata.title}
       description={site.siteMetadata.description}
       content={
