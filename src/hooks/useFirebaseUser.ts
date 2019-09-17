@@ -30,6 +30,18 @@ export const useFirebaseUser = (
     };
   }, []);
 
+  useEffect(() => {
+    const callback = (user: User) => {
+      setState({ user });
+    };
+    const unsubscribe = authenticationService.onProfileChanged(callback);
+
+    return () => {
+      console.info(`firebase: unsubscribe onProfileChanged`);
+      unsubscribe();
+    };
+  }, [state.user !== null]);
+
   const initializeUser = (newUser: User) => {
     authenticationService
       .initialize(newUser)

@@ -71,13 +71,11 @@ const SenryuImageDialog = ({ open, onClickSet, onClose }: Props) => {
     >
       <DialogTitle id="senryu-form-dialog-title" disableTypography>
         <Heading level={6} visualLevel={3}>
-          投稿確認
+          投稿画像
         </Heading>
       </DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          以下の内容で川柳を投稿します。よろしければ「投稿する」を押してください
-        </DialogContentText>
+        <DialogContentText>投稿する画像を設定してください</DialogContentText>
         <div className={classes.fudaWrapper}>
           <input
             accept="image/jpeg,image/png,image/webp,image/gif"

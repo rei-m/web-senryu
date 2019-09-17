@@ -1,16 +1,14 @@
 import React from 'react';
-import Header from '@src/components/organisms/Header';
-import Footer from '@src/components/organisms/Footer';
-import Container from '@src/components/atoms/Container';
+import Layout from '@src/components/organisms/Layout';
 import SEO from '@src/components/atoms/SEO';
 import { User } from '@src/domain';
 
-export interface Props {
+export type Props = {
   content: React.ReactElement;
   user?: User | null;
   title: string;
   description: string;
-}
+};
 
 const SingleContentPageTemplate = ({
   content,
@@ -20,9 +18,9 @@ const SingleContentPageTemplate = ({
 }: Props) => (
   <>
     <SEO title={title} description={description} />
-    <Header title={title} user={user} />
-    <Container>{content}</Container>
-    <Footer />
+    <Layout title={title} user={user}>
+      {content}
+    </Layout>
   </>
 );
 

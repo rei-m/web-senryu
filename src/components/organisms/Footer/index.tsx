@@ -1,4 +1,5 @@
 import React from 'react';
+import clsx from 'clsx';
 import { Link } from 'gatsby';
 import makeStyles from '@src/styles/makeStyles';
 import Heading from '@src/components/atoms/Heading';
@@ -6,11 +7,16 @@ import Txt from '@src/components/atoms/Txt';
 import { ROUTING } from '@src/constants/routing';
 import { useSiteMetaData } from '@src/hooks/useSiteMetaData';
 
-export type PresenterProps = {
-  siteName: string;
+export type Props = {
+  className?: string;
 };
 
-export type ContainerProps = {
+export type PresenterProps = {
+  siteName: string;
+  className?: string;
+};
+
+export type ContainerProps = Props & {
   presenter: (props: PresenterProps) => React.ReactElement;
 };
 
@@ -41,19 +47,14 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const FooterPresenter = ({ siteName }: PresenterProps) => {
+export const FooterPresenter = ({ siteName, className }: PresenterProps) => {
   const classes = useStyles();
   return (
-    <footer className={classes.root}>
+    <footer className={clsx(classes.root, className)}>
       <Heading level={6} visualLevel={1} className={classes.heading}>
         {siteName}
       </Heading>
       <ul className={classes.linkContainer}>
-        <li>
-          <Link to={ROUTING.search} className={classes.link}>
-            <Txt size={`ss`}>川柳をさがす</Txt>
-          </Link>
-        </li>
         <li>
           <Link to={ROUTING.about} className={classes.link}>
             <Txt size={`ss`}>このサイトについて</Txt>
@@ -74,11 +75,13 @@ export const FooterPresenter = ({ siteName }: PresenterProps) => {
   );
 };
 
-export const FooterContainer = ({ presenter }: ContainerProps) => {
+export const FooterContainer = ({ className, presenter }: ContainerProps) => {
   const { site } = useSiteMetaData();
-  return presenter({ siteName: site.siteMetadata.title });
+  return presenter({ siteName: site.siteMetadata.title, className });
 };
 
-const Footer = () => <FooterContainer presenter={FooterPresenter} />;
+const Footer = (props: Props) => (
+  <FooterContainer {...props} presenter={FooterPresenter} />
+);
 
 export default Footer;

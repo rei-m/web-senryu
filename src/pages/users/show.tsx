@@ -3,15 +3,17 @@ import { RouteComponentProps } from '@reach/router';
 import makeStyles from '@src/styles/makeStyles';
 import SingleContentPageTemplate from '@src/components/templates/SingleContentPageTemplate';
 import UserProfile from '@src/components/organisms/UserProfile';
+import UserSettingDialog from '@src/components/organisms/UserSettingDialog';
 import SenryuList from '@src/components/organisms/SenryuList';
 import AccountButton from '@src/components/molecules/AccountButton';
-import SettingButton from '@src/components/molecules/SettingButton';
 import MoreButton from '@src/components/molecules/MoreButton';
 import Progress from '@src/components/atoms/Progress';
 import Txt from '@src/components/atoms/Txt';
+import { useBool } from '@src/hooks/useBool';
 import { useAuthUser } from '@src/hooks/useAuthUser';
+import { useUpdateProfile } from '@src/hooks/useUpdateProfile';
 import { useUserSenryuList } from '@src/hooks/useUserSenryuList';
-import { SenryuId } from '@src/domain';
+import { SenryuId, User } from '@src/domain';
 import { ROUTING } from '@src/constants/routing';
 
 export type Props = {
@@ -24,10 +26,8 @@ const useStyles = makeStyles(theme => ({
   },
   buttonBox: {
     textAlign: 'left',
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2),
     paddingTop: theme.spacing(1),
-    paddingBottom: theme.spacing(1),
+    paddingBottom: theme.spacing(2),
     '& button:nth-child(n+2)': {
       marginLeft: theme.spacing(2),
     },
@@ -42,6 +42,8 @@ const useStyles = makeStyles(theme => ({
 
 const UsersShowPage = ({ id, navigate }: Props) => {
   const authUser = useAuthUser();
+  const { updateProfile } = useUpdateProfile();
+
   const {
     user,
     senryuList,
@@ -51,6 +53,9 @@ const UsersShowPage = ({ id, navigate }: Props) => {
     fetchNextPage,
     isMoreLoading,
   } = useUserSenryuList(id);
+
+  const [isDialogOpen, openDialog, closeDialog] = useBool(false);
+
   const classes = useStyles();
 
   const handleClickSenryu = (senryuId: SenryuId) => {
@@ -58,6 +63,11 @@ const UsersShowPage = ({ id, navigate }: Props) => {
     if (navigate) {
       navigate(ROUTING.senryuShow.replace(`:id`, senryuId));
     }
+  };
+
+  const handleClickPostProfile = (user: User) => {
+    updateProfile(user);
+    closeDialog();
   };
 
   // TODO: メタ情報見直す
@@ -72,16 +82,21 @@ const UsersShowPage = ({ id, navigate }: Props) => {
             <Txt className={classes.error}>{error.message}</Txt>
           ) : senryuList && user ? (
             <>
-              <UserProfile user={user} />
-              {!!authUser && authUser.id === user.id && (
-                <div className={classes.buttonBox}>
-                  <AccountButton size={`small`} iconSize={`1.6rem`}>
-                    詠み人設定
-                  </AccountButton>
-                  <SettingButton size={`small`} iconSize={`1.6rem`}>
-                    その他設定
-                  </SettingButton>
-                </div>
+              {!!authUser && authUser.id === user.id ? (
+                <>
+                  <UserProfile user={authUser} />
+                  <div className={classes.buttonBox}>
+                    <AccountButton
+                      size={`small`}
+                      iconSize={`1.6rem`}
+                      onClick={openDialog}
+                    >
+                      詠み人設定
+                    </AccountButton>
+                  </div>
+                </>
+              ) : (
+                <UserProfile user={user} />
               )}
               <SenryuList
                 senryuList={senryuList}
@@ -96,6 +111,14 @@ const UsersShowPage = ({ id, navigate }: Props) => {
                     <MoreButton onClick={fetchNextPage} />
                   )}
                 </div>
+              )}
+              {!!authUser && (
+                <UserSettingDialog
+                  open={isDialogOpen}
+                  initialUser={authUser}
+                  onClickPost={handleClickPostProfile}
+                  onClose={closeDialog}
+                />
               )}
             </>
           ) : (

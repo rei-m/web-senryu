@@ -27,6 +27,7 @@ export const appTheme = {
     l: '1.8rem',
     ll: '2rem',
   },
+  drawerWidth: 240,
   elevation: (level: 1 | 2) =>
     `0 ${level}px ${level * 3}px rgba(0, 0, 0, 0.26)`,
 };

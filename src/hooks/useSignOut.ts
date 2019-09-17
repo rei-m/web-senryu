@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { User } from '@src/domain';
 import { AuthenticationService } from '@src/domain/services';
 import { useDiContainer } from './useDiContainer';
 
@@ -8,24 +7,24 @@ type Deps = {
 };
 
 type State = {
-  isUpdating: boolean;
+  isSignOutProcessing: boolean;
 };
 
-export const useUpdateProfile = (
+export const useSignOut = (
   { authenticationService }: Deps = useDiContainer()
 ) => {
-  const [state, setState] = useState<State>({ isUpdating: false });
-  const updateProfile = (user: User) => {
-    setState({ isUpdating: true });
+  const [state, setState] = useState<State>({ isSignOutProcessing: false });
+  const signOut = () => {
+    setState({ isSignOutProcessing: true });
     authenticationService
-      .updateProfile(user)
+      .signOut()
       .then(() => {
-        setState({ isUpdating: false });
+        setState({ isSignOutProcessing: false });
       })
       .catch(reason => {
         console.error(reason);
       });
   };
 
-  return { ...state, updateProfile };
+  return { ...state, signOut };
 };

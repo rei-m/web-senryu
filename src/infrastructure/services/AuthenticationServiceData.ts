@@ -29,6 +29,28 @@ export class AuthenticationServiceData implements AuthenticationService {
     return unsubscribe;
   }
 
+  onProfileChanged(callback: (user: User) => void) {
+    const currentUser = firebase.auth().currentUser;
+    if (currentUser) {
+      const userDocRef = userCollection().doc(currentUser.uid);
+      const unsubscribe = userDocRef.onSnapshot(snapShot => {
+        const data = snapShot.data();
+        if (data) {
+          const user = {
+            id: currentUser.uid,
+            ryugou: data.ryugou,
+            description: data.description,
+            profileImageUrl: data.profileImageUrl,
+          };
+          callback(user);
+        }
+      });
+      return unsubscribe;
+    }
+
+    return () => {};
+  }
+
   async initialize(user: User) {
     const userDocRef = userCollection().doc(user.id);
     await userDocRef.set({
@@ -68,6 +90,10 @@ export class AuthenticationServiceData implements AuthenticationService {
       });
     }
     return;
+  }
+
+  async signOut() {
+    return firebase.auth().signOut();
   }
 
   private async uploadProfileImage(userId: UserId, profileImageUrl: string) {

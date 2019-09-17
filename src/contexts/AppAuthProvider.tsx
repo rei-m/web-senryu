@@ -9,7 +9,6 @@ export const AppAuthContext = React.createContext<{
 
 const AppAuthProvider: React.FC<{}> = ({ children }) => {
   const { user, initializeUser } = useFirebaseUser();
-
   return (
     <AppAuthContext.Provider
       value={{
