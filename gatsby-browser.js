@@ -11,16 +11,15 @@ export const wrapRootElement = wrapWithProvider;
 
 import firebase from 'firebase/app';
 
-// TODO: devとprodで使い分けられるようにする
 export const onClientEntry = () => {
   const config = {
-    apiKey: "AIzaSyBFUvQquN00DvqJr4_PwtnVgKdgx3jBPvA",
-    authDomain: "senryudev.firebaseapp.com",
-    databaseURL: "https://senryudev.firebaseio.com",
-    projectId: "senryudev",
-    storageBucket: "",
-    messagingSenderId: "316157055848",
-    appId: "1:316157055848:web:a46d6e248b9f3c24"
+    apiKey: process.env.GATSBY_FB_API_KEY,
+    authDomain: process.env.GATSBY_FB_AUTH_DOMAIN,
+    databaseURL: process.env.GATSBY_FB_DB_URL,
+    projectId: process.env.GATSBY_FB_PROJECT_ID,
+    storageBucket: process.env.GATSBY_FB_STORAGE_BUCKET,
+    messagingSenderId: process.env.GATSBY_FB_MESSAGING_SENDER_ID,
+    appId: process.env.GATSBY_FB_APP_ID
   };
   firebase.initializeApp(config);
 };

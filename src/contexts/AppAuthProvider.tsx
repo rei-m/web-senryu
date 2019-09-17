@@ -9,22 +9,19 @@ export const AppAuthContext = React.createContext<{
 
 const AppAuthProvider: React.FC<{}> = ({ children }) => {
   const { user, initializeUser } = useFirebaseUser();
-  const initializedUser = user ? (user.ryugou === null ? null : user) : null;
-  const handleClickPost = (user: User) => {
-    initializeUser(user);
-  };
+
   return (
     <AppAuthContext.Provider
       value={{
-        user: initializedUser,
+        user: user ? (user.ryugou === null ? null : user) : null,
       }}
     >
       {children}
-      {user && user.ryugou === null && (
+      {user && (
         <UserSettingDialog
-          open={initializedUser === null}
-          userId={user.id}
-          onClickPost={handleClickPost}
+          open={user.ryugou === null}
+          initialUser={user}
+          onClickPost={initializeUser}
         />
       )}
     </AppAuthContext.Provider>

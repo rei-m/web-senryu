@@ -4,7 +4,7 @@ import SingleContentPageTemplate from '@src/components/templates/SingleContentPa
 import SenryuFuda from '@src/components/organisms/SenryuFuda';
 import Progress from '@src/components/atoms/Progress';
 import Txt from '@src/components/atoms/Txt';
-import { useAppUser } from '@src/hooks/useAppUser';
+import { useAuthUser } from '@src/hooks/useAuthUser';
 import { useSenryu } from '@src/hooks/useSenryu';
 
 export type Props = {
@@ -27,14 +27,14 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const SenryuShowPage = ({ id }: Props) => {
-  const user = useAppUser();
+  const user = useAuthUser();
   const { senryu, error } = useSenryu(id);
   const classes = useStyles();
 
   // TODO: メタ情報見直す
   return (
     <SingleContentPageTemplate
-      login={!!user}
+      user={user}
       title={`川柳`}
       description={''}
       content={

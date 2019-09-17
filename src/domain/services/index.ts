@@ -5,4 +5,5 @@ export interface AuthenticationService {
     callback: (user: User | UninitializedUser | null) => void
   ) => () => void;
   initialize: (user: User) => Promise<void>;
+  updateProfile: (user: User) => Promise<void>;
 }

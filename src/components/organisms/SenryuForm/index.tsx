@@ -3,6 +3,7 @@ import makeStyles from '@src/styles/makeStyles';
 import TextField from '@src/components/molecules/TextField';
 import ConfirmTextField from '@src/components/molecules/ConfirmTextField';
 import EditButton from '@src/components/molecules/EditButton';
+import SenryuImageDialog from '@src/components/organisms/SenryuImageDialog';
 import { Senryu, SenryuDraft, User } from '@src/domain';
 
 export type Props = {
@@ -16,8 +17,13 @@ export type PresenterProps = {
   jouku: string;
   chuuku: string;
   geku: string;
+  imageUrl: string | null;
   ryugou: string;
+  openImageDialog: boolean;
   onChangeField: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onClickOpenSetImage: () => void;
+  onCloseSetImage: () => void;
+  onSetImage: (cropped: string) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   className?: string;
 };
@@ -27,7 +33,8 @@ export type ContainerProps = Props & {
 };
 
 export type State = {
-  senryu: Pick<SenryuDraft, 'jouku' | 'chuuku' | 'geku'>;
+  senryu: Pick<SenryuDraft, 'jouku' | 'chuuku' | 'geku' | 'imageUrl'>;
+  openImageDialog: boolean;
 };
 
 const useStyles = makeStyles(theme => ({
@@ -42,8 +49,13 @@ export const Presenter = ({
   jouku,
   chuuku,
   geku,
+  imageUrl,
   ryugou,
+  openImageDialog,
   onChangeField,
+  onSetImage,
+  onClickOpenSetImage,
+  onCloseSetImage,
   onSubmit,
   className,
 }: PresenterProps) => {
@@ -71,6 +83,19 @@ export const Presenter = ({
         fullWidth={true}
         onChange={onChangeField}
       />
+      {imageUrl && <img src={imageUrl} />}
+      <SenryuImageDialog
+        open={openImageDialog}
+        onClickSet={onSetImage}
+        onClose={onCloseSetImage}
+      />
+      <EditButton
+        color="primary"
+        onClick={onClickOpenSetImage}
+        className={classes.fieldMargin}
+      >
+        画像を設定
+      </EditButton>
       <ConfirmTextField label="柳号" value={ryugou} />
       <EditButton color="primary" className={classes.fieldMargin}>
         投稿を確認
@@ -89,21 +114,34 @@ export const Container = ({
   const [state, setState] = useState<State>({
     senryu: initialSenryu
       ? {
-          jouku: initialSenryu.jouku,
-          chuuku: initialSenryu.chuuku,
-          geku: initialSenryu.geku,
+          ...initialSenryu,
         }
       : {
           jouku: '',
           chuuku: '',
           geku: '',
+          imageUrl: null,
         },
+    openImageDialog: false,
   });
 
   const handleChangeField = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.currentTarget;
     const updated = { ...state.senryu, [name]: value };
     setState({ ...state, senryu: updated });
+  };
+
+  const handleClickOpenSetImage = () => {
+    setState({ ...state, openImageDialog: true });
+  };
+
+  const handleCloseSetImage = () => {
+    setState({ ...state, openImageDialog: false });
+  };
+
+  const handleSetImage = (cropped: string) => {
+    const updated = { ...state.senryu, imageUrl: cropped };
+    setState({ ...state, senryu: updated, openImageDialog: false });
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -122,15 +160,20 @@ export const Container = ({
       user === null
         ? { userId: null, ryugou: UNKNOWN_RYUGOU }
         : { userId: user.id, ryugou: user.ryugou };
-    onSubmit({ ...value, ...userValue, ...state.senryu });
+    onSubmit({ ...value, ...state.senryu, ...userValue });
   };
 
   return presenter({
     jouku: state.senryu.jouku,
     chuuku: state.senryu.chuuku,
     geku: state.senryu.geku,
+    imageUrl: state.senryu.imageUrl,
     ryugou: user ? user.ryugou : UNKNOWN_RYUGOU,
+    openImageDialog: state.openImageDialog,
     onChangeField: handleChangeField,
+    onClickOpenSetImage: handleClickOpenSetImage,
+    onCloseSetImage: handleCloseSetImage,
+    onSetImage: handleSetImage,
     onSubmit: handleSubmit,
     className,
   });

@@ -1,7 +1,9 @@
 import firebase from 'firebase/app';
+import axios from 'axios';
 import { AuthenticationService } from '@src/domain/services';
-import { User, UninitializedUser } from '@src/domain';
+import { User, UninitializedUser, UserId } from '@src/domain';
 import { userCollection } from '../firestore';
+import { userStorageRef } from '../storage';
 
 export class AuthenticationServiceData implements AuthenticationService {
   onAuthStateChanged(
@@ -15,6 +17,8 @@ export class AuthenticationServiceData implements AuthenticationService {
           callback({
             id: fbUser.uid,
             ryugou: user ? user.ryugou : null,
+            description: user ? user.description : null,
+            profileImageUrl: user ? user.profileImageUrl : null,
           });
         });
       } else {
@@ -27,6 +31,56 @@ export class AuthenticationServiceData implements AuthenticationService {
 
   async initialize(user: User) {
     const userDocRef = userCollection().doc(user.id);
-    return await userDocRef.set({ ryugou: user.ryugou, senryuCount: 0 });
+    await userDocRef.set({
+      ryugou: user.ryugou,
+      description: user.description,
+      senryuCount: 0,
+    });
+
+    if (user.profileImageUrl) {
+      const result = await this.uploadProfileImage(
+        userDocRef.id,
+        user.profileImageUrl
+      );
+      await userDocRef.update({
+        profileImageUrl: result.profileImageUrl,
+        storageUri: result.storageUri,
+      });
+    }
+    return;
+  }
+
+  async updateProfile(user: User) {
+    const userDocRef = userCollection().doc(user.id);
+    await userDocRef.update({
+      ryugou: user.ryugou,
+      description: user.description,
+    });
+
+    if (user.profileImageUrl) {
+      const result = await this.uploadProfileImage(
+        userDocRef.id,
+        user.profileImageUrl
+      );
+      await userDocRef.update({
+        profileImageUrl: result.profileImageUrl,
+        storageUri: result.storageUri,
+      });
+    }
+    return;
+  }
+
+  private async uploadProfileImage(userId: UserId, profileImageUrl: string) {
+    const response = await axios.get(profileImageUrl, {
+      responseType: 'blob',
+    });
+    const blob = new Blob([response.data], { type: 'image/jpeg' });
+    const storageRef = userStorageRef(`${userId}.jpg`);
+    const fileSnapshot = await storageRef.put(blob);
+    const imageUrl = await fileSnapshot.ref.getDownloadURL();
+    return {
+      profileImageUrl: imageUrl,
+      storageUri: fileSnapshot.metadata.fullPath,
+    };
   }
 }

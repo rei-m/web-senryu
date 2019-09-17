@@ -8,10 +8,11 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import Favorite from '@material-ui/icons/Favorite';
 import makeStyles from '@src/styles/makeStyles';
 import Heading from '@src/components/atoms/Heading';
+import { User } from '@src/domain';
 
 export type Props = {
   title: string;
-  login?: boolean;
+  user?: User | null;
 };
 
 const useStyles = makeStyles(theme => ({
@@ -34,7 +35,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Header = ({ title, login }: Props) => {
+const Header = ({ title, user }: Props) => {
   const classes = useStyles();
   return (
     <>
@@ -43,7 +44,7 @@ const Header = ({ title, login }: Props) => {
           <Heading level={6} visualLevel={1} className={classes.heading}>
             {title}
           </Heading>
-          {login ? (
+          {user ? (
             <div>
               <IconButton aria-label="Show favorite" className={classes.button}>
                 <Favorite />
@@ -54,9 +55,11 @@ const Header = ({ title, login }: Props) => {
               >
                 <Note />
               </IconButton>
-              <IconButton aria-label="Show personal" className={classes.button}>
-                <AccountCircle />
-              </IconButton>
+              <Link to={`/users/${user.id}/`}>
+                <IconButton aria-label="マイページ" className={classes.button}>
+                  <AccountCircle />
+                </IconButton>
+              </Link>
             </div>
           ) : (
             <div>

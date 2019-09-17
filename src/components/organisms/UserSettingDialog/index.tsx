@@ -8,13 +8,12 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import makeStyles from '@src/styles/makeStyles';
 import Heading from '@src/components/atoms/Heading';
 import TextField from '@src/components/molecules/TextField';
-import { User, UserId } from '@src/domain';
+import { User, UninitializedUser } from '@src/domain';
 import { isIncludeBlank } from '@src/utils';
 
 export type Props = {
   open: boolean;
-  userId: UserId;
-  ryugou?: string;
+  initialUser: User | UninitializedUser;
   onClickPost: (user: User) => void;
 };
 
@@ -22,7 +21,11 @@ type FieldKey = keyof Omit<User, 'id'>;
 type FieldError = { [K in FieldKey]?: string };
 
 export type State = {
-  user: User;
+  user: {
+    ryugou: string;
+    description: string;
+    profileImageUrl: string | null;
+  };
   error: FieldError;
 };
 
@@ -37,19 +40,27 @@ const useStyles = makeStyles(theme => ({
 
 export type PresenterProps = {
   open: boolean;
-  user: User;
-  error: FieldError;
   onChangeField: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onClickPost: (e: React.SyntheticEvent<HTMLElement>) => void;
-};
+} & State;
 
 export type ContainerProps = Props & {
   presenter: (props: PresenterProps) => React.ReactElement;
 };
 
 const validateRyugou = (value: string): string | undefined => {
+  if (value.length === 0) {
+    return '必須項目です';
+  }
   if (isIncludeBlank(value)) {
     return '空文字は入力できません';
+  }
+  return undefined;
+};
+
+const validateDescription = (value: string): string | undefined => {
+  if (80 < value.length) {
+    return '80文字以下で入力してください';
   }
   return undefined;
 };
@@ -58,6 +69,8 @@ const validate = (name: FieldKey, value: unknown): string | undefined => {
   switch (name) {
     case 'ryugou':
       return validateRyugou(value as string);
+    case 'description':
+      return validateDescription(value as string);
     default:
       return undefined;
   }
@@ -75,7 +88,7 @@ export const Presenter = ({
     <Dialog open={open} aria-labelledby="user-form-dialog-title">
       <DialogTitle id="user-form-dialog-title" disableTypography>
         <Heading level={6} visualLevel={3}>
-          ユーザー設定
+          詠み人設定
         </Heading>
       </DialogTitle>
       <DialogContent>
@@ -83,7 +96,7 @@ export const Presenter = ({
           className={classes.text}
           classes={{ root: classes.text }}
         >
-          柳号を設定してください（後で変更できます）
+          詠み人の情報を設定してください（後で変更できます）
         </DialogContentText>
         <TextField
           id="ryugou"
@@ -93,6 +106,18 @@ export const Presenter = ({
           onChange={onChangeField}
           error={error.ryugou}
           placeholder="詠み人知らず"
+          required={true}
+          className={classes.fieldMargin}
+        />
+        <TextField
+          id="description"
+          value={user.description}
+          label="自己紹介"
+          rows={3}
+          fullWidth={true}
+          onChange={onChangeField}
+          error={error.description}
+          placeholder="紹介文を入力してください（任意）"
           className={classes.fieldMargin}
         />
       </DialogContent>
@@ -107,13 +132,18 @@ export const Presenter = ({
 
 export const Container = ({
   open,
-  userId,
-  ryugou,
+  initialUser,
   onClickPost,
   presenter,
 }: ContainerProps) => {
   const [state, setState] = useState<State>({
-    user: { id: userId, ryugou: ryugou ? ryugou : '' },
+    user: {
+      ryugou: initialUser.ryugou ? initialUser.ryugou : '',
+      description: initialUser.description ? initialUser.description : '',
+      profileImageUrl: initialUser.profileImageUrl
+        ? initialUser.profileImageUrl
+        : null,
+    },
     error: {},
   });
 
@@ -130,17 +160,29 @@ export const Container = ({
   const handleClickPost = (e: React.SyntheticEvent<HTMLElement>) => {
     e.stopPropagation();
     e.preventDefault();
-    const errorText =
-      state.user.ryugou !== ''
-        ? Object.values(state.error)
-            .filter((v: string | undefined): v is string => !!v)
-            .join(`\n`)
-        : '必須項目です';
+    const ryugouError = validateRyugou(state.user.ryugou);
+    const descriptionError = validateDescription(state.user.description);
+    const errorText: Array<string> = [];
+    if (ryugouError) {
+      errorText.push(`柳号: ${ryugouError}`);
+    }
+    if (descriptionError) {
+      errorText.push(`自己紹介: ${descriptionError}`);
+    }
+
     if (0 < errorText.length) {
-      alert(errorText);
+      alert(errorText.join('\n'));
       return;
     }
-    onClickPost(state.user);
+
+    onClickPost({
+      id: initialUser.id,
+      ryugou: state.user.ryugou,
+      description:
+        state.user.description !== '' ? state.user.description : null,
+      profileImageUrl:
+        state.user.profileImageUrl !== '' ? state.user.profileImageUrl : null,
+    });
   };
 
   return presenter({
