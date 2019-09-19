@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
     boxShadow: theme.shadows[1],
   },
   counter: {
-    textAlign: `right`,
+    textAlign: `left`,
   },
   datetime: {
     fontSize: theme.fontSize.sss,

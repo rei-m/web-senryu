@@ -15,6 +15,7 @@ export type Props = {
   open: boolean;
   initialUser: User | UninitializedUser;
   onClickPost: (user: User) => void;
+  onClose?: () => void;
 };
 
 type FieldKey = keyof Omit<User, 'id'>;
@@ -42,6 +43,7 @@ export type PresenterProps = {
   open: boolean;
   onChangeField: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onClickPost: (e: React.SyntheticEvent<HTMLElement>) => void;
+  onClose?: () => void;
 } & State;
 
 export type ContainerProps = Props & {
@@ -82,6 +84,7 @@ export const Presenter = ({
   error,
   onChangeField,
   onClickPost,
+  onClose,
 }: PresenterProps) => {
   const classes = useStyles();
   return (
@@ -122,6 +125,11 @@ export const Presenter = ({
         />
       </DialogContent>
       <DialogActions>
+        {onClose && (
+          <Button onClick={onClose} color="primary">
+            閉じる
+          </Button>
+        )}
         <Button onClick={onClickPost} color="primary">
           設定する
         </Button>
@@ -134,6 +142,7 @@ export const Container = ({
   open,
   initialUser,
   onClickPost,
+  onClose,
   presenter,
 }: ContainerProps) => {
   const [state, setState] = useState<State>({
@@ -191,6 +200,7 @@ export const Container = ({
     error: state.error,
     onChangeField: handleChangeField,
     onClickPost: handleClickPost,
+    onClose,
   });
 };
 

@@ -11,7 +11,6 @@ export type Props = {
 const useStyles = makeStyles(theme => ({
   root: {
     textAlign: 'left',
-    padding: theme.spacing(2),
   },
   label: {
     color: theme.palette.text.secondary,

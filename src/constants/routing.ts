@@ -3,8 +3,10 @@ export const ROUTING = {
   senryu: '/senryu/',
   senryuNew: '/senryu/new/',
   senryuShow: '/senryu/:id/',
-  search: '/search/',
+  usersShow: '/users/:id/',
   about: '/about/',
-  privacyPolicy: '/privacy/',
+  privacyPolicy: '/policy/',
   termsOfService: '/terms/',
+  auth: '/auth/',
+  account: '/account/',
 } as const;

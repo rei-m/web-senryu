@@ -1,9 +1,10 @@
 import React from 'react';
+import { RouteComponentProps } from '@reach/router';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase from 'firebase/app';
 import NoIndexPageTemplate from '@src/components/templates/NoIndexPageTemplate';
 
-export type Props = {};
+export type Props = RouteComponentProps;
 
 export type PresenterProps = {
   signInSuccessUrl: string;
@@ -43,9 +44,15 @@ export const AuthPagePresenter = ({ signInSuccessUrl }: PresenterProps) => (
   />
 );
 
-export const AuthPageContainer = ({ presenter }: ContainerProps) => {
+export const AuthPageContainer = ({ presenter, location }: ContainerProps) => {
+  const signInSuccessUrl =
+    location && !!location.state.refferer
+      ? location.state.refferer
+      : document.referrer
+      ? document.referrer
+      : '/';
   return presenter({
-    signInSuccessUrl: document.referrer ? document.referrer : '/',
+    signInSuccessUrl,
   });
 };
 
