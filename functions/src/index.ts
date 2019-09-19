@@ -19,9 +19,12 @@ export const onSenryuCreated = functions.firestore
         .firestore()
         .collection('users')
         .doc(snapRef.userId);
-      await userRef.update({
-        senryuCount: FieldValue.increment(1),
-      });
+      const userDoc = await userRef.get();
+      if (userDoc.exists) {
+        await userDoc.ref.update({
+          senryuCount: FieldValue.increment(1),
+        });
+      }
     }
 
     return;
@@ -43,9 +46,27 @@ export const onSenryuDeleted = functions.firestore
         .firestore()
         .collection('users')
         .doc(snapRef.userId);
-      await userRef.update({
-        senryuCount: FieldValue.increment(-1),
-      });
+      const userDoc = await userRef.get();
+      if (userDoc.exists) {
+        await userDoc.ref.update({
+          senryuCount: FieldValue.increment(-1),
+        });
+      }
+    }
+
+    return;
+  });
+
+export const onUserDeleted = functions.auth
+  .user()
+  .onDelete(async (user, _context) => {
+    const userDoc = await admin
+      .firestore()
+      .collection('users')
+      .doc(user.uid)
+      .get();
+    if (userDoc.exists) {
+      await userDoc.ref.delete();
     }
 
     return;

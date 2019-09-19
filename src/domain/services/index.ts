@@ -9,4 +9,5 @@ export interface AuthenticationService {
   initialize: (user: User) => Promise<void>;
   updateProfile: (user: User) => Promise<void>;
   signOut: () => Promise<void>;
+  delete: () => Promise<void>;
 }
