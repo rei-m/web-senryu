@@ -3,6 +3,7 @@ import { RouteComponentProps } from '@reach/router';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase from 'firebase/app';
 import NoIndexPageTemplate from '@src/components/templates/NoIndexPageTemplate';
+import { ROUTING } from '@src/constants/routing';
 
 export type Props = RouteComponentProps;
 
@@ -27,9 +28,9 @@ const uiConfig = {
     // firebase.auth.PhoneAuthProvider.PROVIDER_ID,
   ],
   // Terms of service url.
-  tosUrl: '<your-tos-url>', // TODO: あとで作る
+  tosUrl: ROUTING.termsOfService,
   // Privacy policy url.
-  privacyPolicyUrl: '<your-privacy-policy-url>', // TODO: あとで作る
+  privacyPolicyUrl: ROUTING.privacyPolicy,
 };
 
 export const AuthPagePresenter = ({ signInSuccessUrl }: PresenterProps) => (
@@ -45,12 +46,9 @@ export const AuthPagePresenter = ({ signInSuccessUrl }: PresenterProps) => (
 );
 
 export const AuthPageContainer = ({ presenter, location }: ContainerProps) => {
+  // TODO: 認証済みならTOPに飛ばす
   const signInSuccessUrl =
-    location && !!location.state.refferer
-      ? location.state.refferer
-      : document.referrer
-      ? document.referrer
-      : '/';
+    location && !!location.state.refferer ? location.state.refferer : '/';
   return presenter({
     signInSuccessUrl,
   });

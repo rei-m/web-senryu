@@ -25,6 +25,7 @@ const AccountMenu = ({
   onClickSetting,
   onClickSignIn,
   onClickSignOut,
+  onClickDeleteAccount,
 }: Props) => {
   const handleClickSignIn = (e: React.SyntheticEvent<HTMLAnchorElement>) => {
     e.stopPropagation();
@@ -53,7 +54,7 @@ const AccountMenu = ({
             <ListItemIcon>
               <ArrowBackIcon />
             </ListItemIcon>
-            <ListItemText primary="ログアウト" />
+            <ListItemText primary="サインアウト" />
           </ListItem>
         </>
       ) : (
@@ -66,7 +67,7 @@ const AccountMenu = ({
           <ListItemIcon>
             <ArrowForwardIcon />
           </ListItemIcon>
-          <ListItemText primary="ログイン" />
+          <ListItemText primary="サインイン" />
         </ListItem>
       )}
       <Divider />
@@ -79,7 +80,7 @@ const AccountMenu = ({
       {user && (
         <>
           <Divider />
-          <ListItem button>
+          <ListItem button onClick={onClickDeleteAccount}>
             <ListItemIcon>
               <WarningIcon />
             </ListItemIcon>

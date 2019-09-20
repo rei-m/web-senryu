@@ -11,6 +11,7 @@ export class AuthenticationServiceData implements AuthenticationService {
   ) {
     const unsubscribe = firebase.auth().onAuthStateChanged(fbUser => {
       if (fbUser) {
+        // プロフィールは公開情報なのでauthじゃなくてfirestoreに保存
         const userDocRef = userCollection().doc(fbUser.uid);
         userDocRef.get().then(userDoc => {
           const user = userDoc.data();
@@ -32,6 +33,7 @@ export class AuthenticationServiceData implements AuthenticationService {
   onProfileChanged(callback: (user: User) => void) {
     const currentUser = firebase.auth().currentUser;
     if (currentUser) {
+      // ちょっとだるい実装
       const userDocRef = userCollection().doc(currentUser.uid);
       const unsubscribe = userDocRef.onSnapshot(snapShot => {
         const data = snapShot.data();
@@ -94,6 +96,14 @@ export class AuthenticationServiceData implements AuthenticationService {
 
   async signOut() {
     return firebase.auth().signOut();
+  }
+
+  async delete() {
+    const currentUser = firebase.auth().currentUser;
+    if (currentUser) {
+      await currentUser.delete();
+    }
+    return;
   }
 
   private async uploadProfileImage(userId: UserId, profileImageUrl: string) {

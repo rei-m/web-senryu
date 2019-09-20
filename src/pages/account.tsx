@@ -1,13 +1,17 @@
-import React from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { RouteComponentProps } from '@reach/router';
 import NoIndexPageTemplate from '@src/components/templates/NoIndexPageTemplate';
 import AccountMenu from '@src/components/organisms/AccountMenu';
 import UserSettingDialog from '@src/components/organisms/UserSettingDialog';
+import AlertDialog, {
+  Props as AlertDialogProps,
+} from '@src/components/molecules/AlertDialog';
 import { useBool } from '@src/hooks/useBool';
 import { useAuthUser } from '@src/hooks/useAuthUser';
 import { useUpdateProfile } from '@src/hooks/useUpdateProfile';
 import { User } from '@src/domain';
 import { useSignOut } from '@src/hooks/useSignOut';
+import { useDeleteAccount } from '@src/hooks/useDeleteAccount';
 import { ROUTING } from '@src/constants/routing';
 
 export type Props = RouteComponentProps;
@@ -15,11 +19,13 @@ export type Props = RouteComponentProps;
 export type PresenterProps = {
   user: User | null;
   isSettingDialogOpen: boolean;
+  alertDialog: React.ReactElement<AlertDialogProps> | null;
   onClickSetting: () => void;
   onClickPostProfile: (user: User) => void;
   onCloseSettingDialog: () => void;
   onClickSignIn: () => void;
   onClickSignOut: () => void;
+  onClickDelete: () => void;
 };
 
 export type ContainerProps = Props & {
@@ -29,11 +35,13 @@ export type ContainerProps = Props & {
 export const AccountPagePresenter = ({
   user,
   isSettingDialogOpen,
+  alertDialog,
   onClickSetting,
   onClickPostProfile,
   onCloseSettingDialog,
   onClickSignIn,
   onClickSignOut,
+  onClickDelete,
 }: PresenterProps) => (
   <NoIndexPageTemplate
     title={`管理`}
@@ -45,7 +53,7 @@ export const AccountPagePresenter = ({
           onClickSetting={onClickSetting}
           onClickSignIn={onClickSignIn}
           onClickSignOut={onClickSignOut}
-          onClickDeleteAccount={() => {}}
+          onClickDeleteAccount={onClickDelete}
         />
         {!!user && (
           <UserSettingDialog
@@ -55,6 +63,7 @@ export const AccountPagePresenter = ({
             onClose={onCloseSettingDialog}
           />
         )}
+        {alertDialog}
       </>
     }
   />
@@ -65,30 +74,105 @@ export const AccountPageContainer = ({
   navigate,
 }: ContainerProps) => {
   const authUser = useAuthUser();
-  const [isDialogOpen, openDialog, closeDialog] = useBool(false);
+  const [isSettingDialogOpen, openSettingDialog, closeSettingDialog] = useBool(
+    false
+  );
+  const [isAlertDialogOpen, openAlertDialog, closeAlertDialog] = useBool(false);
+  const [alertDialogType, setAlertDialogType] = useState<
+    null | 'signOut' | 'delete'
+  >(null);
   const { updateProfile } = useUpdateProfile();
 
   const { signOut } = useSignOut();
 
-  const handleClickSignIn = () => {
+  const { deleteAccount } = useDeleteAccount();
+
+  const handleClickSignIn = useCallback(() => {
     if (navigate) {
       navigate(ROUTING.auth, { state: { refferer: ROUTING.account } });
     }
-  };
+  }, []);
 
-  const handleClickPostProfile = (user: User) => {
+  const handleClickSignOut = useCallback(() => {
+    setAlertDialogType('signOut');
+    openAlertDialog();
+  }, []);
+
+  const handleClickDelete = useCallback(() => {
+    setAlertDialogType('delete');
+    openAlertDialog();
+  }, []);
+
+  const handleClickPostProfile = useCallback((user: User) => {
     updateProfile(user);
-    closeDialog();
-  };
+    closeSettingDialog();
+  }, []);
+
+  const alertDialog = useMemo(() => {
+    if (alertDialogType === 'signOut') {
+      const handleClickPositive = () => {
+        signOut();
+        setAlertDialogType(null);
+      };
+      return (
+        <AlertDialog
+          open={isAlertDialogOpen}
+          dialogTitle={`サインアウト`}
+          contentText={`サインアウトします。よろしければ「サインアウトする」を押してください`}
+          positiveButtonLabel={`サインアウトする`}
+          negativeButtonLabel={`戻る`}
+          onClickPositive={handleClickPositive}
+          onClose={closeAlertDialog}
+        />
+      );
+    } else if (alertDialogType === 'delete') {
+      const handleClickPositive = () => {
+        deleteAccount();
+        setAlertDialogType(null);
+      };
+      return (
+        <AlertDialog
+          open={isAlertDialogOpen}
+          dialogTitle={`アカウント削除`}
+          contentText={
+            <div>
+              <div>
+                アカウントを削除します。下記の事項について了承の上、「削除する」を押してください
+              </div>
+              <div>
+                <ul>
+                  <li>
+                    登録した認証情報、プロフィールの情報は完全に削除されます
+                  </li>
+                  <li>投稿した川柳は削除されません</li>
+                  <li>
+                    アカウント削除後にアカウントを復活することはできかねます
+                  </li>
+                </ul>
+              </div>
+            </div>
+          }
+          positiveButtonLabel={`削除する`}
+          negativeButtonLabel={`戻る`}
+          onClickPositive={handleClickPositive}
+          onClose={closeAlertDialog}
+        />
+      );
+    } else {
+      return null;
+    }
+  }, [alertDialogType, isAlertDialogOpen]);
 
   return presenter({
     user: authUser ? authUser : null,
-    isSettingDialogOpen: isDialogOpen,
-    onClickSetting: openDialog,
+    isSettingDialogOpen,
+    alertDialog,
+    onClickSetting: openSettingDialog,
     onClickPostProfile: handleClickPostProfile,
-    onCloseSettingDialog: closeDialog,
+    onCloseSettingDialog: closeSettingDialog,
     onClickSignIn: handleClickSignIn,
-    onClickSignOut: signOut,
+    onClickSignOut: handleClickSignOut,
+    onClickDelete: handleClickDelete,
   });
 };
 
