@@ -14,7 +14,12 @@ const dataToModel: (
   data: firebase.firestore.DocumentData
 ) => Senryu = (id, data) => {
   const createdAt = data.createdAt.toDate().getTime();
-  return { ...data, id, createdAt } as Senryu;
+  return {
+    ...data,
+    comment: data.comment ? data.comment : null,
+    id,
+    createdAt,
+  } as Senryu;
 };
 
 const COUNT_MAX = 20;
@@ -23,6 +28,7 @@ const POST_KEY_LIST: Array<keyof Senryu> = [
   'jouku',
   'chuuku',
   'geku',
+  'comment',
   'ryugou',
   'userId',
 ];

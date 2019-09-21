@@ -30,6 +30,7 @@ export type Senryu = Readonly<{
   geku: string;
   ryugou: string;
   imageUrl: string | null;
+  comment: string | null;
   userId: UserId | null;
   createdAt: number;
 }>;

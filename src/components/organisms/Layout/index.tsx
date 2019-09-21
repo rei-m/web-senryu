@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { navigate } from 'gatsby';
 import { useMediaQuery } from '@material-ui/core';
 import makeStyles from '@src/styles/makeStyles';
@@ -35,16 +35,13 @@ const Layout: React.FC<Props> = ({ user, title, children }) => {
   const isDisplayDrawer = useMediaQuery<ThemeInterface>(theme =>
     theme.breakpoints.up('sm')
   );
-  const classes = useStyles();
 
-  const handleClickPostProfile = (user: User) => {
+  const handleClickPostProfile = useCallback((user: User) => {
     updateProfile(user);
     closeSettingDialog();
-  };
+  }, []);
 
-  const handleClickLink = (to: string) => {
-    navigate(to);
-  };
+  const classes = useStyles();
 
   return (
     <>
@@ -60,7 +57,7 @@ const Layout: React.FC<Props> = ({ user, title, children }) => {
           open={isOpenDrawer || isDisplayDrawer}
           user={user ? user : null}
           onClickSetting={openSettingDialog}
-          onClickLink={handleClickLink}
+          onClickLink={navigate}
           onClose={closeDrawer}
         />
       </nav>
