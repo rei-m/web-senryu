@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import grey from '@material-ui/core/colors/grey';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import RemoveCircleIcon from '@material-ui/icons/RemoveCircleOutline';
 import CroppableSquareImage from '@src/components/molecules/CroppableSquareImage';
 import makeStyles from '@src/styles/makeStyles';
 import Heading from '@src/components/atoms/Heading';
@@ -22,11 +24,16 @@ export type State = {
 
 const useStyles = makeStyles(theme => ({
   fudaWrapper: {
-    padding: theme.spacing(4),
+    margin: theme.spacing(2),
+    position: 'relative',
   },
-  fuda: {
-    boxShadow: theme.elevation(1),
-    margin: 'auto',
+  removeIcon: {
+    position: 'absolute',
+    right: '-10px',
+    top: '-10px',
+    backgroundColor: grey[50],
+    borderRadius: theme.spacing(2),
+    cursor: 'pointer',
   },
 }));
 
@@ -60,7 +67,21 @@ const SenryuImageDialog = ({ open, onClickSet, onClose }: Props) => {
     e.stopPropagation();
     if (state.croppedImageUrl) {
       onClickSet(state.croppedImageUrl);
+      setState({
+        orgImageUrl: null,
+        croppedImageUrl: null,
+      });
     }
+  };
+
+  const handleClickRemoveImage = () => {
+    if (state.croppedImageUrl) {
+      window.URL.revokeObjectURL(state.croppedImageUrl);
+    }
+    setState({
+      orgImageUrl: null,
+      croppedImageUrl: null,
+    });
   };
 
   return (
@@ -75,18 +96,28 @@ const SenryuImageDialog = ({ open, onClickSet, onClose }: Props) => {
         </Heading>
       </DialogTitle>
       <DialogContent>
-        <DialogContentText>投稿する画像を設定してください</DialogContentText>
+        <DialogContentText>
+          川柳と一緒に投稿する画像を設定できます
+        </DialogContentText>
         <div className={classes.fudaWrapper}>
-          <input
-            accept="image/jpeg,image/png,image/webp,image/gif"
-            type="file"
-            onChange={handleSelectFile}
-          />
-          {state.orgImageUrl && (
-            <CroppableSquareImage
-              src={state.orgImageUrl}
-              onChange={handleChangeCropped}
+          {state.orgImageUrl == null ? (
+            <input
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              type="file"
+              onChange={handleSelectFile}
             />
+          ) : (
+            <>
+              <CroppableSquareImage
+                src={state.orgImageUrl}
+                onChange={handleChangeCropped}
+              />
+              <RemoveCircleIcon
+                fontSize={`large`}
+                className={classes.removeIcon}
+                onClick={handleClickRemoveImage}
+              />
+            </>
           )}
         </div>
       </DialogContent>

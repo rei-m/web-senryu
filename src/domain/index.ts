@@ -1,7 +1,3 @@
-type Draft<T, D extends keyof T> = {
-  [K in keyof T]-?: (K extends D ? T[K] | null : T[K]);
-};
-
 /**
  * ユーザー
  */
@@ -30,6 +26,7 @@ export type Senryu = Readonly<{
   geku: string;
   ryugou: string;
   imageUrl: string | null;
+  comment: string | null;
   userId: UserId | null;
   createdAt: number;
 }>;
