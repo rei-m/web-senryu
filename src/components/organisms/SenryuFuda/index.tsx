@@ -1,13 +1,17 @@
 import React, { useRef, useState, useLayoutEffect } from 'react';
 import clsx from 'clsx';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import useTheme from '@material-ui/core/styles/useTheme';
 import makeStyles from '@src/styles/makeStyles';
+import SenryuImgae from '@src/components/molecules/SenryuImage';
 import Txt from '@src/components/atoms/Txt';
 import { Senryu as SenryuType, SenryuDraft, SenryuId } from '@src/domain';
+import { ThemeInterface } from '@src/styles/theme';
 
 export type Props = {
   senryu: SenryuType | SenryuDraft;
   size: `s` | `m` | `l` | `ll`;
+  isVisibleImage?: boolean;
   onClick?: (senryuId: SenryuId) => void;
   className?: string;
 };
@@ -39,10 +43,21 @@ const useStyles = makeStyles<{ width: number; size: `s` | `m` | `l` | `ll` }>(
       paddingLeft: theme.spacing(2),
       paddingRight: theme.spacing(2),
       width: props.width,
-      minHeight: props.width / 0.7,
+      minWidth: 176,
+      minHeight: 240,
+      display: 'flex',
+      alignItems: 'center',
+      flexDirection: 'column',
+      [theme.breakpoints.up('sm')]: {
+        minWidth: 'unset',
+        flexDirection: 'row-reverse',
+      },
+    }),
+    contents: {
       writingMode: `vertical-rl`,
       textOrientation: 'upright',
-    }),
+      wordBreak: 'keep-all',
+    },
     first: () => ({
       textAlign: 'start',
       display: `block`,
@@ -64,10 +79,23 @@ const useStyles = makeStyles<{ width: number; size: `s` | `m` | `l` | `ll` }>(
       display: `block`,
       marginRight: theme.spacing(1.5),
     },
+    image: {
+      marginTop: theme.spacing(2),
+      [theme.breakpoints.up('sm')]: {
+        marginTop: 0,
+        marginRight: theme.spacing(1.5),
+      },
+    },
   })
 );
 
-const SenryuFuda = ({ senryu, size = `m`, onClick, className }: Props) => {
+const SenryuFuda = ({
+  senryu,
+  size = `m`,
+  isVisibleImage = true,
+  onClick,
+  className,
+}: Props) => {
   const theme = useTheme();
   const [width, setWidth] = useState(0);
   const ref1 = useRef<HTMLElement>(null);
@@ -76,15 +104,23 @@ const SenryuFuda = ({ senryu, size = `m`, onClick, className }: Props) => {
   const ref4 = useRef<HTMLElement>(null);
   const refs = [ref1, ref2, ref3, ref4];
 
+  const isUpSm = useMediaQuery<ThemeInterface>(theme =>
+    theme.breakpoints.up('sm')
+  );
+
   useLayoutEffect(() => {
     if (refs.every(ref => ref.current)) {
       const containerWidth = refs.reduce(
         (previous, current) => (previous += current.current!.clientWidth),
         theme.spacing(8.5)
       );
-      setWidth(containerWidth);
+      if (senryu.imageUrl && isVisibleImage && isUpSm) {
+        setWidth(containerWidth + 144 + theme.spacing(1.5));
+      } else {
+        setWidth(containerWidth);
+      }
     }
-  }, [refs.every(ref => ref.current)]);
+  }, [refs.every(ref => ref.current), isUpSm]);
 
   const classes = useStyles({ width, size });
 
@@ -97,24 +133,34 @@ const SenryuFuda = ({ senryu, size = `m`, onClick, className }: Props) => {
     : undefined;
 
   return (
-    <p onClick={handleClick} className={clsx(classes.root, className)}>
-      <Txt ref={ref1} size={size} className={classes.first}>
-        {senryu.jouku}
-      </Txt>
-      <Txt ref={ref2} size={size} className={classes.second}>
-        {senryu.chuuku}
-      </Txt>
-      <Txt ref={ref3} size={size} className={classes.third}>
-        {senryu.geku}
-      </Txt>
-      <Txt
-        ref={ref4}
-        size={ryugouSize[size]}
-        className={clsx(classes.txt, classes.fourth)}
-      >
-        {senryu.ryugou}
-      </Txt>
-    </p>
+    <div onClick={handleClick} className={clsx(classes.root, className)}>
+      <p className={classes.contents}>
+        <Txt ref={ref1} size={size} className={classes.first}>
+          {senryu.jouku}
+        </Txt>
+        <Txt ref={ref2} size={size} className={classes.second}>
+          {senryu.chuuku}
+        </Txt>
+        <Txt ref={ref3} size={size} className={classes.third}>
+          {senryu.geku}
+        </Txt>
+        <Txt
+          ref={ref4}
+          size={ryugouSize[size]}
+          className={clsx(classes.txt, classes.fourth)}
+        >
+          {senryu.ryugou}
+        </Txt>
+      </p>
+      {senryu.imageUrl && isVisibleImage && (
+        <SenryuImgae
+          src={senryu.imageUrl}
+          size={144}
+          alt={`${senryu.jouku} ${senryu.chuuku} ${senryu.geku}`}
+          className={classes.image}
+        />
+      )}
+    </div>
   );
 };
 

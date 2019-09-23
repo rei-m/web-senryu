@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import makeStyles from '@src/styles/makeStyles';
 import TextField from '@src/components/molecules/TextField';
 import ConfirmTextField from '@src/components/molecules/ConfirmTextField';
+import EditableSenryuImage from '@src/components/molecules/EditableSenryuImage';
 import EditButton from '@src/components/molecules/EditButton';
 import SenryuImageDialog from '@src/components/organisms/SenryuImageDialog';
 import { Senryu, SenryuDraft, User } from '@src/domain';
@@ -15,6 +16,7 @@ export type Props = {
 };
 
 export type PresenterProps = {
+  isAuthorized: boolean;
   jouku: string;
   chuuku: string;
   geku: string;
@@ -26,6 +28,7 @@ export type PresenterProps = {
   onClickOpenSetImage: () => void;
   onCloseSetImage: () => void;
   onSetImage: (cropped: string) => void;
+  onRemovetImage: () => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   className?: string;
 };
@@ -47,6 +50,7 @@ const useStyles = makeStyles(theme => ({
 const UNKNOWN_RYUGOU = `詠み人知らず`;
 
 export const Presenter = ({
+  isAuthorized,
   jouku,
   chuuku,
   geku,
@@ -58,6 +62,7 @@ export const Presenter = ({
   onSetImage,
   onClickOpenSetImage,
   onCloseSetImage,
+  onRemovetImage,
   onSubmit,
   className,
 }: PresenterProps) => {
@@ -88,7 +93,16 @@ export const Presenter = ({
         required={true}
         onChange={onChangeField}
       />
-      {imageUrl && <img src={imageUrl} />}
+      {isAuthorized && (
+        <EditableSenryuImage
+          src={imageUrl}
+          alt="投稿画像"
+          size={144}
+          onClickNoImage={onClickOpenSetImage}
+          onClickRemoveImage={onRemovetImage}
+          className={classes.fieldMargin}
+        />
+      )}
       <SenryuImageDialog
         open={imageDialogOpen}
         onClickSet={onSetImage}
@@ -100,14 +114,8 @@ export const Presenter = ({
         label="一言"
         fullWidth={true}
         onChange={onChangeField}
-      />
-      <EditButton
-        color="primary"
-        onClick={onClickOpenSetImage}
         className={classes.fieldMargin}
-      >
-        画像を設定
-      </EditButton>
+      />
       <ConfirmTextField label="柳号" value={ryugou} />
       <EditButton color="primary" className={classes.fieldMargin}>
         投稿を確認
@@ -149,6 +157,10 @@ export const Container = ({
     closeImageDialog();
   };
 
+  const handleRemoveImage = () => {
+    setState({ ...state, imageUrl: null });
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.stopPropagation();
     e.preventDefault();
@@ -170,6 +182,7 @@ export const Container = ({
   };
 
   return presenter({
+    isAuthorized: user !== null,
     jouku: state.jouku,
     chuuku: state.chuuku,
     geku: state.geku,
@@ -181,6 +194,7 @@ export const Container = ({
     onClickOpenSetImage: openImageDialog,
     onCloseSetImage: closeImageDialog,
     onSetImage: handleSetImage,
+    onRemovetImage: handleRemoveImage,
     onSubmit: handleSubmit,
     className,
   });

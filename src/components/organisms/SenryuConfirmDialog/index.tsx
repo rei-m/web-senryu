@@ -7,6 +7,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import makeStyles from '@src/styles/makeStyles';
 import Heading from '@src/components/atoms/Heading';
+import ConfirmTextField from '@src/components/molecules/ConfirmTextField';
 import SenryuFuda from '@src/components/organisms/SenryuFuda';
 import { SenryuDraft } from '@src/domain';
 
@@ -18,12 +19,13 @@ export type Props = {
 };
 
 const useStyles = makeStyles(theme => ({
-  fudaWrapper: {
-    padding: theme.spacing(4),
-  },
   fuda: {
     boxShadow: theme.elevation(1),
-    margin: 'auto',
+    marginRight: 'auto',
+    marginLeft: 'auto',
+  },
+  comment: {
+    marginTop: theme.spacing(2),
   },
 }));
 
@@ -52,11 +54,18 @@ const SenryuConfirmDialog = ({ open, senryu, onClickPost, onClose }: Props) => {
         <DialogContentText>
           以下の内容で川柳を投稿します。よろしければ「投稿する」を押してください
         </DialogContentText>
-        <div className={classes.fudaWrapper}>
-          {senryu && (
+        {senryu && (
+          <>
             <SenryuFuda senryu={senryu} size={`m`} className={classes.fuda} />
-          )}
-        </div>
+            {senryu.comment && (
+              <ConfirmTextField
+                label={`一言`}
+                value={senryu.comment}
+                className={classes.comment}
+              />
+            )}
+          </>
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">
