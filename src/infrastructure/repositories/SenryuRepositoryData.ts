@@ -148,4 +148,10 @@ export class SenryuRepositoryData implements SenryuRepository {
       throw e;
     }
   }
+
+  async delete(senryuId: SenryuId) {
+    return await senryuCollection()
+      .doc(senryuId)
+      .delete();
+  }
 }

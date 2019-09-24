@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { RouteComponentProps } from '@reach/router';
 import makeStyles from '@src/styles/makeStyles';
 import SingleContentPageTemplate from '@src/components/templates/SingleContentPageTemplate';
 import SenryuList from '@src/components/organisms/SenryuList';
+import SenryuModal from '@src/components/organisms/SenryuModal';
 import MoreButton from '@src/components/molecules/MoreButton';
 import Progress from '@src/components/atoms/Progress';
 import Txt from '@src/components/atoms/Txt';
+import { useBool } from '@src/hooks/useBool';
 import { useAuthUser } from '@src/hooks/useAuthUser';
 import { useSenryuList } from '@src/hooks/useSenryuList';
-import { SenryuId } from '@src/domain';
+import { Senryu, UserId, SenryuId } from '@src/domain';
 import { ROUTING } from '@src/constants/routing';
 
 export type Props = RouteComponentProps;
@@ -26,28 +28,40 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const SenryuPage = ({ navigate }: Props) => {
-  const user = useAuthUser();
+  const authUser = useAuthUser();
   const {
     senryuList,
     totalCount,
     hasNextPage,
     error,
     fetchNextPage,
+    deleteSenryu,
     isMoreLoading,
   } = useSenryuList();
-  const classes = useStyles();
+  const [currentSenryu, displaySenryu] = useState<null | Senryu>(null);
+  const [isSenryuModalOpen, openSenryuModal, closeSenryuModal] = useBool(false);
+  const handleClickSenryu = (senryu: Senryu) => {
+    displaySenryu(senryu);
+    openSenryuModal();
+  };
 
-  const handleClickSenryu = (senryuId: SenryuId) => {
-    // 現状、遷移すると取得分が吹き飛ぶのでnavigateやめるか歌の情報をGlabalで持つようにする
+  const handleClickUserName = (userId: UserId) => {
     if (navigate) {
-      navigate(ROUTING.senryuShow.replace(`:id`, senryuId));
+      navigate(ROUTING.usersShow.replace(`:id`, userId));
     }
   };
+
+  const handleClickDeleteSenryu = (senryuId: SenryuId) => {
+    closeSenryuModal();
+    deleteSenryu(senryuId);
+  };
+
+  const classes = useStyles();
 
   // TODO: メタ情報見直す
   return (
     <SingleContentPageTemplate
-      user={user}
+      user={authUser}
       title={`川柳`}
       description={''}
       content={
@@ -70,6 +84,18 @@ const SenryuPage = ({ navigate }: Props) => {
                   )}
                 </div>
               )}
+              <SenryuModal
+                open={isSenryuModalOpen}
+                senryu={currentSenryu}
+                canDelete={
+                  currentSenryu && authUser
+                    ? currentSenryu.userId === authUser.id
+                    : false
+                }
+                onClickUserName={handleClickUserName}
+                onClickDelete={handleClickDeleteSenryu}
+                onClose={closeSenryuModal}
+              />
             </>
           ) : (
             <Progress />
