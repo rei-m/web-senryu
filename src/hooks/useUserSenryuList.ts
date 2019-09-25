@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Senryu, UserId, User, SenryuId } from '@src/domain';
 import { SenryuRepository, UserRepository } from '@src/domain/repositories';
 import { useDiContainer } from './useDiContainer';
+import { useBool } from './useBool';
 
 type Deps = {
   userRepository: UserRepository;
@@ -15,8 +16,6 @@ type State = {
   senryuList?: Array<Senryu>;
   totalPages: number;
   totalCount: number;
-  isMoreLoading: boolean;
-  error?: Error;
 };
 
 export const useUserSenryuList = (
@@ -28,8 +27,9 @@ export const useUserSenryuList = (
     hasNextPage: false,
     totalPages: 0,
     totalCount: 0,
-    isMoreLoading: false,
   });
+  const [isMoreLoading, startMoreLoad, finsihMoreLoad] = useBool(false);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     Promise.all([
@@ -44,11 +44,10 @@ export const useUserSenryuList = (
           totalPages: page.totalPages,
           totalCount: page.totalCount,
           senryuList: page.itemList,
-          isMoreLoading: false,
         });
       })
       .catch(reason => {
-        setState({ ...state, error: new Error(reason) });
+        setError(new Error(reason));
       });
   }, []);
 
@@ -56,7 +55,8 @@ export const useUserSenryuList = (
     if (!state.senryuList) {
       return;
     }
-    setState({ ...state, isMoreLoading: true });
+
+    startMoreLoad();
 
     try {
       const result = await senryuRepository.findByUserPerPage(
@@ -72,10 +72,12 @@ export const useUserSenryuList = (
         totalPages: result.totalPages,
         totalCount: result.totalCount,
         senryuList: [...state.senryuList, ...result.itemList],
-        isMoreLoading: false,
       });
+
+      finsihMoreLoad();
     } catch (error) {
-      setState({ ...state, error: new Error(error) });
+      setError(new Error(error));
+      finsihMoreLoad();
     }
   };
 
@@ -98,5 +100,5 @@ export const useUserSenryuList = (
     }
   };
 
-  return { ...state, fetchNextPage, deleteSenryu };
+  return { ...state, isMoreLoading, error, fetchNextPage, deleteSenryu };
 };

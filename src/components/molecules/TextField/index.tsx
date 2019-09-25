@@ -1,7 +1,9 @@
 import React from 'react';
-import MuiTextField, { TextFieldProps } from '@material-ui/core/TextField';
+import MuiTextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import makeStyles from '@src/styles/makeStyles';
 import Txt from '@src/components/atoms/Txt';
+import Counter from '@src/components/atoms/Counter';
 
 export type Props = {
   id: string;
@@ -12,14 +14,24 @@ export type Props = {
   helperText?: React.ReactNode;
   fullWidth?: boolean;
   changed?: boolean;
-  error?: string;
+  error?: string | null;
   required?: boolean;
   disabled?: boolean;
+  maxLength?: number;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
   startAdornment?: React.ReactNode;
   endAdornment?: React.ReactNode;
   className?: string;
-} & Pick<TextFieldProps, 'FormHelperTextProps'>;
+};
+
+const useStyles = makeStyles(() => ({
+  helperText: {
+    textAlign: 'left',
+  },
+  helperTextCounter: {
+    textAlign: 'right',
+  },
+}));
 
 const TextField = ({
   id,
@@ -32,12 +44,22 @@ const TextField = ({
   error,
   required,
   disabled,
+  maxLength,
   onChange,
   startAdornment,
   endAdornment,
   className,
-  FormHelperTextProps,
 }: Props) => {
+  const classes = useStyles();
+  const helperTextEl = error ? (
+    <Txt size={`ss`}>{error}</Txt>
+  ) : helperText ? (
+    helperText
+  ) : maxLength ? (
+    <Counter size={`ss`} current={value.length} maximum={maxLength} />
+  ) : (
+    undefined
+  );
   return (
     <MuiTextField
       id={id}
@@ -45,7 +67,7 @@ const TextField = ({
       value={value}
       label={label}
       placeholder={placeholder}
-      helperText={<Txt size={`ss`}>{error ? error : helperText}</Txt>}
+      helperText={helperTextEl}
       fullWidth={fullWidth}
       required={required}
       disabled={disabled}
@@ -67,7 +89,16 @@ const TextField = ({
         ),
       }}
       className={className}
-      FormHelperTextProps={FormHelperTextProps}
+      FormHelperTextProps={{
+        classes: {
+          root:
+            error || helperText
+              ? classes.helperText
+              : maxLength
+              ? classes.helperTextCounter
+              : '',
+        },
+      }}
     />
   );
 };

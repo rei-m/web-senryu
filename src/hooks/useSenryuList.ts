@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Senryu, SenryuId } from '@src/domain';
 import { SenryuRepository } from '@src/domain/repositories';
 import { useDiContainer } from './useDiContainer';
+import { useBool } from './useBool';
 
 type Deps = {
   senryuRepository: SenryuRepository;
@@ -13,8 +14,6 @@ type State = {
   senryuList?: Array<Senryu>;
   totalPages: number;
   totalCount: number;
-  isMoreLoading: boolean;
-  error?: Error;
 };
 
 export const useSenryuList = (
@@ -25,8 +24,9 @@ export const useSenryuList = (
     hasNextPage: false,
     totalPages: 0,
     totalCount: 0,
-    isMoreLoading: false,
   });
+  const [isMoreLoading, startMoreLoad, finsihMoreLoad] = useBool(false);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     senryuRepository
@@ -38,11 +38,10 @@ export const useSenryuList = (
           totalPages: page.totalPages,
           totalCount: page.totalCount,
           senryuList: page.itemList,
-          isMoreLoading: false,
         });
       })
       .catch(reason => {
-        setState({ ...state, error: new Error(reason) });
+        setError(new Error(reason));
       });
   }, []);
 
@@ -50,7 +49,8 @@ export const useSenryuList = (
     if (!state.senryuList) {
       return;
     }
-    setState({ ...state, isMoreLoading: true });
+
+    startMoreLoad();
 
     try {
       const result = await senryuRepository.findAllPerPage(
@@ -64,10 +64,12 @@ export const useSenryuList = (
         totalPages: result.totalPages,
         totalCount: result.totalCount,
         senryuList: [...state.senryuList, ...result.itemList],
-        isMoreLoading: false,
       });
+
+      finsihMoreLoad();
     } catch (error) {
-      setState({ ...state, error: new Error(error) });
+      setError(new Error(error));
+      finsihMoreLoad();
     }
   };
 
@@ -89,5 +91,5 @@ export const useSenryuList = (
     }
   };
 
-  return { ...state, fetchNextPage, deleteSenryu };
+  return { ...state, isMoreLoading, error, fetchNextPage, deleteSenryu };
 };

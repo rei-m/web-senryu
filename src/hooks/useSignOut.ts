@@ -1,30 +1,28 @@
-import { useState } from 'react';
+import { useCallback } from 'react';
 import { AuthenticationService } from '@src/domain/services';
 import { useDiContainer } from './useDiContainer';
+import { useBool } from './useBool';
 
 type Deps = {
   authenticationService: AuthenticationService;
 };
 
-type State = {
-  isSignOutProcessing: boolean;
-};
-
 export const useSignOut = (
   { authenticationService }: Deps = useDiContainer()
 ) => {
-  const [state, setState] = useState<State>({ isSignOutProcessing: false });
-  const signOut = () => {
-    setState({ isSignOutProcessing: true });
-    authenticationService
-      .signOut()
-      .then(() => {
-        setState({ isSignOutProcessing: false });
-      })
-      .catch(reason => {
-        console.error(reason);
-      });
-  };
+  const [isProcessing, startProcess, finsihProcess] = useBool(false);
 
-  return { ...state, signOut };
+  const signOut = useCallback(async () => {
+    startProcess();
+    try {
+      await authenticationService.signOut();
+      finsihProcess();
+    } catch (error) {
+      // TODO
+      console.error(error);
+      finsihProcess();
+    }
+  }, []);
+
+  return { isProcessing, signOut };
 };

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { User, UninitializedUser } from '@src/domain';
 import { AuthenticationService } from '@src/domain/services';
 import { useDiContainer } from './useDiContainer';
@@ -42,16 +42,15 @@ export const useFirebaseUser = (
     };
   }, [state.user !== null]);
 
-  const initializeUser = (newUser: User) => {
-    authenticationService
-      .initialize(newUser)
-      .then(() => {
-        setState({ user: newUser });
-      })
-      .catch(reason => {
-        console.error(reason);
-      });
-  };
+  const initializeUser = useCallback(async (newUser: User) => {
+    try {
+      authenticationService.initialize(newUser);
+      setState({ user: newUser });
+    } catch (error) {
+      // TODO
+      console.error(error);
+    }
+  }, []);
 
   return { ...state, initializeUser };
 };

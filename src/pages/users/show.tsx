@@ -50,10 +50,10 @@ const UsersShowPage = ({ id, navigate }: Props) => {
     senryuList,
     totalCount,
     hasNextPage,
+    isMoreLoading,
     error,
     fetchNextPage,
     deleteSenryu,
-    isMoreLoading,
   } = useUserSenryuList(id);
   const [currentSenryu, displaySenryu] = useState<null | Senryu>(null);
   const [isSenryuModalOpen, openSenryuModal, closeSenryuModal] = useBool(false);
