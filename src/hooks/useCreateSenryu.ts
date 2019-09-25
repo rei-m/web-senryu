@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useCallback } from 'react';
+import { SenryuDraft } from '@src/domain';
 import { SenryuRepository } from '@src/domain/repositories';
 import { useDiContainer } from './useDiContainer';
-import { SenryuDraft } from '@src/domain';
+import { useBool } from './useBool';
 
 type Deps = {
   senryuRepository: SenryuRepository;
@@ -10,14 +11,20 @@ type Deps = {
 export const useCreateSenryu = (
   { senryuRepository }: Deps = useDiContainer()
 ) => {
-  const [isCreating, setState] = useState(false);
+  const [isProcessing, startProcess, finsihProcess] = useBool(false);
 
-  const createSenryu = async (senryu: SenryuDraft) => {
-    setState(true);
-    const id = await senryuRepository.add(senryu);
-    setState(false);
-    return id;
-  };
+  const createSenryu = useCallback(async (senryu: SenryuDraft) => {
+    startProcess();
+    try {
+      const id = await senryuRepository.add(senryu);
+      finsihProcess();
+      return id;
+    } catch (error) {
+      // TODO
+      finsihProcess();
+      throw error;
+    }
+  }, []);
 
-  return { isCreating, createSenryu };
+  return { isProcessing, createSenryu };
 };

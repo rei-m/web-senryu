@@ -7,27 +7,23 @@ type Deps = {
   senryuRepository: SenryuRepository;
 };
 
-type State = {
-  senryu?: Senryu;
-  error?: Error;
-};
-
 export const useSenryu = (
   senryuId: SenryuId,
   { senryuRepository }: Deps = useDiContainer()
 ) => {
-  const [state, setState] = useState<State>({});
+  const [senryu, setSenryu] = useState<Senryu>();
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     senryuRepository
       .findById(senryuId)
-      .then(senryu => {
-        setState({ senryu });
+      .then(result => {
+        setSenryu(result);
       })
       .catch(reason => {
-        setState({ error: new Error(reason) });
+        setError(new Error(reason));
       });
   }, []);
 
-  return { ...state };
+  return { senryu, error };
 };

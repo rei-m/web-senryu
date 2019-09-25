@@ -34,9 +34,9 @@ const SenryuPage = ({ navigate }: Props) => {
     totalCount,
     hasNextPage,
     error,
+    isMoreLoading,
     fetchNextPage,
     deleteSenryu,
-    isMoreLoading,
   } = useSenryuList();
   const [currentSenryu, displaySenryu] = useState<null | Senryu>(null);
   const [isSenryuModalOpen, openSenryuModal, closeSenryuModal] = useBool(false);

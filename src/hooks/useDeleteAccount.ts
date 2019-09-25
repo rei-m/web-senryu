@@ -1,32 +1,27 @@
-import { useState } from 'react';
+import { useCallback } from 'react';
 import { AuthenticationService } from '@src/domain/services';
 import { useDiContainer } from './useDiContainer';
+import { useBool } from './useBool';
 
 type Deps = {
   authenticationService: AuthenticationService;
 };
 
-type State = {
-  isDeleteAccountProcessing: boolean;
-};
-
 export const useDeleteAccount = (
   { authenticationService }: Deps = useDiContainer()
 ) => {
-  const [state, setState] = useState<State>({
-    isDeleteAccountProcessing: false,
-  });
-  const deleteAccount = () => {
-    setState({ isDeleteAccountProcessing: true });
-    authenticationService
-      .delete()
-      .then(() => {
-        setState({ isDeleteAccountProcessing: false });
-      })
-      .catch(reason => {
-        console.error(reason);
-      });
-  };
+  const [isProcessing, startProcess, finsihProcess] = useBool(false);
 
-  return { ...state, deleteAccount };
+  const deleteAccount = useCallback(async () => {
+    startProcess();
+    try {
+      await authenticationService.delete();
+      finsihProcess();
+    } catch (error) {
+      // TODO
+      console.error(error);
+    }
+  }, []);
+
+  return { isProcessing, deleteAccount };
 };

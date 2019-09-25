@@ -6,7 +6,21 @@ import EditableSenryuImage from '@src/components/molecules/EditableSenryuImage';
 import EditButton from '@src/components/molecules/EditButton';
 import SenryuImageDialog from '@src/components/organisms/SenryuImageDialog';
 import { Senryu, SenryuDraft, User } from '@src/domain';
+import {
+  KU_LENGTH,
+  COMMENT_LENGTH,
+  UNKNOWN_RYUGOU,
+} from '@src/domain/constant';
+import { validateKu, validateComment } from '@src/domain/validation';
 import { useBool } from '@src/hooks/useBool';
+
+type Value = Pick<SenryuDraft, 'jouku' | 'chuuku' | 'geku' | 'imageUrl'> & {
+  comment: string;
+};
+
+type FormError = {
+  [key: string]: string | null;
+};
 
 export type Props = {
   user: User | null;
@@ -24,6 +38,7 @@ export type PresenterProps = {
   imageUrl: string | null;
   ryugou: string;
   imageDialogOpen: boolean;
+  formError: FormError;
   onChangeField: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onClickOpenSetImage: () => void;
   onCloseSetImage: () => void;
@@ -37,17 +52,18 @@ export type ContainerProps = Props & {
   presenter: (props: PresenterProps) => React.ReactElement;
 };
 
-type Value = Pick<SenryuDraft, 'jouku' | 'chuuku' | 'geku' | 'imageUrl'> & {
-  comment: string;
-};
-
 const useStyles = makeStyles(theme => ({
   fieldMargin: {
     marginTop: theme.spacing(2),
   },
 }));
 
-const UNKNOWN_RYUGOU = `詠み人知らず`;
+const validator: { [key: string]: (value: string) => null | string } = {
+  jouku: validateKu,
+  chuuku: validateKu,
+  geku: validateKu,
+  comment: validateComment,
+};
 
 export const Presenter = ({
   isAuthorized,
@@ -58,6 +74,7 @@ export const Presenter = ({
   imageUrl,
   ryugou,
   imageDialogOpen,
+  formError,
   onChangeField,
   onSetImage,
   onClickOpenSetImage,
@@ -75,7 +92,9 @@ export const Presenter = ({
         label="上句（上五）"
         fullWidth={true}
         required={true}
+        maxLength={KU_LENGTH}
         onChange={onChangeField}
+        error={formError['jouku']}
       />
       <TextField
         id="chuuku"
@@ -83,7 +102,10 @@ export const Presenter = ({
         label="中句（中七）"
         fullWidth={true}
         required={true}
+        maxLength={KU_LENGTH}
         onChange={onChangeField}
+        error={formError['chuuku']}
+        className={classes.fieldMargin}
       />
       <TextField
         id="geku"
@@ -91,7 +113,10 @@ export const Presenter = ({
         label="下句（下五）"
         fullWidth={true}
         required={true}
+        maxLength={KU_LENGTH}
         onChange={onChangeField}
+        error={formError['geku']}
+        className={classes.fieldMargin}
       />
       {isAuthorized && (
         <EditableSenryuImage
@@ -113,10 +138,16 @@ export const Presenter = ({
         value={comment}
         label="一言"
         fullWidth={true}
+        maxLength={COMMENT_LENGTH}
         onChange={onChangeField}
+        error={formError['comment']}
         className={classes.fieldMargin}
       />
-      <ConfirmTextField label="柳号" value={ryugou} />
+      <ConfirmTextField
+        label="柳号"
+        value={ryugou}
+        className={classes.fieldMargin}
+      />
       <EditButton color="primary" className={classes.fieldMargin}>
         投稿を確認
       </EditButton>
@@ -145,11 +176,20 @@ export const Container = ({
           imageUrl: null,
         }
   );
+
+  const [formError, setFormError] = useState<FormError>({
+    jouku: null,
+    chuuku: null,
+    geku: null,
+    comment: null,
+  });
+
   const [imageDialogOpen, openImageDialog, closeImageDialog] = useBool(false);
 
   const handleChangeField = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.currentTarget;
     setState({ ...state, [name]: value });
+    setFormError({ ...formError, [name]: validator[name](value) });
   };
 
   const handleSetImage = (cropped: string) => {
@@ -190,6 +230,7 @@ export const Container = ({
     imageUrl: state.imageUrl,
     ryugou: user ? user.ryugou : UNKNOWN_RYUGOU,
     imageDialogOpen,
+    formError,
     onChangeField: handleChangeField,
     onClickOpenSetImage: openImageDialog,
     onCloseSetImage: closeImageDialog,

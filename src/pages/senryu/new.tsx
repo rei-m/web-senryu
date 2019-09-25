@@ -77,7 +77,7 @@ export const Presenter = ({
 
 export const Container = ({ navigate, presenter }: ContainerProps) => {
   const user = useAuthUser();
-  const { isCreating, createSenryu } = useCreateSenryu();
+  const { isProcessing, createSenryu } = useCreateSenryu();
   const [state, setState] = useState<State>({ openConfirm: false });
 
   const handleSubmitForm = (value: SenryuDraft) => {
@@ -98,7 +98,7 @@ export const Container = ({ navigate, presenter }: ContainerProps) => {
   };
 
   return presenter({
-    isLoading: isCreating,
+    isLoading: isProcessing,
     user,
     senryu: state.senryu,
     openConfirmDialog: state.openConfirm,
