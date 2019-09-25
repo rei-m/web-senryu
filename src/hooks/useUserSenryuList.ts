@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Senryu, UserId, User } from '@src/domain';
+import { Senryu, UserId, User, SenryuId } from '@src/domain';
 import { SenryuRepository, UserRepository } from '@src/domain/repositories';
 import { useDiContainer } from './useDiContainer';
 
@@ -52,33 +52,51 @@ export const useUserSenryuList = (
       });
   }, []);
 
-  const fetchNextPage = () => {
+  const fetchNextPage = async () => {
     if (!state.senryuList) {
       return;
     }
     setState({ ...state, isMoreLoading: true });
 
-    senryuRepository
-      .findByUserPerPage(
+    try {
+      const result = await senryuRepository.findByUserPerPage(
         userId,
         state.currentPage + 1,
         state.senryuList.slice(-1)[0]
-      )
-      .then(page => {
-        setState({
-          user: state.user,
-          currentPage: page.currentPage,
-          hasNextPage: page.hasNextPage,
-          totalPages: page.totalPages,
-          totalCount: page.totalCount,
-          senryuList: [...state.senryuList, ...page.itemList],
-          isMoreLoading: false,
-        });
-      })
-      .catch(reason => {
-        setState({ ...state, error: new Error(reason) });
+      );
+
+      setState({
+        user: state.user,
+        currentPage: result.currentPage,
+        hasNextPage: result.hasNextPage,
+        totalPages: result.totalPages,
+        totalCount: result.totalCount,
+        senryuList: [...state.senryuList, ...result.itemList],
+        isMoreLoading: false,
       });
+    } catch (error) {
+      setState({ ...state, error: new Error(error) });
+    }
   };
 
-  return { ...state, fetchNextPage };
+  const deleteSenryu = async (senryuId: SenryuId) => {
+    try {
+      await senryuRepository.delete(senryuId);
+      if (state.senryuList) {
+        const updated = state.senryuList.filter(
+          senryu => senryu.id !== senryuId
+        );
+        setState({
+          ...state,
+          senryuList: updated,
+          totalCount: state.totalCount - 1,
+        });
+      }
+    } catch (error) {
+      // TODO
+      console.error(error);
+    }
+  };
+
+  return { ...state, fetchNextPage, deleteSenryu };
 };

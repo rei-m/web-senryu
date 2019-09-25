@@ -2,17 +2,18 @@ import React, { useRef, useState, useLayoutEffect } from 'react';
 import clsx from 'clsx';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import useTheme from '@material-ui/core/styles/useTheme';
+import PhotoIcon from '@material-ui/icons/Photo';
 import makeStyles from '@src/styles/makeStyles';
 import SenryuImgae from '@src/components/molecules/SenryuImage';
 import Txt from '@src/components/atoms/Txt';
-import { Senryu as SenryuType, SenryuDraft, SenryuId } from '@src/domain';
+import { Senryu as SenryuType, SenryuDraft } from '@src/domain';
 import { ThemeInterface } from '@src/styles/theme';
 
 export type Props = {
   senryu: SenryuType | SenryuDraft;
   size: `s` | `m` | `l` | `ll`;
   isVisibleImage?: boolean;
-  onClick?: (senryuId: SenryuId) => void;
+  onClick?: (senryu: SenryuType | SenryuDraft) => void;
   className?: string;
 };
 
@@ -48,6 +49,7 @@ const useStyles = makeStyles<{ width: number; size: `s` | `m` | `l` | `ll` }>(
       display: 'flex',
       alignItems: 'center',
       flexDirection: 'column',
+      position: `relative`,
       [theme.breakpoints.up('sm')]: {
         minWidth: 'unset',
         flexDirection: 'row-reverse',
@@ -85,6 +87,12 @@ const useStyles = makeStyles<{ width: number; size: `s` | `m` | `l` | `ll` }>(
         marginTop: 0,
         marginRight: theme.spacing(1.5),
       },
+    },
+    imageMark: {
+      position: 'absolute',
+      left: theme.spacing(0.5),
+      top: theme.spacing(0.5),
+      color: theme.palette.primary.main,
     },
   })
 );
@@ -126,9 +134,7 @@ const SenryuFuda = ({
 
   const handleClick = onClick
     ? () => {
-        if (senryu.id) {
-          onClick(senryu.id);
-        }
+        onClick(senryu);
       }
     : undefined;
 
@@ -152,14 +158,18 @@ const SenryuFuda = ({
           {senryu.ryugou}
         </Txt>
       </p>
-      {senryu.imageUrl && isVisibleImage && (
-        <SenryuImgae
-          src={senryu.imageUrl}
-          size={144}
-          alt={`${senryu.jouku} ${senryu.chuuku} ${senryu.geku}`}
-          className={classes.image}
-        />
-      )}
+      {senryu.imageUrl ? (
+        isVisibleImage ? (
+          <SenryuImgae
+            src={senryu.imageUrl}
+            size={144}
+            alt={`${senryu.jouku} ${senryu.chuuku} ${senryu.geku}`}
+            className={classes.image}
+          />
+        ) : (
+          <PhotoIcon className={classes.imageMark} />
+        )
+      ) : null}
     </div>
   );
 };

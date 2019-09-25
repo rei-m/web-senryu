@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Senryu } from '@src/domain';
+import { Senryu, SenryuId } from '@src/domain';
 import { SenryuRepository } from '@src/domain/repositories';
 import { useDiContainer } from './useDiContainer';
 
@@ -46,28 +46,48 @@ export const useSenryuList = (
       });
   }, []);
 
-  const fetchNextPage = () => {
+  const fetchNextPage = async () => {
     if (!state.senryuList) {
       return;
     }
     setState({ ...state, isMoreLoading: true });
 
-    senryuRepository
-      .findAllPerPage(state.currentPage + 1, state.senryuList.slice(-1)[0])
-      .then(page => {
-        setState({
-          currentPage: page.currentPage,
-          hasNextPage: page.hasNextPage,
-          totalPages: page.totalPages,
-          totalCount: page.totalCount,
-          senryuList: [...state.senryuList, ...page.itemList],
-          isMoreLoading: false,
-        });
-      })
-      .catch(reason => {
-        setState({ ...state, error: new Error(reason) });
+    try {
+      const result = await senryuRepository.findAllPerPage(
+        state.currentPage + 1,
+        state.senryuList.slice(-1)[0]
+      );
+
+      setState({
+        currentPage: result.currentPage,
+        hasNextPage: result.hasNextPage,
+        totalPages: result.totalPages,
+        totalCount: result.totalCount,
+        senryuList: [...state.senryuList, ...result.itemList],
+        isMoreLoading: false,
       });
+    } catch (error) {
+      setState({ ...state, error: new Error(error) });
+    }
   };
 
-  return { ...state, fetchNextPage };
+  const deleteSenryu = async (senryuId: SenryuId) => {
+    try {
+      await senryuRepository.delete(senryuId);
+      if (state.senryuList) {
+        const updated = state.senryuList.filter(
+          senryu => senryu.id !== senryuId
+        );
+        setState({
+          ...state,
+          senryuList: updated,
+        });
+      }
+    } catch (error) {
+      // TODO
+      console.error(error);
+    }
+  };
+
+  return { ...state, fetchNextPage, deleteSenryu };
 };

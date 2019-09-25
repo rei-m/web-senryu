@@ -39,9 +39,7 @@ const AlertDialog = ({
       </DialogContentText>
     </DialogContent>
     <DialogActions>
-      <Button onClick={onClose} color="primary">
-        {negativeButtonLabel}
-      </Button>
+      <Button onClick={onClose}>{negativeButtonLabel}</Button>
       <Button onClick={onClickPositive} color="primary" autoFocus>
         {positiveButtonLabel}
       </Button>

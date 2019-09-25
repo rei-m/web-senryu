@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { RouteComponentProps } from '@reach/router';
 import makeStyles from '@src/styles/makeStyles';
 import SingleContentPageTemplate from '@src/components/templates/SingleContentPageTemplate';
 import UserProfile from '@src/components/organisms/UserProfile';
 import UserSettingDialog from '@src/components/organisms/UserSettingDialog';
 import SenryuList from '@src/components/organisms/SenryuList';
+import SenryuModal from '@src/components/organisms/SenryuModal';
 import AccountButton from '@src/components/molecules/AccountButton';
 import MoreButton from '@src/components/molecules/MoreButton';
 import Progress from '@src/components/atoms/Progress';
@@ -13,7 +14,7 @@ import { useBool } from '@src/hooks/useBool';
 import { useAuthUser } from '@src/hooks/useAuthUser';
 import { useUpdateProfile } from '@src/hooks/useUpdateProfile';
 import { useUserSenryuList } from '@src/hooks/useUserSenryuList';
-import { SenryuId, User } from '@src/domain';
+import { User, Senryu, UserId, SenryuId } from '@src/domain';
 import { ROUTING } from '@src/constants/routing';
 
 export type Props = {
@@ -51,30 +52,42 @@ const UsersShowPage = ({ id, navigate }: Props) => {
     hasNextPage,
     error,
     fetchNextPage,
+    deleteSenryu,
     isMoreLoading,
   } = useUserSenryuList(id);
-
-  const [isDialogOpen, openDialog, closeDialog] = useBool(false);
+  const [currentSenryu, displaySenryu] = useState<null | Senryu>(null);
+  const [isSenryuModalOpen, openSenryuModal, closeSenryuModal] = useBool(false);
+  const handleClickSenryu = (senryu: Senryu) => {
+    displaySenryu(senryu);
+    openSenryuModal();
+  };
+  const [isSettingDialogOpen, openSettingDialog, closeSettingDialog] = useBool(
+    false
+  );
 
   const classes = useStyles();
 
-  const handleClickSenryu = (senryuId: SenryuId) => {
-    // 現状、遷移すると取得分が吹き飛ぶのでnavigateやめる
+  const handleClickPostProfile = (user: User) => {
+    updateProfile(user);
+    closeSettingDialog();
+  };
+
+  const handleClickUserName = (userId: UserId) => {
     if (navigate) {
-      navigate(ROUTING.senryuShow.replace(`:id`, senryuId));
+      navigate(ROUTING.usersShow.replace(`:id`, userId));
     }
   };
 
-  const handleClickPostProfile = (user: User) => {
-    updateProfile(user);
-    closeDialog();
+  const handleClickDeleteSenryu = (senryuId: SenryuId) => {
+    closeSenryuModal();
+    deleteSenryu(senryuId);
   };
 
   // TODO: メタ情報見直す
   return (
     <SingleContentPageTemplate
       user={authUser}
-      title={user ? `${user.ryugou}さんの川柳` : `詠み人知らず`}
+      title={user ? `${user.ryugou}の川柳` : `詠み人知らず`}
       description={``}
       content={
         <div className={classes.root}>
@@ -89,7 +102,7 @@ const UsersShowPage = ({ id, navigate }: Props) => {
                     <AccountButton
                       size={`small`}
                       iconSize={`1.6rem`}
-                      onClick={openDialog}
+                      onClick={openSettingDialog}
                     >
                       詠み人設定
                     </AccountButton>
@@ -112,12 +125,24 @@ const UsersShowPage = ({ id, navigate }: Props) => {
                   )}
                 </div>
               )}
+              <SenryuModal
+                open={isSenryuModalOpen}
+                senryu={currentSenryu}
+                canDelete={
+                  currentSenryu && authUser
+                    ? currentSenryu.userId === authUser.id
+                    : false
+                }
+                onClickUserName={handleClickUserName}
+                onClickDelete={handleClickDeleteSenryu}
+                onClose={closeSenryuModal}
+              />
               {!!authUser && (
                 <UserSettingDialog
-                  open={isDialogOpen}
+                  open={isSettingDialogOpen}
                   initialUser={authUser}
                   onClickPost={handleClickPostProfile}
-                  onClose={closeDialog}
+                  onClose={closeSettingDialog}
                 />
               )}
             </>
