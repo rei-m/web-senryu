@@ -6,11 +6,11 @@ import { USER_1 } from '@test/mock';
 
 storiesOf('organisms/Header', module)
   .add('logout', () => (
-    <Header title={`Recipe Catalog`} onClickMenu={action('onClickMenu')} />
+    <Header title={`楽々川柳`} onClickMenu={action('onClickMenu')} />
   ))
   .add('login', () => (
     <Header
-      title={`Recipe Catalog`}
+      title={`楽々川柳`}
       user={USER_1}
       onClickMenu={action('onClickMenu')}
     />

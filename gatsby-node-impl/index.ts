@@ -5,17 +5,14 @@ export const onCreatePage: GatsbyOnCreatePage<{}> = async ({
   actions,
 }) => {
   const { createPage } = actions;
-  if (page.path.match(/^\/senryu\/.*/)) {
-    if (page.path === '/senryu/' || page.path === '/senryu/new/') {
-      return;
-    }
-
-    page.matchPath = '/senryu/:id';
-
+  if (page.path === '/senryu/show/') {
+    page.matchPath = '/senryu/show/:id/';
     createPage(page);
-  } else if (page.path.match(/^\/users\/.*/)) {
-    page.matchPath = '/users/:id';
-
+    return;
+  }
+  if (page.path === '/users/show/') {
+    page.matchPath = '/users/:id/';
     createPage(page);
+    return;
   }
 };

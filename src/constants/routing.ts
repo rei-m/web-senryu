@@ -2,7 +2,7 @@ export const ROUTING = {
   root: '/',
   senryu: '/senryu/',
   senryuNew: '/senryu/new/',
-  senryuShow: '/senryu/:id/',
+  senryuShow: '/senryu/show/:id/',
   usersShow: '/users/:id/',
   about: '/about/',
   privacyPolicy: '/policy/',

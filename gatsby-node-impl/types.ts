@@ -4,6 +4,8 @@ interface PageInput<T> {
   layout?: string;
   context?: T;
   matchPath?: string;
+  componentPath: string;
+  isCreatedByStatefulCreatePages: boolean;
 }
 
 interface NodeInputBase {
