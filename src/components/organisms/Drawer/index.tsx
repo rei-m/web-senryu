@@ -14,6 +14,10 @@ import makeStyles from '@src/styles/makeStyles';
 import UserProfile from '@src/components/organisms/UserProfile';
 import { User } from '@src/domain';
 import { ROUTING } from '@src/constants/routing';
+import { APP_NAME } from '@src/constants';
+
+import sense from '@src/images/sense.png';
+import { Link } from 'gatsby';
 
 export type Props = {
   isInitialDisplay: boolean;
@@ -25,7 +29,27 @@ export type Props = {
 };
 
 const useStyles = makeStyles(theme => ({
-  toolbar: theme.mixins.toolbar,
+  toolbar: {
+    ...theme.mixins.toolbar,
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+    backgroundColor: theme.palette.primary.main,
+    boxShadow: theme.shadows[4],
+    display: 'flex',
+    alignItems: 'center',
+  },
+  rootLink: {
+    display: 'flex',
+    color: theme.palette.text.primary,
+    '&:hover': {
+      textDecoration: 'none',
+    },
+    '& img': {
+      width: 32,
+      marginRight: theme.spacing(1),
+      marginBottom: 0,
+    },
+  },
   drawerPaper: {
     width: theme.drawerWidth,
   },
@@ -73,7 +97,12 @@ const Drawer = ({
       {...drawerProps}
     >
       <List disablePadding>
-        <div className={classes.toolbar}>サービスロゴ</div>
+        <div className={classes.toolbar}>
+          <Link to={ROUTING.root} className={classes.rootLink}>
+            <img src={sense} alt={APP_NAME} />
+            {APP_NAME}
+          </Link>
+        </div>
         <Divider />
         {user && (
           <>
@@ -119,12 +148,24 @@ const Drawer = ({
           <ListItemText primary="みんなの川柳" />
         </ListItem>
         <Divider />
-        {user && (
+        {user ? (
           <ListItem button onClick={onClickSetting}>
             <ListItemIcon>
               <AccountCircleIcon />
             </ListItemIcon>
             <ListItemText primary="詠み人設定" />
+          </ListItem>
+        ) : (
+          <ListItem
+            button
+            component={`a`}
+            href={ROUTING.auth}
+            onClick={handleClickLink}
+          >
+            <ListItemIcon>
+              <AccountCircleIcon />
+            </ListItemIcon>
+            <ListItemText primary="サインイン" />
           </ListItem>
         )}
         <ListItem

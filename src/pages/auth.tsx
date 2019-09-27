@@ -35,7 +35,7 @@ const uiConfig = {
 
 export const AuthPagePresenter = ({ signInSuccessUrl }: PresenterProps) => (
   <NoIndexPageTemplate
-    title={`認証`}
+    title={`サインイン`}
     content={
       <StyledFirebaseAuth
         uiConfig={{ ...uiConfig, signInSuccessUrl }}

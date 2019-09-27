@@ -22,6 +22,7 @@ export type ContainerProps = Props & {
 
 const useStyles = makeStyles(theme => ({
   root: {
+    borderTop: `1px solid ${theme.palette.divider}`,
     backgroundColor: theme.palette.background.paper,
     padding: theme.spacing(6),
   },
@@ -34,7 +35,7 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'flex-start',
     flexDirection: 'column',
     marginTop: theme.spacing(2),
-    '& li': {
+    '& > li': {
       marginRight: theme.spacing(1),
       color: theme.palette.text.secondary,
     },
