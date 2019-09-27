@@ -1,9 +1,10 @@
 import { SiteMetaData } from '../src/types';
 import { GatsbyPlugin } from './types';
+import { APP_NAME } from '@src/constants';
 
 export const siteMetadata: SiteMetaData = {
-  title: `WORK IN PROGRESS`,
-  description: `WORK IN PROGRESS`,
+  title: APP_NAME,
+  description: `${APP_NAME}は誰でも気軽に川柳を投稿できるサイトです。暮らしの中でのふと感じたことや、思ったこと、感動したことなどを川柳で詠んでみませんか。`,
   author: `@rei-m`,
 };
 
@@ -21,8 +22,8 @@ export const plugins: GatsbyPlugin[] = [
   {
     resolve: `gatsby-plugin-manifest`,
     options: {
-      name: `work in progress`,
-      short_name: `wip`,
+      name: APP_NAME,
+      short_name: APP_NAME,
       start_url: `/`,
       background_color: `#663399`,
       theme_color: `#663399`,
@@ -49,12 +50,6 @@ export const plugins: GatsbyPlugin[] = [
       stylesProvider: {
         injectFirst: true,
       },
-    },
-  },
-  {
-    resolve: `gatsby-plugin-emotion`,
-    options: {
-      // Accepts all options defined by `babel-plugin-emotion` plugin.
     },
   },
   `gatsby-plugin-no-sourcemaps`,

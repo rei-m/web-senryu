@@ -108,8 +108,8 @@ export const Container = ({ navigate, presenter }: ContainerProps) => {
   });
 };
 
-const SenryuNewPage = (props: Props) => (
+const CreateSenryuPage = (props: Props) => (
   <Container {...props} presenter={Presenter} />
 );
 
-export default SenryuNewPage;
+export default CreateSenryuPage;
