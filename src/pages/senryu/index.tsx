@@ -62,7 +62,7 @@ const SenryuPage = ({ navigate }: Props) => {
   return (
     <SingleContentPageTemplate
       user={authUser}
-      title={`川柳`}
+      title={`みんなの川柳`}
       description={''}
       content={
         <div className={classes.root}>
