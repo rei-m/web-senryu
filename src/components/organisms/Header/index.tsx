@@ -41,7 +41,7 @@ const Header = ({ title, user, onClickMenu, className }: Props) => {
   const classes = useStyles();
 
   return (
-    <AppBar position="static" className={clsx(classes.root, className)}>
+    <AppBar position="fixed" className={clsx(classes.root, className)}>
       <Toolbar>
         <MenuButton onClick={onClickMenu} className={classes.menuButton} />
         <Heading level={6} visualLevel={2} className={classes.heading}>

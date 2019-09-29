@@ -16,7 +16,6 @@ import { User } from '@src/domain';
 import { ROUTING } from '@src/constants/routing';
 import { APP_NAME } from '@src/constants';
 
-import sense from '@src/images/sense.png';
 import { Link } from 'gatsby';
 
 export type Props = {
@@ -99,7 +98,6 @@ const Drawer = ({
       <List disablePadding>
         <div className={classes.toolbar}>
           <Link to={ROUTING.root} className={classes.rootLink}>
-            <img src={sense} alt={APP_NAME} />
             {APP_NAME}
           </Link>
         </div>
@@ -153,7 +151,7 @@ const Drawer = ({
             <ListItemIcon>
               <AccountCircleIcon />
             </ListItemIcon>
-            <ListItemText primary="詠み人設定" />
+            <ListItemText primary="投稿者設定" />
           </ListItem>
         ) : (
           <ListItem

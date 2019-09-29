@@ -87,7 +87,7 @@ const UsersShowPage = ({ id, navigate }: Props) => {
   return (
     <SingleContentPageTemplate
       user={authUser}
-      title={user ? `${user.ryugou}の川柳` : `詠み人知らず`}
+      title={user ? `${user.ryugou}の川柳` : `よみ人知らず`}
       description={``}
       content={
         <div className={classes.root}>
@@ -104,7 +104,7 @@ const UsersShowPage = ({ id, navigate }: Props) => {
                       iconSize={`1.6rem`}
                       onClick={openSettingDialog}
                     >
-                      詠み人設定
+                      投稿者設定
                     </AccountButton>
                   </div>
                 </>

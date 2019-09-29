@@ -91,7 +91,7 @@ export const Presenter = ({
     <Dialog open={open} aria-labelledby="user-form-dialog-title">
       <DialogTitle id="user-form-dialog-title" disableTypography>
         <Heading level={6} visualLevel={3}>
-          詠み人設定
+          投稿者設定
         </Heading>
       </DialogTitle>
       <DialogContent>
@@ -99,7 +99,7 @@ export const Presenter = ({
           className={classes.text}
           classes={{ root: classes.text }}
         >
-          詠み人の情報を設定してください（後で変更できます）
+          投稿者の情報を設定してください（後で変更できます）
         </DialogContentText>
         <TextField
           id="ryugou"
@@ -108,7 +108,7 @@ export const Presenter = ({
           fullWidth={true}
           onChange={onChangeField}
           error={error.ryugou}
-          placeholder="詠み人知らず"
+          placeholder="よみ人知らず"
           required={true}
           className={classes.fieldMargin}
         />

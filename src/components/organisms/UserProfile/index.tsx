@@ -25,7 +25,7 @@ const UserProfile = ({ user }: Props) => {
   return (
     <div className={classes.root}>
       <div className={classes.label}>
-        <Txt size={`sss`}>詠み人</Txt>
+        <Txt size={`sss`}>投稿者</Txt>
       </div>
       <div>
         <Txt size={`l`}>{user.ryugou}</Txt>
