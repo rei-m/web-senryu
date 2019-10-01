@@ -48,7 +48,7 @@ const AccountMenu = ({
             <ListItemIcon>
               <AccountCircleIcon />
             </ListItemIcon>
-            <ListItemText primary="詠み人設定" />
+            <ListItemText primary="投稿者設定" />
           </ListItem>
           <ListItem button onClick={onClickSignOut}>
             <ListItemIcon>

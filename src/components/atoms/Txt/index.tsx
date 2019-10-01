@@ -4,7 +4,7 @@ import makeStyles from '@src/styles/makeStyles';
 import { FontSize } from '@src/styles/theme';
 
 export type Props = {
-  tag?: `span` | `cite`;
+  tag?: `span` | `p` | `cite`;
   size?: FontSize;
   children?: React.ReactNode;
   className?: string;

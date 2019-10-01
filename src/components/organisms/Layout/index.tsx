@@ -24,6 +24,14 @@ const useStyles = makeStyles(theme => ({
       width: `calc(100% - ${theme.drawerWidth}px)`,
     },
   },
+  container: {
+    marginTop: 56,
+    minHeight: 'calc(100vh - 216px)',
+    [theme.breakpoints.up('sm')]: {
+      marginTop: 64,
+      minHeight: 'calc(100vh - 224px)',
+    },
+  },
 }));
 
 const Layout: React.FC<Props> = ({ user, title, children }) => {
@@ -61,7 +69,9 @@ const Layout: React.FC<Props> = ({ user, title, children }) => {
           onClose={closeDrawer}
         />
       </nav>
-      <Container className={classes.width}>{children}</Container>
+      <Container className={`${classes.container} ${classes.width}`}>
+        {children}
+      </Container>
       <Footer className={classes.width} />
       {user && (
         <UserSettingDialog

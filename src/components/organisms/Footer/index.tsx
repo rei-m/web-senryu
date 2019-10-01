@@ -22,8 +22,9 @@ export type ContainerProps = Props & {
 
 const useStyles = makeStyles(theme => ({
   root: {
+    height: 160,
     borderTop: `1px solid ${theme.palette.divider}`,
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: theme.palette.primary.main,
     padding: theme.spacing(6),
   },
   heading: {

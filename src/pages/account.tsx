@@ -3,6 +3,7 @@ import { RouteComponentProps } from '@reach/router';
 import NoIndexPageTemplate from '@src/components/templates/NoIndexPageTemplate';
 import AccountMenu from '@src/components/organisms/AccountMenu';
 import UserSettingDialog from '@src/components/organisms/UserSettingDialog';
+import ConfirmDeleteAccountDialog from '@src/components/organisms/ConfirmDeleteAccountDialog';
 import AlertDialog, {
   Props as AlertDialogProps,
 } from '@src/components/molecules/AlertDialog';
@@ -131,29 +132,8 @@ export const AccountPageContainer = ({
         setAlertDialogType(null);
       };
       return (
-        <AlertDialog
+        <ConfirmDeleteAccountDialog
           open={isAlertDialogOpen}
-          dialogTitle={`アカウント削除`}
-          contentText={
-            <div>
-              <div>
-                アカウントを削除します。下記の事項について了承の上、「削除する」を押してください
-              </div>
-              <div>
-                <ul>
-                  <li>
-                    登録した認証情報、プロフィールの情報は完全に削除されます
-                  </li>
-                  <li>投稿した川柳は削除されません</li>
-                  <li>
-                    アカウント削除後にアカウントを復活することはできかねます
-                  </li>
-                </ul>
-              </div>
-            </div>
-          }
-          positiveButtonLabel={`削除する`}
-          negativeButtonLabel={`戻る`}
           onClickPositive={handleClickPositive}
           onClose={closeAlertDialog}
         />

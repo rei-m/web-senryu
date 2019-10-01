@@ -43,6 +43,11 @@ export const muiTheme = createMuiTheme({
         fontSize: appTheme.fontSize.s,
       },
     },
+    MuiContainer: {
+      root: {
+        backgroundColor: palette.grey['100'],
+      },
+    },
     MuiButton: {
       root: {
         fontSize: appTheme.fontSize.m,
