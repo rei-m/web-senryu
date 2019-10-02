@@ -40,15 +40,6 @@ const useStyles = makeStyles(theme => ({
   heading: {
     fontWeight: 'bold',
     textAlign: 'left',
-    position: 'relative',
-    '&:after': {
-      content: '""',
-      width: '100%',
-      borderBottom: `4px double ${theme.palette.grey[500]}`,
-      position: 'absolute',
-      bottom: theme.spacing(-1),
-      left: 0,
-    },
   },
   paragraph: {
     textAlign: 'left',
@@ -63,6 +54,7 @@ const IndexPage = () => {
   const user = useAuthUser();
   const { site } = useSiteMetaData();
   const classes = useStyles();
+
   return (
     <SingleContentPageTemplate
       user={user}
@@ -72,7 +64,12 @@ const IndexPage = () => {
         <>
           <Section
             heading={
-              <Heading level={2} visualLevel={1} className={classes.heading}>
+              <Heading
+                level={2}
+                visualLevel={1}
+                underline
+                className={classes.heading}
+              >
                 {`${site.siteMetadata.title}へようこそ`}
               </Heading>
             }
@@ -85,14 +82,14 @@ const IndexPage = () => {
               <TopMenuLink
                 to={ROUTING.senryuNew}
                 label="川柳を投稿する"
-                description="会員登録不要で川柳を投稿できます。登録すると柳号（ペンネーム）の設定や画像付きの川柳を投稿できるようになります。"
+                description="会員登録不要でだれでも川柳を投稿できます。"
                 icon={<EditIcon />}
                 className={classes.link}
               />
               <TopMenuLink
                 to={ROUTING.senryu}
                 label="川柳を見る"
-                description={`今までに${site.siteMetadata.title}に投稿された川柳を見ることができます。`}
+                description={`今までに投稿された川柳を見ることができます。`}
                 icon={<PeopleIcon />}
                 className={classes.link}
               />
@@ -100,7 +97,12 @@ const IndexPage = () => {
           </Section>
           <Section
             heading={
-              <Heading level={2} visualLevel={1} className={classes.heading}>
+              <Heading
+                level={2}
+                visualLevel={1}
+                underline
+                className={classes.heading}
+              >
                 川柳とは
               </Heading>
             }
