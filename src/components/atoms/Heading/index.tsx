@@ -11,6 +11,7 @@ const HEADINGS: Array<HeadingElements> = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
 export type Props = {
   level?: Level;
   visualLevel?: Level;
+  underline?: boolean;
   className?: string;
 };
 
@@ -37,19 +38,38 @@ const useStyles = makeStyles(theme => ({
   6: {
     fontSize: theme.fontSize.sss,
   },
+  underline: {
+    position: 'relative',
+    '&:after': {
+      content: '""',
+      width: '100%',
+      borderBottom: `4px double ${theme.palette.grey[500]}`,
+      position: 'absolute',
+      bottom: theme.spacing(-1),
+      left: 0,
+    },
+  },
 }));
 
 export const Heading: React.FC<Props> = ({
   children,
   level = 2,
   visualLevel,
+  underline,
   className,
 }) => {
   const classes = useStyles();
   const Tag = HEADINGS[level - 1];
   const visualClassName = classes[visualLevel ? visualLevel : level];
   return (
-    <Tag className={clsx(classes.root, visualClassName, className)}>
+    <Tag
+      className={clsx(
+        classes.root,
+        visualClassName,
+        underline && classes.underline,
+        className
+      )}
+    >
       {children}
     </Tag>
   );
