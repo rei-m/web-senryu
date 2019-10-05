@@ -318,7 +318,7 @@ const PolicyPage = () => {
                 underline
                 className={classes.heading}
               >
-                10. お問い合わせ窓口
+                9. お問い合わせ窓口
               </Heading>
             }
             className={clsx(classes.section, classes.sectionMargin)}

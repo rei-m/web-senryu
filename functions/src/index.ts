@@ -14,12 +14,8 @@ export const onSenryuCreated = functions.firestore
     });
 
     const snapRef = snap.data();
-    if (snapRef && snapRef.userId) {
-      const userRef = admin
-        .firestore()
-        .collection('users')
-        .doc(snapRef.userId);
-      const userDoc = await userRef.get();
+    if (snapRef && snapRef.user.ref) {
+      const userDoc = await snapRef.user.ref.get();
       if (userDoc.exists) {
         await userDoc.ref.update({
           senryuCount: FieldValue.increment(1),
@@ -41,12 +37,8 @@ export const onSenryuDeleted = functions.firestore
     });
 
     const snapRef = snap.data();
-    if (snapRef && snapRef.userId) {
-      const userRef = admin
-        .firestore()
-        .collection('users')
-        .doc(snapRef.userId);
-      const userDoc = await userRef.get();
+    if (snapRef && snapRef.user.ref) {
+      const userDoc = await snapRef.user.ref.get();
       if (userDoc.exists) {
         await userDoc.ref.update({
           senryuCount: FieldValue.increment(-1),
