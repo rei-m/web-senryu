@@ -15,23 +15,19 @@ const dataToModel: (
 ) => Senryu = (id, data) => {
   const createdAt = data.createdAt.toDate().getTime();
   return {
-    ...data,
-    comment: data.comment ? data.comment : null,
     id,
+    jouku: data.jouku,
+    chuuku: data.chuuku,
+    geku: data.geku,
+    comment: data.comment ? data.comment : null,
+    userId: data.user.ref ? data.user.ref.id : null,
+    ryugou: data.user.ryugou,
+    imageUrl: data.imageUrl ? data.imageUrl : null,
     createdAt,
-  } as Senryu;
+  };
 };
 
 const COUNT_MAX = 20;
-
-const POST_KEY_LIST: Array<keyof Senryu> = [
-  'jouku',
-  'chuuku',
-  'geku',
-  'comment',
-  'ryugou',
-  'userId',
-];
 
 export class SenryuRepositoryData implements SenryuRepository {
   async findById(id: SenryuId) {
@@ -56,11 +52,11 @@ export class SenryuRepositoryData implements SenryuRepository {
     const query =
       base === undefined
         ? senryuCollection()
-            .where('userId', '==', userId)
+            .where('user.ref', '==', userCollection().doc(userId))
             .orderBy('createdAt', 'desc')
             .limit(COUNT_MAX)
         : senryuCollection()
-            .where('userId', '==', userId)
+            .where('user.ref', '==', userCollection().doc(userId))
             .orderBy('createdAt', 'desc')
             .startAfter(new Date(base.createdAt))
             .limit(COUNT_MAX);
@@ -112,37 +108,36 @@ export class SenryuRepositoryData implements SenryuRepository {
 
   async add(senryu: SenryuDraft) {
     try {
-      const data = Object.entries(senryu).reduce(
-        (prev, current) => {
-          const [key, value] = current;
-          if (POST_KEY_LIST.includes(key as keyof Senryu)) {
-            prev[key] = value;
-          }
-          return prev;
+      const data = {
+        jouku: senryu.jouku,
+        chuuku: senryu.chuuku,
+        geku: senryu.geku,
+        comment: senryu.comment,
+        user: {
+          ref: senryu.userId ? userCollection().doc(senryu.userId) : null,
+          ryugou: senryu.ryugou,
         },
-        {} as { [key: string]: unknown }
-      );
-      const docRef = await senryuCollection().add({
-        ...data,
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      });
+      };
+
+      const senryuRef = await senryuCollection().add(data);
 
       if (senryu.imageUrl) {
         const response = await axios.get(senryu.imageUrl, {
           responseType: 'blob',
         });
         const blob = new Blob([response.data], { type: 'image/jpeg' });
-        const storageRef = senryuStorageRef(`${docRef.id}.jpg`);
+        const storageRef = senryuStorageRef(`${senryuRef.id}.jpg`);
         const fileSnapshot = await storageRef.put(blob);
         const imageUrl = await fileSnapshot.ref.getDownloadURL();
 
-        await docRef.update({
+        await senryuRef.update({
           imageUrl,
           storageUri: fileSnapshot.metadata.fullPath,
         });
       }
 
-      return docRef.id;
+      return senryuRef.id;
     } catch (e) {
       console.error(e);
       throw e;
