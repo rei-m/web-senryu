@@ -7,13 +7,12 @@ import ConfirmDeleteAccountDialog from '@src/components/organisms/ConfirmDeleteA
 import AlertDialog, {
   Props as AlertDialogProps,
 } from '@src/components/molecules/AlertDialog';
+import { User } from '@src/domain';
 import { useBool } from '@src/hooks/useBool';
 import { useAuthUser } from '@src/hooks/useAuthUser';
 import { useUpdateProfile } from '@src/hooks/useUpdateProfile';
-import { User } from '@src/domain';
 import { useSignOut } from '@src/hooks/useSignOut';
 import { useDeleteAccount } from '@src/hooks/useDeleteAccount';
-import { ROUTING } from '@src/constants/routing';
 
 export type Props = RouteComponentProps;
 
@@ -24,7 +23,6 @@ export type PresenterProps = {
   onClickSetting: () => void;
   onClickPostProfile: (user: User) => void;
   onCloseSettingDialog: () => void;
-  onClickSignIn: () => void;
   onClickSignOut: () => void;
   onClickDelete: () => void;
 };
@@ -40,7 +38,6 @@ export const AccountPagePresenter = ({
   onClickSetting,
   onClickPostProfile,
   onCloseSettingDialog,
-  onClickSignIn,
   onClickSignOut,
   onClickDelete,
 }: PresenterProps) => (
@@ -52,7 +49,6 @@ export const AccountPagePresenter = ({
         <AccountMenu
           user={user ? user : null}
           onClickSetting={onClickSetting}
-          onClickSignIn={onClickSignIn}
           onClickSignOut={onClickSignOut}
           onClickDeleteAccount={onClickDelete}
         />
@@ -70,10 +66,7 @@ export const AccountPagePresenter = ({
   />
 );
 
-export const AccountPageContainer = ({
-  presenter,
-  navigate,
-}: ContainerProps) => {
+export const AccountPageContainer = ({ presenter }: ContainerProps) => {
   const authUser = useAuthUser();
   const [isSettingDialogOpen, openSettingDialog, closeSettingDialog] = useBool(
     false
@@ -87,12 +80,6 @@ export const AccountPageContainer = ({
   const { signOut } = useSignOut();
 
   const { deleteAccount } = useDeleteAccount();
-
-  const handleClickSignIn = useCallback(() => {
-    if (navigate) {
-      navigate(ROUTING.auth, { state: { refferer: ROUTING.account } });
-    }
-  }, []);
 
   const handleClickSignOut = useCallback(() => {
     setAlertDialogType('signOut');
@@ -150,7 +137,6 @@ export const AccountPageContainer = ({
     onClickSetting: openSettingDialog,
     onClickPostProfile: handleClickPostProfile,
     onCloseSettingDialog: closeSettingDialog,
-    onClickSignIn: handleClickSignIn,
     onClickSignOut: handleClickSignOut,
     onClickDelete: handleClickDelete,
   });

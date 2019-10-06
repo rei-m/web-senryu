@@ -35,13 +35,6 @@ const useStyles = makeStyles(theme => ({
       fontWeight: 'normal',
       fontSize: theme.fontSize.s,
     },
-    '& dd': {
-      marginTop: theme.spacing(0.5),
-      marginBottom: theme.spacing(0.5),
-      marginLeft: theme.spacing(4),
-      fontSize: theme.fontSize.s,
-      display: 'list-item',
-    },
   },
   orderedList: {
     textAlign: 'left',

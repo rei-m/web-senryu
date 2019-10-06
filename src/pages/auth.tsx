@@ -3,6 +3,7 @@ import { RouteComponentProps } from '@reach/router';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase from 'firebase/app';
 import NoIndexPageTemplate from '@src/components/templates/NoIndexPageTemplate';
+import { useAuthUser } from '@src/hooks/useAuthUser';
 import { ROUTING } from '@src/constants/routing';
 
 export type Props = RouteComponentProps;
@@ -27,9 +28,7 @@ const uiConfig = {
     firebase.auth.EmailAuthProvider.PROVIDER_ID,
     // firebase.auth.PhoneAuthProvider.PROVIDER_ID,
   ],
-  // Terms of service url.
   tosUrl: ROUTING.termsOfService,
-  // Privacy policy url.
   privacyPolicyUrl: ROUTING.privacyPolicy,
 };
 
@@ -45,12 +44,17 @@ export const AuthPagePresenter = ({ signInSuccessUrl }: PresenterProps) => (
   />
 );
 
-export const AuthPageContainer = ({ presenter, location }: ContainerProps) => {
-  // TODO: 認証済みならTOPに飛ばす
-  const signInSuccessUrl =
-    location && !!location.state.refferer ? location.state.refferer : '/';
+export const AuthPageContainer = ({ presenter, navigate }: ContainerProps) => {
+  const authUser = useAuthUser();
+  if (authUser) {
+    if (navigate) {
+      navigate(ROUTING.root, { replace: true });
+    }
+    return <div />;
+  }
+
   return presenter({
-    signInSuccessUrl,
+    signInSuccessUrl: '/',
   });
 };
 

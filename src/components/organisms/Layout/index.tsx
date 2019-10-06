@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import { navigate } from 'gatsby';
 import { useMediaQuery } from '@material-ui/core';
 import makeStyles from '@src/styles/makeStyles';
 import Header from '@src/components/organisms/Header';
@@ -65,7 +64,6 @@ const Layout: React.FC<Props> = ({ user, title, children }) => {
           open={isOpenDrawer || isDisplayDrawer}
           user={user ? user : null}
           onClickSetting={openSettingDialog}
-          onClickLink={navigate}
           onClose={closeDrawer}
         />
       </nav>

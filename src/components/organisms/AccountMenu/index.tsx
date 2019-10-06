@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'gatsby';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -15,7 +16,6 @@ import { ROUTING } from '@src/constants/routing';
 export type Props = {
   user: User | null;
   onClickSetting: () => void;
-  onClickSignIn: () => void;
   onClickSignOut: () => void;
   onClickDeleteAccount: () => void;
 };
@@ -23,19 +23,12 @@ export type Props = {
 const AccountMenu = ({
   user,
   onClickSetting,
-  onClickSignIn,
   onClickSignOut,
   onClickDeleteAccount,
 }: Props) => {
-  const handleClickSignIn = (e: React.SyntheticEvent<HTMLAnchorElement>) => {
-    e.stopPropagation();
-    e.preventDefault();
-    onClickSignIn();
-  };
-
   return (
     <List>
-      <ListItem button>
+      <ListItem button component={Link} to={ROUTING.about}>
         <ListItemIcon>
           <DescriptionIcon />
         </ListItemIcon>
@@ -58,12 +51,7 @@ const AccountMenu = ({
           </ListItem>
         </>
       ) : (
-        <ListItem
-          button
-          component={`a`}
-          href={ROUTING.auth}
-          onClick={handleClickSignIn}
-        >
+        <ListItem button component={Link} to={ROUTING.auth}>
           <ListItemIcon>
             <ArrowForwardIcon />
           </ListItemIcon>
@@ -71,10 +59,10 @@ const AccountMenu = ({
         </ListItem>
       )}
       <Divider />
-      <ListItem button>
+      <ListItem button component={Link} to={ROUTING.termsOfService}>
         <ListItemText primary="利用規約" />
       </ListItem>
-      <ListItem button>
+      <ListItem button component={Link} to={ROUTING.privacyPolicy}>
         <ListItemText primary="プライバシーポリシー" />
       </ListItem>
       {user && (

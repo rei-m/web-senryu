@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { Link } from 'gatsby';
 import MuiDrawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -9,6 +10,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import PersonIcon from '@material-ui/icons/Person';
 import PeopleIcon from '@material-ui/icons/People';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import DescriptionIcon from '@material-ui/icons/Description';
 import SettingsIcon from '@material-ui/icons/Settings';
 import makeStyles from '@src/styles/makeStyles';
 import UserProfile from '@src/components/organisms/UserProfile';
@@ -16,14 +18,11 @@ import { User } from '@src/domain';
 import { ROUTING } from '@src/constants/routing';
 import { APP_NAME } from '@src/constants';
 
-import { Link } from 'gatsby';
-
 export type Props = {
   isInitialDisplay: boolean;
   open: boolean;
   user: User | null;
   onClickSetting: () => void;
-  onClickLink: (to: string) => void;
   onClose: () => void;
 };
 
@@ -59,7 +58,6 @@ const Drawer = ({
   open,
   user,
   onClickSetting,
-  onClickLink,
   onClose,
 }: Props) => {
   const drawerProps = useMemo(() => {
@@ -80,12 +78,6 @@ const Drawer = ({
   }, [isInitialDisplay]);
 
   const classes = useStyles();
-
-  const handleClickLink = (e: React.SyntheticEvent<HTMLAnchorElement>) => {
-    e.stopPropagation();
-    e.preventDefault();
-    onClickLink(e.currentTarget.pathname);
-  };
 
   return (
     <MuiDrawer
@@ -110,12 +102,7 @@ const Drawer = ({
             <Divider />
           </>
         )}
-        <ListItem
-          button
-          component={`a`}
-          href={ROUTING.senryuNew}
-          onClick={handleClickLink}
-        >
+        <ListItem button component={Link} to={ROUTING.senryuNew}>
           <ListItemIcon>
             <EditIcon />
           </ListItemIcon>
@@ -124,9 +111,8 @@ const Drawer = ({
         {user && (
           <ListItem
             button
-            component={`a`}
-            href={ROUTING.usersShow.replace(`:id`, user.id)}
-            onClick={handleClickLink}
+            component={Link}
+            to={ROUTING.usersShow.replace(`:id`, user.id)}
           >
             <ListItemIcon>
               <PersonIcon />
@@ -134,12 +120,7 @@ const Drawer = ({
             <ListItemText primary="あなたの川柳" />
           </ListItem>
         )}
-        <ListItem
-          button
-          component={`a`}
-          href={ROUTING.senryu}
-          onClick={handleClickLink}
-        >
+        <ListItem button component={Link} to={ROUTING.senryu}>
           <ListItemIcon>
             <PeopleIcon />
           </ListItemIcon>
@@ -154,24 +135,20 @@ const Drawer = ({
             <ListItemText primary="投稿者設定" />
           </ListItem>
         ) : (
-          <ListItem
-            button
-            component={`a`}
-            href={ROUTING.auth}
-            onClick={handleClickLink}
-          >
+          <ListItem button component={Link} to={ROUTING.auth}>
             <ListItemIcon>
               <AccountCircleIcon />
             </ListItemIcon>
             <ListItemText primary="サインイン" />
           </ListItem>
         )}
-        <ListItem
-          button
-          component={`a`}
-          href={ROUTING.account}
-          onClick={handleClickLink}
-        >
+        <ListItem button component={Link} to={ROUTING.about}>
+          <ListItemIcon>
+            <DescriptionIcon />
+          </ListItemIcon>
+          <ListItemText primary="このサイトについて" />
+        </ListItem>
+        <ListItem button component={Link} to={ROUTING.account}>
           <ListItemIcon>
             <SettingsIcon />
           </ListItemIcon>
