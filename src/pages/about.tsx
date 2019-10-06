@@ -90,23 +90,6 @@ const AboutPage = () => {
               当サイトは@rei_mが個人で運営しています。不具合や要望等あればTwitterまでご連絡ください。
             </Txt>
           </Section>
-          <Section
-            heading={
-              <Heading
-                level={2}
-                visualLevel={1}
-                underline
-                className={classes.heading}
-              >
-                プライバシーポリシーについて
-              </Heading>
-            }
-            className={clsx(classes.section, classes.sectionMargin)}
-          >
-            <Txt size={`s`} tag="p" className={classes.paragraph}>
-              アカウント管理、サイトの利用状況の把握や広告配信のためにGoogleが提供しているサービスを利用しております。詳しくはこちら。
-            </Txt>
-          </Section>
         </>
       }
     />
