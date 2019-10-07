@@ -9,4 +9,5 @@ export const ROUTING = {
   termsOfService: '/terms/',
   auth: '/auth/',
   account: '/account/',
+  guideline: '/guideline/',
 } as const;
