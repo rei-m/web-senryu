@@ -55,7 +55,7 @@ const useStyles = makeStyles(theme => ({
       fontSize: '4rem',
       marginLeft: 'auto',
       marginRight: 'auto',
-      marginBottom: theme.spacing(0.5),
+      marginBottom: theme.spacing(1),
     },
   },
   label: {
@@ -65,7 +65,7 @@ const useStyles = makeStyles(theme => ({
     '&:after': {
       content: '""',
       width: '100%',
-      borderBottom: `4px double ${theme.palette.grey[500]}`,
+      borderBottom: `4px double ${theme.palette.grey[900]}`,
       position: 'absolute',
       bottom: theme.spacing(-1),
       left: 0,
