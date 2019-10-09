@@ -25,10 +25,10 @@ const useStyles = makeStyles(theme => ({
   },
   container: {
     marginTop: 56,
-    minHeight: 'calc(100vh - 216px)',
+    minHeight: 'calc(100vh - 186px)',
     [theme.breakpoints.up('sm')]: {
       marginTop: 64,
-      minHeight: 'calc(100vh - 224px)',
+      minHeight: 'calc(100vh - 194px)',
     },
   },
 }));

@@ -40,7 +40,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const SenryuPage = ({ navigate }: Props) => {
+const SenryuPage = ({ navigate, location }: Props) => {
   const authUser = useAuthUser();
   const {
     senryuList,
@@ -51,8 +51,12 @@ const SenryuPage = ({ navigate }: Props) => {
     fetchNextPage,
     deleteSenryu,
   } = useSenryuList();
-  const [currentSenryu, displaySenryu] = useState<null | Senryu>(null);
-  const [isSenryuModalOpen, openSenryuModal, closeSenryuModal] = useBool(false);
+  const [currentSenryu, displaySenryu] = useState<null | Senryu>(
+    location && location.state ? location.state : null
+  );
+  const [isSenryuModalOpen, openSenryuModal, closeSenryuModal] = useBool(
+    currentSenryu !== null
+  );
   const handleClickSenryu = (senryu: Senryu) => {
     displaySenryu(senryu);
     openSenryuModal();

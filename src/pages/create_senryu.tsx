@@ -89,7 +89,7 @@ export const Container = ({ navigate, presenter }: ContainerProps) => {
     // TODO: エラーハンドリング
     const id = await createSenryu(value);
     if (navigate) {
-      navigate(ROUTING.senryuShow.replace(':id', id));
+      navigate(ROUTING.senryu, { state: { ...value, id } });
     }
   };
 

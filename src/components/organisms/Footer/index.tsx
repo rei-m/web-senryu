@@ -25,6 +25,8 @@ const useStyles = makeStyles(theme => ({
     borderTop: `1px solid ${theme.palette.divider}`,
     backgroundColor: theme.palette.primary.main,
     padding: theme.spacing(4, 6),
+    minHeight: 130,
+    boxSizing: 'border-box',
   },
   heading: {
     textAlign: 'left',
