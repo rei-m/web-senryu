@@ -3,6 +3,7 @@ import { RouteComponentProps } from '@reach/router';
 import makeStyles from '@src/styles/makeStyles';
 import SingleContentPageTemplate from '@src/components/templates/SingleContentPageTemplate';
 import SenryuList from '@src/components/organisms/SenryuList';
+import SenryuListEmpty from '@src/components/organisms/SenryuListEmpty';
 import SenryuModal from '@src/components/organisms/SenryuModal';
 import MoreButton from '@src/components/molecules/MoreButton';
 import Progress from '@src/components/atoms/Progress';
@@ -21,6 +22,9 @@ const useStyles = makeStyles(theme => ({
   },
   more: {
     marginTop: theme.spacing(2),
+  },
+  emptyMessage: {
+    marginTop: theme.spacing(4),
   },
   error: {
     color: theme.palette.error.main,
@@ -70,11 +74,15 @@ const SenryuPage = ({ navigate }: Props) => {
             <Txt className={classes.error}>{error.message}</Txt>
           ) : senryuList ? (
             <>
-              <SenryuList
-                senryuList={senryuList}
-                totalCount={totalCount}
-                onClickSenryu={handleClickSenryu}
-              />
+              {0 < senryuList.length ? (
+                <SenryuList
+                  senryuList={senryuList}
+                  totalCount={totalCount}
+                  onClickSenryu={handleClickSenryu}
+                />
+              ) : (
+                <SenryuListEmpty className={classes.emptyMessage} />
+              )}
               {hasNextPage && (
                 <div className={classes.more}>
                   {isMoreLoading ? (
