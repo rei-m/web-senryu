@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { RouteComponentProps } from '@reach/router';
+import { Divider } from '@material-ui/core';
 import makeStyles from '@src/styles/makeStyles';
 import SingleContentPageTemplate from '@src/components/templates/SingleContentPageTemplate';
 import UserProfile from '@src/components/organisms/UserProfile';
 import UserSettingDialog from '@src/components/organisms/UserSettingDialog';
 import SenryuList from '@src/components/organisms/SenryuList';
+import SenryuListEmpty from '@src/components/organisms/SenryuListEmpty';
 import SenryuModal from '@src/components/organisms/SenryuModal';
+import EditFab from '@src/components/molecules/EditFab';
 import AccountButton from '@src/components/molecules/AccountButton';
 import MoreButton from '@src/components/molecules/MoreButton';
 import Progress from '@src/components/atoms/Progress';
@@ -36,6 +39,17 @@ const useStyles = makeStyles(theme => ({
   more: {
     marginTop: theme.spacing(2),
   },
+  emptyMessage: {
+    marginTop: theme.spacing(4),
+  },
+  fab: {
+    position: 'fixed',
+    right: theme.spacing(2),
+    bottom: theme.spacing(2),
+    [theme.breakpoints.up('sm')]: {
+      display: 'none',
+    },
+  },
   error: {
     color: theme.palette.error.main,
   },
@@ -43,6 +57,7 @@ const useStyles = makeStyles(theme => ({
 
 const UsersShowPage = ({ id, navigate }: Props) => {
   const authUser = useAuthUser();
+
   const { updateProfile } = useUpdateProfile();
 
   const {
@@ -55,17 +70,21 @@ const UsersShowPage = ({ id, navigate }: Props) => {
     fetchNextPage,
     deleteSenryu,
   } = useUserSenryuList(id);
+
   const [currentSenryu, displaySenryu] = useState<null | Senryu>(null);
+
   const [isSenryuModalOpen, openSenryuModal, closeSenryuModal] = useBool(false);
-  const handleClickSenryu = (senryu: Senryu) => {
-    displaySenryu(senryu);
-    openSenryuModal();
-  };
+
   const [isSettingDialogOpen, openSettingDialog, closeSettingDialog] = useBool(
     false
   );
 
   const classes = useStyles();
+
+  const handleClickSenryu = (senryu: Senryu) => {
+    displaySenryu(senryu);
+    openSenryuModal();
+  };
 
   const handleClickPostProfile = (user: User) => {
     updateProfile(user);
@@ -83,7 +102,14 @@ const UsersShowPage = ({ id, navigate }: Props) => {
     deleteSenryu(senryuId);
   };
 
-  // TODO: メタ情報見直す
+  const handleClickFab = (e: React.MouseEvent<{}>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (navigate) {
+      navigate(ROUTING.senryuNew);
+    }
+  };
+
   return (
     <SingleContentPageTemplate
       user={authUser}
@@ -111,11 +137,23 @@ const UsersShowPage = ({ id, navigate }: Props) => {
               ) : (
                 <UserProfile user={user} />
               )}
-              <SenryuList
-                senryuList={senryuList}
-                totalCount={totalCount}
-                onClickSenryu={handleClickSenryu}
-              />
+              <Divider />
+              {0 < senryuList.length ? (
+                <>
+                  <SenryuList
+                    senryuList={senryuList}
+                    totalCount={totalCount}
+                    onClickSenryu={handleClickSenryu}
+                  />
+                  <EditFab
+                    href={ROUTING.senryuNew}
+                    onClick={handleClickFab}
+                    className={classes.fab}
+                  />
+                </>
+              ) : (
+                <SenryuListEmpty className={classes.emptyMessage} />
+              )}
               {hasNextPage && (
                 <div className={classes.more}>
                   {isMoreLoading ? (
