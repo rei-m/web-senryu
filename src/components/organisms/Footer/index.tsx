@@ -22,10 +22,9 @@ export type ContainerProps = Props & {
 
 const useStyles = makeStyles(theme => ({
   root: {
-    height: 160,
     borderTop: `1px solid ${theme.palette.divider}`,
     backgroundColor: theme.palette.primary.main,
-    padding: theme.spacing(6),
+    padding: theme.spacing(4, 6),
   },
   heading: {
     textAlign: 'left',
@@ -39,6 +38,9 @@ const useStyles = makeStyles(theme => ({
     '& > li': {
       marginRight: theme.spacing(1),
       color: theme.palette.text.secondary,
+    },
+    '& > li:last-child': {
+      marginBottom: 0,
     },
     [theme.breakpoints.up('sm')]: {
       flexDirection: 'row',

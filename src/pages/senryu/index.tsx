@@ -5,6 +5,7 @@ import SingleContentPageTemplate from '@src/components/templates/SingleContentPa
 import SenryuList from '@src/components/organisms/SenryuList';
 import SenryuListEmpty from '@src/components/organisms/SenryuListEmpty';
 import SenryuModal from '@src/components/organisms/SenryuModal';
+import EditFab from '@src/components/molecules/EditFab';
 import MoreButton from '@src/components/molecules/MoreButton';
 import Progress from '@src/components/atoms/Progress';
 import Txt from '@src/components/atoms/Txt';
@@ -25,6 +26,14 @@ const useStyles = makeStyles(theme => ({
   },
   emptyMessage: {
     marginTop: theme.spacing(4),
+  },
+  fab: {
+    position: 'fixed',
+    right: theme.spacing(2),
+    bottom: theme.spacing(2),
+    [theme.breakpoints.up('sm')]: {
+      display: 'none',
+    },
   },
   error: {
     color: theme.palette.error.main,
@@ -60,6 +69,14 @@ const SenryuPage = ({ navigate }: Props) => {
     deleteSenryu(senryuId);
   };
 
+  const handleClickFab = (e: React.MouseEvent<{}>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (navigate) {
+      navigate(ROUTING.senryuNew);
+    }
+  };
+
   const classes = useStyles();
 
   // TODO: メタ情報見直す
@@ -75,11 +92,18 @@ const SenryuPage = ({ navigate }: Props) => {
           ) : senryuList ? (
             <>
               {0 < senryuList.length ? (
-                <SenryuList
-                  senryuList={senryuList}
-                  totalCount={totalCount}
-                  onClickSenryu={handleClickSenryu}
-                />
+                <>
+                  <SenryuList
+                    senryuList={senryuList}
+                    totalCount={totalCount}
+                    onClickSenryu={handleClickSenryu}
+                  />
+                  <EditFab
+                    href={ROUTING.senryuNew}
+                    onClick={handleClickFab}
+                    className={classes.fab}
+                  />
+                </>
               ) : (
                 <SenryuListEmpty className={classes.emptyMessage} />
               )}
