@@ -13,6 +13,7 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import DescriptionIcon from '@material-ui/icons/Description';
 import SettingsIcon from '@material-ui/icons/Settings';
 import makeStyles from '@src/styles/makeStyles';
+import Logo from '@src/components/atoms/Logo';
 import UserProfile from '@src/components/organisms/UserProfile';
 import { User } from '@src/domain';
 import { ROUTING } from '@src/constants/routing';
@@ -35,6 +36,9 @@ const useStyles = makeStyles(theme => ({
     boxShadow: theme.shadows[4],
     display: 'flex',
     alignItems: 'center',
+  },
+  logo: {
+    marginRight: theme.spacing(1),
   },
   rootLink: {
     display: 'flex',
@@ -89,6 +93,7 @@ const Drawer = ({
     >
       <List disablePadding>
         <div className={classes.toolbar}>
+          <Logo className={classes.logo} />
           <Link to={ROUTING.root} className={classes.rootLink}>
             {APP_NAME}
           </Link>

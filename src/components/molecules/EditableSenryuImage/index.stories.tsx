@@ -2,7 +2,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import EditableSenryuImage from './index';
-import gatsbyIcon from '@src/images/gatsby-icon.png';
+import appIcon from '@src/images/app-icon.png';
 
 storiesOf('molecules/EditableSenryuImage', module)
   .add('no image', () => (
@@ -16,7 +16,7 @@ storiesOf('molecules/EditableSenryuImage', module)
   ))
   .add('exist image', () => (
     <EditableSenryuImage
-      src={gatsbyIcon}
+      src={appIcon}
       alt="test"
       size={150}
       onClickNoImage={action('onClickNoImage')}
