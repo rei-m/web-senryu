@@ -38,7 +38,7 @@ const renderTxt = (
     size = `m`,
     className,
   }: React.PropsWithChildren<Props>,
-  ref: React.Ref<HTMLSpanElement>
+  ref: React.Ref<any>
 ) => {
   const classes = useStyles();
   const Tag = tag;

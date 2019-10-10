@@ -24,6 +24,10 @@ const useStyles = makeStyles(theme => ({
   more: {
     marginTop: theme.spacing(2),
   },
+  flashMessage: {
+    padding: theme.spacing(4, 2),
+    color: theme.palette.primary.dark,
+  },
   emptyMessage: {
     marginTop: theme.spacing(4),
   },
@@ -51,9 +55,7 @@ const SenryuPage = ({ navigate, location }: Props) => {
     fetchNextPage,
     deleteSenryu,
   } = useSenryuList();
-  const [currentSenryu, displaySenryu] = useState<null | Senryu>(
-    location && location.state ? location.state : null
-  );
+  const [currentSenryu, displaySenryu] = useState<null | Senryu>(null);
   const [isSenryuModalOpen, openSenryuModal, closeSenryuModal] = useBool(
     currentSenryu !== null
   );
@@ -95,6 +97,11 @@ const SenryuPage = ({ navigate, location }: Props) => {
             <Txt className={classes.error}>{error.message}</Txt>
           ) : senryuList ? (
             <>
+              {location && location.state.message && (
+                <div className={classes.flashMessage}>
+                  <Txt>{location.state.message}</Txt>
+                </div>
+              )}
               {0 < senryuList.length ? (
                 <>
                   <SenryuList

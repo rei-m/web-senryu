@@ -36,6 +36,9 @@ const useStyles = makeStyles(theme => ({
       marginLeft: theme.spacing(2),
     },
   },
+  list: {
+    marginTop: theme.spacing(2),
+  },
   more: {
     marginTop: theme.spacing(2),
   },
@@ -144,6 +147,7 @@ const UsersShowPage = ({ id, navigate }: Props) => {
                     senryuList={senryuList}
                     totalCount={totalCount}
                     onClickSenryu={handleClickSenryu}
+                    className={classes.list}
                   />
                   <EditFab
                     href={ROUTING.senryuNew}

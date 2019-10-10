@@ -87,9 +87,9 @@ export const Container = ({ navigate, presenter }: ContainerProps) => {
   const handleClickPost = async (value: SenryuDraft) => {
     // setState({ ...state, openConfirm: false });
     // TODO: エラーハンドリング
-    const id = await createSenryu(value);
+    await createSenryu(value);
     if (navigate) {
-      navigate(ROUTING.senryu, { state: { ...value, id } });
+      navigate(ROUTING.senryu, { state: { message: '投稿に成功しました！' } });
     }
   };
 
