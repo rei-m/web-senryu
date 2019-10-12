@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
   fab: {
     position: 'fixed',
     right: theme.spacing(2),
-    bottom: theme.spacing(2),
+    bottom: theme.spacing(9),
     [theme.breakpoints.up('sm')]: {
       display: 'none',
     },
