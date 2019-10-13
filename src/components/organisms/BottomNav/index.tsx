@@ -11,9 +11,11 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import makeStyles from '@src/styles/makeStyles';
 import { User } from '@src/domain';
 import { ROUTING } from '@src/constants/routing';
+import { NavMenu } from '@src/constants';
 
 export type Props = {
   user?: User | null;
+  navMenu?: NavMenu;
   className?: string;
 };
 

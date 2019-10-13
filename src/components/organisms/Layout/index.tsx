@@ -11,10 +11,12 @@ import { User } from '@src/domain';
 import { useBool } from '@src/hooks/useBool';
 import { useUpdateProfile } from '@src/hooks/useUpdateProfile';
 import { ThemeInterface } from '@src/styles/theme';
+import { NavMenu } from '@src/constants';
 
 export type Props = {
   user?: User | null;
   title: string;
+  navMenu?: NavMenu;
 };
 
 const useStyles = makeStyles(theme => ({
@@ -38,11 +40,14 @@ const useStyles = makeStyles(theme => ({
     position: 'fixed',
     width: '100%',
     bottom: 0,
+    boxShadow: theme.shadows['4'],
+    zIndex: 1,
   },
 }));
 
-const Layout: React.FC<Props> = ({ user, title, children }) => {
+const Layout: React.FC<Props> = ({ user, title, navMenu, children }) => {
   const { updateProfile } = useUpdateProfile();
+  // 途中でハンバーガーメニューからBottomNavへ切り替えた変更の名残
   const [isOpenDrawer, openDrawer, closeDrawer] = useBool(false);
   const [isSettingDialogOpen, openSettingDialog, closeSettingDialog] = useBool(
     false
@@ -83,7 +88,11 @@ const Layout: React.FC<Props> = ({ user, title, children }) => {
       {isDisplayDrawer ? (
         <Footer className={classes.width} />
       ) : (
-        <BottomNav user={user} className={classes.bottomNav} />
+        <BottomNav
+          user={user}
+          navMenu={navMenu}
+          className={classes.bottomNav}
+        />
       )}
 
       {user && (
