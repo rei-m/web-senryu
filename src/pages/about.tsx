@@ -9,6 +9,7 @@ import Txt from '@src/components/atoms/Txt';
 import { useAuthUser } from '@src/hooks/useAuthUser';
 import { useSiteMetaData } from '@src/hooks/useSiteMetaData';
 import { ROUTING } from '@src/constants/routing';
+import { NavMenu } from '@src/constants';
 
 const useStyles = makeStyles(theme => ({
   section: {
@@ -39,6 +40,7 @@ const AboutPage = () => {
       user={user}
       title={`${site.siteMetadata.title}について`}
       description={`${site.siteMetadata.title}についての紹介です。${site.siteMetadata.description}`}
+      navMenu={NavMenu.About}
       content={
         <>
           <Section

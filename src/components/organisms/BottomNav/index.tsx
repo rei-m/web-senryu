@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import clsx from 'clsx';
 import { Link } from 'gatsby';
 import BottomNavigation from '@material-ui/core/BottomNavigation';
@@ -24,25 +24,39 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.primary.main,
   },
   action: {
+    color: `${theme.palette.text.secondary} !important`, // 手抜きでごめんちょ
     textDecoration: 'none',
     '&:hover': {
       textDecoration: 'none',
     },
   },
   selected: {
-    color: `${theme.palette.getContrastText(
-      theme.palette.primary.main
-    )} !important`, // 手抜きでごめんちょ
+    color: `${theme.palette.text.primary} !important`, // 手抜きでごめんちょ
   },
 }));
 
-const BottomNav = ({ user, className }: Props) => {
+const NavMenuToValue = {
+  [NavMenu.Top]: undefined,
+  [NavMenu.CreateSenryu]: 0,
+  [NavMenu.MySenryu]: 1,
+  [NavMenu.SenryuList]: 2,
+  [NavMenu.SignIn]: 1,
+  [NavMenu.About]: 3,
+  [NavMenu.Settings]: 3,
+};
+
+const BottomNav = ({ user, navMenu, className }: Props) => {
+  const value = useMemo(() => (navMenu ? NavMenuToValue[navMenu] : undefined), [
+    navMenu,
+  ]);
+
   const classes = useStyles();
 
   return (
     <BottomNavigation
       showLabels
       component="nav"
+      value={value}
       className={clsx(classes.root, className)}
     >
       <BottomNavigationAction
@@ -60,6 +74,7 @@ const BottomNav = ({ user, className }: Props) => {
           component={Link}
           to={ROUTING.usersShow.replace(`:id`, user.id)}
           className={classes.action}
+          classes={{ selected: classes.selected }}
         />
       ) : (
         <BottomNavigationAction
@@ -68,6 +83,7 @@ const BottomNav = ({ user, className }: Props) => {
           component={Link}
           to={ROUTING.auth}
           className={classes.action}
+          classes={{ selected: classes.selected }}
         />
       )}
       <BottomNavigationAction
@@ -76,6 +92,7 @@ const BottomNav = ({ user, className }: Props) => {
         component={Link}
         to={ROUTING.senryu}
         className={classes.action}
+        classes={{ selected: classes.selected }}
       />
       <BottomNavigationAction
         label="管理・他"
@@ -83,6 +100,7 @@ const BottomNav = ({ user, className }: Props) => {
         component={Link}
         to={ROUTING.account}
         className={classes.action}
+        classes={{ selected: classes.selected }}
       />
     </BottomNavigation>
   );

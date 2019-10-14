@@ -13,6 +13,7 @@ import { useAuthUser } from '@src/hooks/useAuthUser';
 import { useUpdateProfile } from '@src/hooks/useUpdateProfile';
 import { useSignOut } from '@src/hooks/useSignOut';
 import { useDeleteAccount } from '@src/hooks/useDeleteAccount';
+import { NavMenu } from '@src/constants';
 
 export type Props = RouteComponentProps;
 
@@ -44,6 +45,7 @@ export const AccountPagePresenter = ({
   <NoIndexPageTemplate
     title={`管理`}
     user={user}
+    navMenu={NavMenu.Settings}
     content={
       <>
         <AccountMenu

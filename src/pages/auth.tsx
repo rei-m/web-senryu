@@ -5,6 +5,7 @@ import firebase from 'firebase/app';
 import NoIndexPageTemplate from '@src/components/templates/NoIndexPageTemplate';
 import { useAuthUser } from '@src/hooks/useAuthUser';
 import { ROUTING } from '@src/constants/routing';
+import { NavMenu } from '@src/constants';
 
 export type Props = RouteComponentProps;
 
@@ -35,6 +36,7 @@ const uiConfig = {
 export const AuthPagePresenter = ({ signInSuccessUrl }: PresenterProps) => (
   <NoIndexPageTemplate
     title={`サインイン`}
+    navMenu={NavMenu.SignIn}
     content={
       <StyledFirebaseAuth
         uiConfig={{ ...uiConfig, signInSuccessUrl }}

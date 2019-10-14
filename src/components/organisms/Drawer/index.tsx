@@ -55,6 +55,9 @@ const useStyles = makeStyles(theme => ({
   drawerPaper: {
     width: theme.drawerWidth,
   },
+  active: {
+    backgroundColor: theme.palette.grey['100'],
+  },
 }));
 
 const Drawer = ({
@@ -107,7 +110,12 @@ const Drawer = ({
             <Divider />
           </>
         )}
-        <ListItem button component={Link} to={ROUTING.senryuNew}>
+        <ListItem
+          button
+          component={Link}
+          to={ROUTING.senryuNew}
+          activeClassName={classes.active}
+        >
           <ListItemIcon>
             <EditIcon />
           </ListItemIcon>
@@ -118,6 +126,7 @@ const Drawer = ({
             button
             component={Link}
             to={ROUTING.usersShow.replace(`:id`, user.id)}
+            activeClassName={classes.active}
           >
             <ListItemIcon>
               <PersonIcon />
@@ -125,7 +134,12 @@ const Drawer = ({
             <ListItemText primary="あなたの川柳" />
           </ListItem>
         )}
-        <ListItem button component={Link} to={ROUTING.senryu}>
+        <ListItem
+          button
+          component={Link}
+          to={ROUTING.senryu}
+          activeClassName={classes.active}
+        >
           <ListItemIcon>
             <PeopleIcon />
           </ListItemIcon>
@@ -140,20 +154,35 @@ const Drawer = ({
             <ListItemText primary="投稿者設定" />
           </ListItem>
         ) : (
-          <ListItem button component={Link} to={ROUTING.auth}>
+          <ListItem
+            button
+            component={Link}
+            to={ROUTING.auth}
+            activeClassName={classes.active}
+          >
             <ListItemIcon>
               <AccountCircleIcon />
             </ListItemIcon>
             <ListItemText primary="サインイン" />
           </ListItem>
         )}
-        <ListItem button component={Link} to={ROUTING.about}>
+        <ListItem
+          button
+          component={Link}
+          to={ROUTING.about}
+          activeClassName={classes.active}
+        >
           <ListItemIcon>
             <DescriptionIcon />
           </ListItemIcon>
           <ListItemText primary="このサイトについて" />
         </ListItem>
-        <ListItem button component={Link} to={ROUTING.account}>
+        <ListItem
+          button
+          component={Link}
+          to={ROUTING.account}
+          activeClassName={classes.active}
+        >
           <ListItemIcon>
             <SettingsIcon />
           </ListItemIcon>

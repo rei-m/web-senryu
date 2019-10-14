@@ -5,9 +5,9 @@ export const OWNER_EMAIL = 'reim.dev@gmail.com';
 export enum NavMenu {
   Top,
   CreateSenryu,
+  MySenryu,
   SenryuList,
   SignIn,
-  MySenryu,
   About,
   Settings,
 }

@@ -14,6 +14,7 @@ import { useAuthUser } from '@src/hooks/useAuthUser';
 import { useSenryuList } from '@src/hooks/useSenryuList';
 import { Senryu, UserId, SenryuId } from '@src/domain';
 import { ROUTING } from '@src/constants/routing';
+import { NavMenu } from '@src/constants';
 
 export type Props = RouteComponentProps;
 
@@ -91,6 +92,7 @@ const SenryuPage = ({ navigate, location }: Props) => {
       user={authUser}
       title={`みんなの川柳`}
       description={''}
+      navMenu={NavMenu.SenryuList}
       content={
         <div className={classes.root}>
           {error ? (

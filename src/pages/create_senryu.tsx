@@ -9,6 +9,7 @@ import { SenryuDraft, User } from '@src/domain';
 import { useAuthUser } from '@src/hooks/useAuthUser';
 import { useCreateSenryu } from '@src/hooks/useCreateSenryu';
 import { ROUTING } from '@src/constants/routing';
+import { NavMenu } from '@src/constants';
 
 export type Props = RouteComponentProps;
 
@@ -54,6 +55,7 @@ export const Presenter = ({
     <NoIndexPageTemplate
       user={user}
       title={`投稿`}
+      navMenu={NavMenu.CreateSenryu}
       content={
         user !== undefined && !isLoading ? (
           <>
