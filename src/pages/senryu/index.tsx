@@ -14,6 +14,7 @@ import { useAuthUser } from '@src/hooks/useAuthUser';
 import { useSenryuList } from '@src/hooks/useSenryuList';
 import { Senryu, UserId, SenryuId } from '@src/domain';
 import { ROUTING } from '@src/constants/routing';
+import { NavMenu } from '@src/constants';
 
 export type Props = RouteComponentProps;
 
@@ -24,13 +25,17 @@ const useStyles = makeStyles(theme => ({
   more: {
     marginTop: theme.spacing(2),
   },
+  flashMessage: {
+    padding: theme.spacing(4, 2),
+    color: theme.palette.primary.dark,
+  },
   emptyMessage: {
     marginTop: theme.spacing(4),
   },
   fab: {
     position: 'fixed',
     right: theme.spacing(2),
-    bottom: theme.spacing(2),
+    bottom: theme.spacing(9),
     [theme.breakpoints.up('sm')]: {
       display: 'none',
     },
@@ -40,7 +45,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const SenryuPage = ({ navigate }: Props) => {
+const SenryuPage = ({ navigate, location }: Props) => {
   const authUser = useAuthUser();
   const {
     senryuList,
@@ -52,7 +57,9 @@ const SenryuPage = ({ navigate }: Props) => {
     deleteSenryu,
   } = useSenryuList();
   const [currentSenryu, displaySenryu] = useState<null | Senryu>(null);
-  const [isSenryuModalOpen, openSenryuModal, closeSenryuModal] = useBool(false);
+  const [isSenryuModalOpen, openSenryuModal, closeSenryuModal] = useBool(
+    currentSenryu !== null
+  );
   const handleClickSenryu = (senryu: Senryu) => {
     displaySenryu(senryu);
     openSenryuModal();
@@ -85,12 +92,18 @@ const SenryuPage = ({ navigate }: Props) => {
       user={authUser}
       title={`みんなの川柳`}
       description={''}
+      navMenu={NavMenu.SenryuList}
       content={
         <div className={classes.root}>
           {error ? (
             <Txt className={classes.error}>{error.message}</Txt>
           ) : senryuList ? (
             <>
+              {location && location.state.message && (
+                <div className={classes.flashMessage}>
+                  <Txt>{location.state.message}</Txt>
+                </div>
+              )}
               {0 < senryuList.length ? (
                 <>
                   <SenryuList

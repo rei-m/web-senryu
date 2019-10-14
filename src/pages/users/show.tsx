@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { RouteComponentProps } from '@reach/router';
 import { Divider } from '@material-ui/core';
 import makeStyles from '@src/styles/makeStyles';
@@ -19,6 +19,7 @@ import { useUpdateProfile } from '@src/hooks/useUpdateProfile';
 import { useUserSenryuList } from '@src/hooks/useUserSenryuList';
 import { User, Senryu, UserId, SenryuId } from '@src/domain';
 import { ROUTING } from '@src/constants/routing';
+import { NavMenu } from '@src/constants';
 
 export type Props = {
   id: string;
@@ -36,6 +37,9 @@ const useStyles = makeStyles(theme => ({
       marginLeft: theme.spacing(2),
     },
   },
+  list: {
+    marginTop: theme.spacing(2),
+  },
   more: {
     marginTop: theme.spacing(2),
   },
@@ -45,7 +49,7 @@ const useStyles = makeStyles(theme => ({
   fab: {
     position: 'fixed',
     right: theme.spacing(2),
-    bottom: theme.spacing(2),
+    bottom: theme.spacing(9),
     [theme.breakpoints.up('sm')]: {
       display: 'none',
     },
@@ -57,6 +61,10 @@ const useStyles = makeStyles(theme => ({
 
 const UsersShowPage = ({ id, navigate }: Props) => {
   const authUser = useAuthUser();
+
+  const isOwnPage = useMemo(() => {
+    return !!authUser && authUser.id === id;
+  }, [authUser]);
 
   const { updateProfile } = useUpdateProfile();
 
@@ -115,27 +123,24 @@ const UsersShowPage = ({ id, navigate }: Props) => {
       user={authUser}
       title={user ? `${user.ryugou}の川柳` : `よみ人知らず`}
       description={``}
+      navMenu={isOwnPage ? NavMenu.MySenryu : NavMenu.SenryuList}
       content={
         <div className={classes.root}>
           {error ? (
             <Txt className={classes.error}>{error.message}</Txt>
           ) : senryuList && user ? (
             <>
-              {!!authUser && authUser.id === user.id ? (
-                <>
-                  <UserProfile user={authUser} />
-                  <div className={classes.buttonBox}>
-                    <AccountButton
-                      size={`small`}
-                      iconSize={`1.6rem`}
-                      onClick={openSettingDialog}
-                    >
-                      投稿者設定
-                    </AccountButton>
-                  </div>
-                </>
-              ) : (
-                <UserProfile user={user} />
+              <UserProfile user={user} />
+              {isOwnPage && (
+                <div className={classes.buttonBox}>
+                  <AccountButton
+                    size={`small`}
+                    iconSize={`1.6rem`}
+                    onClick={openSettingDialog}
+                  >
+                    投稿者設定
+                  </AccountButton>
+                </div>
               )}
               <Divider />
               {0 < senryuList.length ? (
@@ -144,6 +149,7 @@ const UsersShowPage = ({ id, navigate }: Props) => {
                     senryuList={senryuList}
                     totalCount={totalCount}
                     onClickSenryu={handleClickSenryu}
+                    className={classes.list}
                   />
                   <EditFab
                     href={ROUTING.senryuNew}

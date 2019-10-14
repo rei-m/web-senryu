@@ -6,6 +6,7 @@ import Progress from '@src/components/atoms/Progress';
 import Txt from '@src/components/atoms/Txt';
 import { useAuthUser } from '@src/hooks/useAuthUser';
 import { useSenryu } from '@src/hooks/useSenryu';
+import { NavMenu } from '@src/constants';
 
 export type Props = {
   id: string;
@@ -37,6 +38,7 @@ const SenryuShowPage = ({ id }: Props) => {
       user={user}
       title={`川柳`}
       description={''}
+      navMenu={NavMenu.SenryuList}
       content={
         <div className={classes.root}>
           {error ? (

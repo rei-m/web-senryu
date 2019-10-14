@@ -9,6 +9,7 @@ import { SenryuDraft, User } from '@src/domain';
 import { useAuthUser } from '@src/hooks/useAuthUser';
 import { useCreateSenryu } from '@src/hooks/useCreateSenryu';
 import { ROUTING } from '@src/constants/routing';
+import { NavMenu } from '@src/constants';
 
 export type Props = RouteComponentProps;
 
@@ -54,6 +55,7 @@ export const Presenter = ({
     <NoIndexPageTemplate
       user={user}
       title={`投稿`}
+      navMenu={NavMenu.CreateSenryu}
       content={
         user !== undefined && !isLoading ? (
           <>
@@ -87,9 +89,9 @@ export const Container = ({ navigate, presenter }: ContainerProps) => {
   const handleClickPost = async (value: SenryuDraft) => {
     // setState({ ...state, openConfirm: false });
     // TODO: エラーハンドリング
-    const id = await createSenryu(value);
+    await createSenryu(value);
     if (navigate) {
-      navigate(ROUTING.senryuShow.replace(':id', id));
+      navigate(ROUTING.senryu, { state: { message: '投稿に成功しました！' } });
     }
   };
 

@@ -107,6 +107,7 @@ export class SenryuRepositoryData implements SenryuRepository {
   }
 
   async add(senryu: SenryuDraft) {
+    // Transactionでまとめようと思ったけどDocId自前で生成する必要がる + そこまで厳密に整合性求めなくてもいいとこ（と思うことにした）なのでそのまま
     try {
       const data = {
         jouku: senryu.jouku,
@@ -121,6 +122,20 @@ export class SenryuRepositoryData implements SenryuRepository {
       };
 
       const senryuRef = await senryuCollection().add(data);
+
+      await aggregateCollection()
+        .doc('count')
+        .update({
+          senryu: firebase.firestore.FieldValue.increment(1),
+        });
+
+      if (senryu.userId) {
+        await userCollection()
+          .doc(senryu.userId)
+          .update({
+            senryuCount: firebase.firestore.FieldValue.increment(1),
+          });
+      }
 
       if (senryu.imageUrl) {
         const response = await axios.get(senryu.imageUrl, {
@@ -145,8 +160,25 @@ export class SenryuRepositoryData implements SenryuRepository {
   }
 
   async delete(senryuId: SenryuId) {
-    return await senryuCollection()
+    const senryu = await senryuCollection()
       .doc(senryuId)
-      .delete();
+      .get();
+
+    const senryuData = senryu.data();
+
+    if (senryuData) {
+      const userDoc = await senryuData.user.ref.get();
+      await userDoc.ref.update({
+        senryuCount: firebase.firestore.FieldValue.increment(-1),
+      });
+    }
+
+    await aggregateCollection()
+      .doc('count')
+      .update({
+        senryu: firebase.firestore.FieldValue.increment(-1),
+      });
+
+    await senryu.ref.delete();
   }
 }
