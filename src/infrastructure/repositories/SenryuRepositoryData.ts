@@ -107,7 +107,7 @@ export class SenryuRepositoryData implements SenryuRepository {
   }
 
   async add(senryu: SenryuDraft) {
-    // Transactionでまとめようと思ったけどDocId自前で生成する必要がる + そこまで厳密に整合性求めなくてもいいとこなのでそのまま
+    // Transactionでまとめようと思ったけどDocId自前で生成する必要がる + そこまで厳密に整合性求めなくてもいいとこ（と思うことにした）なのでそのまま
     try {
       const data = {
         jouku: senryu.jouku,

@@ -13,11 +13,9 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import DescriptionIcon from '@material-ui/icons/Description';
 import SettingsIcon from '@material-ui/icons/Settings';
 import makeStyles from '@src/styles/makeStyles';
-import Logo from '@src/components/atoms/Logo';
 import UserProfile from '@src/components/organisms/UserProfile';
 import { User } from '@src/domain';
 import { ROUTING } from '@src/constants/routing';
-import { APP_NAME } from '@src/constants';
 
 export type Props = {
   isInitialDisplay: boolean;
@@ -95,12 +93,7 @@ const Drawer = ({
       {...drawerProps}
     >
       <List disablePadding>
-        <div className={classes.toolbar}>
-          <Logo className={classes.logo} />
-          <Link to={ROUTING.root} className={classes.rootLink}>
-            {APP_NAME}
-          </Link>
-        </div>
+        <div className={classes.toolbar} />
         <Divider />
         {user && (
           <>
