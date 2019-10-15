@@ -12,11 +12,33 @@ import Txt from '@src/components/atoms/Txt';
 import { useBool } from '@src/hooks/useBool';
 import { useAuthUser } from '@src/hooks/useAuthUser';
 import { useSenryuList } from '@src/hooks/useSenryuList';
-import { Senryu, UserId, SenryuId } from '@src/domain';
+import { Senryu, UserId, SenryuId, User } from '@src/domain';
 import { ROUTING } from '@src/constants/routing';
 import { NavMenu } from '@src/constants';
 
 export type Props = RouteComponentProps;
+
+export type PresenterProps = {
+  authUser?: User | null;
+  senryuList?: Array<Senryu>;
+  totalCount: number;
+  hasNextPage: boolean;
+  isMoreLoading: boolean;
+  isSenryuModalOpen: boolean;
+  currentSenryu: Senryu | null;
+  flashMessage?: string;
+  error: Error | null;
+  onClickSenryu: (senryu: Senryu) => void;
+  onClickMore: () => void;
+  onClickUserName: (userId: UserId) => void;
+  onClickDeleteSenryu: (senryuId: SenryuId) => void;
+  onCloseSenryuModal: () => void;
+  onClickFab: (e: React.MouseEvent<{}>) => void;
+};
+
+export type ContainerProps = Props & {
+  presenter: (props: PresenterProps) => React.ReactElement;
+};
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -45,7 +67,93 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const SenryuPage = ({ navigate, location }: Props) => {
+export const Presenter = ({
+  authUser,
+  senryuList,
+  totalCount,
+  hasNextPage,
+  isMoreLoading,
+  isSenryuModalOpen,
+  currentSenryu,
+  flashMessage,
+  error,
+  onClickSenryu,
+  onClickMore,
+  onClickUserName,
+  onClickDeleteSenryu,
+  onCloseSenryuModal,
+  onClickFab,
+}: PresenterProps) => {
+  const classes = useStyles();
+  return (
+    <SingleContentPageTemplate
+      user={authUser}
+      title={`みんなの川柳`}
+      description={`楽々川柳は誰でも簡単に川柳を投稿することができるサイトです。こちらでは楽々川柳に投稿された川柳を見ることができます。`}
+      navMenu={NavMenu.SenryuList}
+      content={
+        <div className={classes.root}>
+          {error ? (
+            <Txt className={classes.error}>{error.message}</Txt>
+          ) : senryuList ? (
+            <>
+              {flashMessage && (
+                <div className={classes.flashMessage}>
+                  <Txt>{flashMessage}</Txt>
+                </div>
+              )}
+              {0 < senryuList.length ? (
+                <>
+                  <SenryuList
+                    senryuList={senryuList}
+                    totalCount={totalCount}
+                    onClickSenryu={onClickSenryu}
+                  />
+                  <EditFab
+                    href={ROUTING.senryuNew}
+                    onClick={onClickFab}
+                    className={classes.fab}
+                  />
+                </>
+              ) : (
+                <SenryuListEmpty className={classes.emptyMessage} />
+              )}
+              {hasNextPage && (
+                <div className={classes.more}>
+                  {isMoreLoading ? (
+                    <Progress />
+                  ) : (
+                    <MoreButton onClick={onClickMore} />
+                  )}
+                </div>
+              )}
+              <SenryuModal
+                open={isSenryuModalOpen}
+                senryu={currentSenryu}
+                canDelete={
+                  currentSenryu && authUser
+                    ? currentSenryu.userId === authUser.id
+                    : false
+                }
+                onClickUserName={onClickUserName}
+                onClickDelete={onClickDeleteSenryu}
+                onClose={onCloseSenryuModal}
+              />
+            </>
+          ) : (
+            <Progress />
+          )}
+        </div>
+      }
+    />
+  );
+};
+
+export const Container = ({
+  navigate,
+  location,
+  presenter,
+}: ContainerProps) => {
   const authUser = useAuthUser();
   const {
     senryuList,
@@ -84,71 +192,28 @@ const SenryuPage = ({ navigate, location }: Props) => {
     }
   };
 
-  const classes = useStyles();
-
-  // TODO: メタ情報見直す
-  return (
-    <SingleContentPageTemplate
-      user={authUser}
-      title={`みんなの川柳`}
-      description={''}
-      navMenu={NavMenu.SenryuList}
-      content={
-        <div className={classes.root}>
-          {error ? (
-            <Txt className={classes.error}>{error.message}</Txt>
-          ) : senryuList ? (
-            <>
-              {location && location.state.message && (
-                <div className={classes.flashMessage}>
-                  <Txt>{location.state.message}</Txt>
-                </div>
-              )}
-              {0 < senryuList.length ? (
-                <>
-                  <SenryuList
-                    senryuList={senryuList}
-                    totalCount={totalCount}
-                    onClickSenryu={handleClickSenryu}
-                  />
-                  <EditFab
-                    href={ROUTING.senryuNew}
-                    onClick={handleClickFab}
-                    className={classes.fab}
-                  />
-                </>
-              ) : (
-                <SenryuListEmpty className={classes.emptyMessage} />
-              )}
-              {hasNextPage && (
-                <div className={classes.more}>
-                  {isMoreLoading ? (
-                    <Progress />
-                  ) : (
-                    <MoreButton onClick={fetchNextPage} />
-                  )}
-                </div>
-              )}
-              <SenryuModal
-                open={isSenryuModalOpen}
-                senryu={currentSenryu}
-                canDelete={
-                  currentSenryu && authUser
-                    ? currentSenryu.userId === authUser.id
-                    : false
-                }
-                onClickUserName={handleClickUserName}
-                onClickDelete={handleClickDeleteSenryu}
-                onClose={closeSenryuModal}
-              />
-            </>
-          ) : (
-            <Progress />
-          )}
-        </div>
-      }
-    />
-  );
+  return presenter({
+    authUser,
+    senryuList,
+    totalCount,
+    hasNextPage,
+    isMoreLoading,
+    isSenryuModalOpen,
+    currentSenryu,
+    flashMessage:
+      location && location.state.message ? location.state.message : undefined,
+    error,
+    onClickSenryu: handleClickSenryu,
+    onClickMore: fetchNextPage,
+    onClickUserName: handleClickUserName,
+    onClickDeleteSenryu: handleClickDeleteSenryu,
+    onCloseSenryuModal: closeSenryuModal,
+    onClickFab: handleClickFab,
+  });
 };
+
+const SenryuPage = (props: Props) => (
+  <Container {...props} presenter={Presenter} />
+);
 
 export default SenryuPage;
