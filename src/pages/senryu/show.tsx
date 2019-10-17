@@ -32,7 +32,7 @@ const SenryuShowPage = ({ id }: Props) => {
   const { senryu, error } = useSenryu(id);
   const classes = useStyles();
 
-  // TODO: メタ情報見直す
+  // TODO: 未使用。シェア用のURL発行する機能作るときにちゃんと作る
   return (
     <SingleContentPageTemplate
       user={user}

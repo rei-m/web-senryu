@@ -1,4 +1,5 @@
 import React from 'react';
+import clsx from 'clsx';
 import makeStyles from '@src/styles/makeStyles';
 import Txt from '@src/components/atoms/Txt';
 import { User } from '@src/domain';
@@ -20,10 +21,10 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const UserProfile = ({ user }: Props) => {
+const UserProfile = ({ user, className }: Props) => {
   const classes = useStyles();
   return (
-    <div className={classes.root}>
+    <div className={clsx(classes.root, className)}>
       <div className={classes.label}>
         <Txt size={`sss`}>投稿者</Txt>
       </div>

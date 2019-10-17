@@ -89,7 +89,7 @@ export const Presenter = ({
     <SingleContentPageTemplate
       user={authUser}
       title={`みんなの川柳`}
-      description={`楽々川柳は誰でも簡単に川柳を投稿することができるサイトです。こちらでは楽々川柳に投稿された川柳を見ることができます。`}
+      description={`こちらでは楽々川柳に投稿された川柳を見ることができます。楽々川柳は誰でも簡単に川柳を投稿することができるサイトです。`}
       navMenu={NavMenu.SenryuList}
       content={
         <div className={classes.root}>
