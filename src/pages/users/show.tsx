@@ -113,9 +113,9 @@ export const Presenter = ({
     <SingleContentPageTemplate
       user={authUser}
       title={user ? `${user.ryugou}の川柳` : `よみ人知らず`}
-      description={`こちらでは${
+      description={`${
         user ? user.ryugou : 'よみ人知らず'
-      }が楽々川柳に投稿した川柳を見ることができます。楽々川柳は誰でも簡単に川柳を投稿することができるサイトです。`}
+      }が楽々川柳に投稿した川柳です。楽々川柳は誰でも簡単に川柳を投稿することができるサイトです。`}
       navMenu={isOwnPage ? NavMenu.MySenryu : NavMenu.SenryuList}
       content={
         <div className={classes.root}>
