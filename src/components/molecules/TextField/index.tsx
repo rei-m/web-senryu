@@ -24,12 +24,15 @@ export type Props = {
   className?: string;
 };
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(theme => ({
   helperText: {
     textAlign: 'left',
   },
   helperTextCounter: {
     textAlign: 'right',
+  },
+  textField: {
+    backgroundColor: theme.palette.grey[50],
   },
 }));
 
@@ -87,6 +90,9 @@ const TextField = ({
         ) : (
           undefined
         ),
+        classes: {
+          root: classes.textField,
+        },
       }}
       className={className}
       FormHelperTextProps={{

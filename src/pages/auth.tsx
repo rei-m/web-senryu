@@ -1,5 +1,5 @@
 import React from 'react';
-import { RouteComponentProps } from '@reach/router';
+import { RouteComponentProps, Redirect } from '@reach/router';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase from 'firebase/app';
 import NoIndexPageTemplate from '@src/components/templates/NoIndexPageTemplate';
@@ -46,13 +46,10 @@ export const AuthPagePresenter = ({ signInSuccessUrl }: PresenterProps) => (
   />
 );
 
-export const AuthPageContainer = ({ presenter, navigate }: ContainerProps) => {
+export const AuthPageContainer = ({ presenter }: ContainerProps) => {
   const authUser = useAuthUser();
   if (authUser) {
-    if (navigate) {
-      navigate(ROUTING.root, { replace: true });
-    }
-    return <div />;
+    return <Redirect to={ROUTING.root} replace />;
   }
 
   return presenter({

@@ -32,7 +32,7 @@ export type ContainerProps = Props & {
   presenter: (props: PresenterProps) => React.ReactElement;
 };
 
-export const AccountPagePresenter = ({
+export const Presenter = ({
   user,
   isSettingDialogOpen,
   alertDialog,
@@ -68,7 +68,7 @@ export const AccountPagePresenter = ({
   />
 );
 
-export const AccountPageContainer = ({ presenter }: ContainerProps) => {
+export const Container = ({ presenter }: ContainerProps) => {
   const authUser = useAuthUser();
   const [isSettingDialogOpen, openSettingDialog, closeSettingDialog] = useBool(
     false
@@ -145,7 +145,7 @@ export const AccountPageContainer = ({ presenter }: ContainerProps) => {
 };
 
 const AccountPage = (props: Props) => (
-  <AccountPageContainer {...props} presenter={AccountPagePresenter} />
+  <Container {...props} presenter={Presenter} />
 );
 
 export default AccountPage;

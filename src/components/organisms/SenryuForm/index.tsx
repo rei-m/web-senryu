@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import clsx from 'clsx';
 import makeStyles from '@src/styles/makeStyles';
+import Txt from '@src/components/atoms/Txt';
 import TextField from '@src/components/molecules/TextField';
 import ConfirmTextField from '@src/components/molecules/ConfirmTextField';
 import EditableSenryuImage from '@src/components/molecules/EditableSenryuImage';
@@ -56,6 +58,13 @@ const useStyles = makeStyles(theme => ({
   fieldMargin: {
     marginTop: theme.spacing(2),
   },
+  fieldDoubleMargin: {
+    marginTop: theme.spacing(4),
+  },
+  imageLabelContainer: {
+    textAlign: 'left',
+    color: theme.palette.text.secondary,
+  },
 }));
 
 const validator: { [key: string]: (value: string) => null | string } = {
@@ -95,6 +104,7 @@ export const Presenter = ({
         maxLength={KU_LENGTH}
         onChange={onChangeField}
         error={formError['jouku']}
+        className={classes.textField}
       />
       <TextField
         id="chuuku"
@@ -119,14 +129,20 @@ export const Presenter = ({
         className={classes.fieldMargin}
       />
       {isAuthorized && (
-        <EditableSenryuImage
-          src={imageUrl}
-          alt="投稿画像"
-          size={144}
-          onClickNoImage={onClickOpenSetImage}
-          onClickRemoveImage={onRemovetImage}
-          className={classes.fieldMargin}
-        />
+        <>
+          <div
+            className={clsx(classes.fieldMargin, classes.imageLabelContainer)}
+          >
+            <Txt size={`ss`}>投稿画像</Txt>
+          </div>
+          <EditableSenryuImage
+            src={imageUrl}
+            alt="投稿画像"
+            size={144}
+            onClickNoImage={onClickOpenSetImage}
+            onClickRemoveImage={onRemovetImage}
+          />
+        </>
       )}
       <SenryuImageDialog
         open={imageDialogOpen}
@@ -141,7 +157,7 @@ export const Presenter = ({
         maxLength={COMMENT_LENGTH}
         onChange={onChangeField}
         error={formError['comment']}
-        className={classes.fieldMargin}
+        className={classes.fieldDoubleMargin}
       />
       <ConfirmTextField
         label="柳号"

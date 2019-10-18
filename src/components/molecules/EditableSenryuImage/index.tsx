@@ -18,6 +18,7 @@ const useStyles = makeStyles(theme => ({
   root: {
     position: 'relative',
     backgroundColor: grey[500],
+    borderRadius: theme.spacing(1),
   },
   image: {
     borderRadius: theme.spacing(1),
