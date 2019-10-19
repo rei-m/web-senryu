@@ -60,8 +60,8 @@ const useStyles = makeStyles(theme => ({
   },
   cancelIcon: {
     position: 'absolute',
-    top: 0,
-    right: 0,
+    top: 4,
+    right: 4,
     cursor: 'pointer',
     color: theme.palette.text.secondary,
   },

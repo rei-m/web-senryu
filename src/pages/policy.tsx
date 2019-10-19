@@ -35,13 +35,13 @@ const useStyles = makeStyles(theme => ({
     },
     '& dt': {
       fontWeight: 'normal',
-      fontSize: theme.fontSize.s,
+      fontSize: theme.fontSize.ss,
     },
     '& dd': {
       marginTop: theme.spacing(0.5),
       marginBottom: theme.spacing(0.5),
       marginLeft: theme.spacing(4),
-      fontSize: theme.fontSize.s,
+      fontSize: theme.fontSize.ss,
       display: 'list-item',
     },
   },
@@ -53,7 +53,7 @@ const useStyles = makeStyles(theme => ({
       marginLeft: theme.spacing(2),
       marginTop: theme.spacing(0.5),
       marginBottom: theme.spacing(0.5),
-      fontSize: theme.fontSize.s,
+      fontSize: theme.fontSize.ss,
       display: 'list-item',
       listStyleType: 'decimal',
     },
@@ -74,8 +74,8 @@ const PolicyPage = () => {
           <Section
             heading={
               <Heading
-                level={2}
-                visualLevel={1}
+                level={3}
+                visualLevel={3}
                 underline
                 className={classes.heading}
               >
@@ -84,15 +84,15 @@ const PolicyPage = () => {
             }
             className={clsx(classes.section)}
           >
-            <Txt size={`s`} tag="p" className={classes.paragraph}>
+            <Txt size={`ss`} tag="p" className={classes.paragraph}>
               {`${site.siteMetadata.title}の運営者（以下「運営者」といいます。）は${site.siteMetadata.title}（以下「本サービス」といいます。）におけるユーザーについての個人情報を含む利用者情報の取扱いについて、以下のとおりプライバシーポリシー（以下「本ポリシー」といいます。）を定めます。`}
             </Txt>
           </Section>
           <Section
             heading={
               <Heading
-                level={2}
-                visualLevel={1}
+                level={3}
+                visualLevel={3}
                 underline
                 className={classes.heading}
               >
@@ -101,7 +101,7 @@ const PolicyPage = () => {
             }
             className={clsx(classes.section, classes.sectionMargin)}
           >
-            <Txt size={`s`} tag="p" className={classes.paragraph}>
+            <Txt size={`ss`} tag="p" className={classes.paragraph}>
               本ポリシーにおいて、「利用者情報」とは、ユーザーの識別に係る情報、通信サービス上の行動履歴、その他ユーザーのスマートフォン、PC等の端末においてユーザーまたはユーザーの端末に関連して生成または蓄積された情報であって、本ポリシーに基づき本サービスが収集するものを意味するものとします。本サービスにおける利用者情報は、その収集方法に応じて、以下のようなものとなります。
             </Txt>
             <dl className={classes.descriptionList}>
@@ -138,7 +138,7 @@ const PolicyPage = () => {
           <Section
             heading={
               <Heading
-                level={2}
+                level={3}
                 visualLevel={1}
                 underline
                 className={classes.heading}
@@ -148,7 +148,7 @@ const PolicyPage = () => {
             }
             className={clsx(classes.section, classes.sectionMargin)}
           >
-            <Txt size={`s`} tag="p" className={classes.paragraph}>
+            <Txt size={`ss`} tag="p" className={classes.paragraph}>
               運営者が個人情報を収集利用する主な目的は、以下のとおりです。
             </Txt>
             <ol className={classes.orderedList}>
@@ -168,8 +168,8 @@ const PolicyPage = () => {
           <Section
             heading={
               <Heading
-                level={2}
-                visualLevel={1}
+                level={3}
+                visualLevel={3}
                 underline
                 className={classes.heading}
               >
@@ -178,15 +178,15 @@ const PolicyPage = () => {
             }
             className={clsx(classes.section, classes.sectionMargin)}
           >
-            <Txt size={`s`} tag="p" className={classes.paragraph}>
+            <Txt size={`ss`} tag="p" className={classes.paragraph}>
               運営者は、利用目的が変更前と関連性を有すると合理的に認められる場合に限り、個人情報の利用目的を変更するものとします。
             </Txt>
           </Section>
           <Section
             heading={
               <Heading
-                level={2}
-                visualLevel={1}
+                level={3}
+                visualLevel={3}
                 underline
                 className={classes.heading}
               >
@@ -215,8 +215,8 @@ const PolicyPage = () => {
           <Section
             heading={
               <Heading
-                level={2}
-                visualLevel={1}
+                level={3}
+                visualLevel={3}
                 underline
                 className={classes.heading}
               >
@@ -225,7 +225,7 @@ const PolicyPage = () => {
             }
             className={clsx(classes.section, classes.sectionMargin)}
           >
-            <Txt size={`s`} tag="p" className={classes.paragraph}>
+            <Txt size={`ss`} tag="p" className={classes.paragraph}>
               運営者は、本人から個人情報の開示を求められたときは、本人に対し、遅滞なくこれを開示します。ただし、開示することにより次のいずれかに該当する場合は、その全部または一部を開示しないこともあり、開示しない決定をした場合には、その旨を遅滞なく通知します。
             </Txt>
             <ol className={classes.orderedList}>
@@ -239,8 +239,8 @@ const PolicyPage = () => {
           <Section
             heading={
               <Heading
-                level={2}
-                visualLevel={1}
+                level={3}
+                visualLevel={3}
                 underline
                 className={classes.heading}
               >
@@ -264,8 +264,8 @@ const PolicyPage = () => {
           <Section
             heading={
               <Heading
-                level={2}
-                visualLevel={1}
+                level={3}
+                visualLevel={3}
                 underline
                 className={classes.heading}
               >
@@ -292,8 +292,8 @@ const PolicyPage = () => {
           <Section
             heading={
               <Heading
-                level={2}
-                visualLevel={1}
+                level={3}
+                visualLevel={3}
                 underline
                 className={classes.heading}
               >
@@ -314,8 +314,8 @@ const PolicyPage = () => {
           <Section
             heading={
               <Heading
-                level={2}
-                visualLevel={1}
+                level={3}
+                visualLevel={3}
                 underline
                 className={classes.heading}
               >
@@ -324,10 +324,10 @@ const PolicyPage = () => {
             }
             className={clsx(classes.section, classes.sectionMargin)}
           >
-            <Txt size={`s`} tag="p" className={classes.paragraph}>
+            <Txt size={`ss`} tag="p" className={classes.paragraph}>
               本ポリシーに関するお問い合わせは、下記の窓口までお願いいたします。
             </Txt>
-            <Txt size={`s`} tag="p" className={classes.paragraph}>
+            <Txt size={`ss`} tag="p" className={classes.paragraph}>
               {`Eメールアドレス：${OWNER_EMAIL}`}
             </Txt>
           </Section>

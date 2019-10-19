@@ -133,7 +133,7 @@ export const Presenter = ({
           <div
             className={clsx(classes.fieldMargin, classes.imageLabelContainer)}
           >
-            <Txt size={`ss`}>投稿画像</Txt>
+            <Txt size={`ss`}>画像</Txt>
           </div>
           <EditableSenryuImage
             src={imageUrl}

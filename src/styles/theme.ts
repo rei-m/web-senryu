@@ -37,10 +37,10 @@ export const muiTheme = createMuiTheme({
   overrides: {
     MuiTypography: {
       body1: {
-        fontSize: appTheme.fontSize.m,
+        fontSize: appTheme.fontSize.s,
       },
       body2: {
-        fontSize: appTheme.fontSize.s,
+        fontSize: appTheme.fontSize.ss,
       },
     },
     MuiContainer: {
@@ -50,7 +50,7 @@ export const muiTheme = createMuiTheme({
     },
     MuiButton: {
       root: {
-        fontSize: appTheme.fontSize.m,
+        fontSize: appTheme.fontSize.s,
         textTransform: 'none',
       },
       sizeSmall: {
