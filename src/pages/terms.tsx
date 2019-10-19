@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => ({
     },
     '& dt': {
       fontWeight: 'normal',
-      fontSize: theme.fontSize.s,
+      fontSize: theme.fontSize.ss,
       position: 'relative',
       '&:before': {
         content: '"・"',
@@ -53,7 +53,7 @@ const useStyles = makeStyles(theme => ({
       marginLeft: theme.spacing(2),
       marginTop: theme.spacing(0.5),
       marginBottom: theme.spacing(0.5),
-      fontSize: theme.fontSize.s,
+      fontSize: theme.fontSize.ss,
       display: 'list-item',
       listStyleType: 'decimal',
     },
@@ -74,8 +74,8 @@ const TermsPage = () => {
           <Section
             heading={
               <Heading
-                level={2}
-                visualLevel={1}
+                level={3}
+                visualLevel={3}
                 underline
                 className={classes.heading}
               >
@@ -84,15 +84,15 @@ const TermsPage = () => {
             }
             className={clsx(classes.section)}
           >
-            <Txt size={`s`} tag="p" className={classes.paragraph}>
+            <Txt size={`ss`} tag="p" className={classes.paragraph}>
               {`この利用規約（以下「本規約」といいます。）は、${site.siteMetadata.title}の運営者（以下「運営者」といいます。）がこのウェブサイト上で提供するサービス（以下「本サービス」といいます。）の利用条件を定めるものです。本サービスを利用するユーザーの皆さま（以下「ユーザー」といいます。）には、本規約に従って、本サービスをご利用いただきます。`}
             </Txt>
           </Section>
           <Section
             heading={
               <Heading
-                level={2}
-                visualLevel={1}
+                level={3}
+                visualLevel={3}
                 underline
                 className={classes.heading}
               >
@@ -119,8 +119,8 @@ const TermsPage = () => {
           <Section
             heading={
               <Heading
-                level={2}
-                visualLevel={1}
+                level={3}
+                visualLevel={3}
                 underline
                 className={classes.heading}
               >
@@ -144,8 +144,8 @@ const TermsPage = () => {
           <Section
             heading={
               <Heading
-                level={2}
-                visualLevel={1}
+                level={3}
+                visualLevel={3}
                 underline
                 className={classes.heading}
               >
@@ -154,7 +154,7 @@ const TermsPage = () => {
             }
             className={clsx(classes.section, classes.sectionMargin)}
           >
-            <Txt size={`s`} tag="p" className={classes.paragraph}>
+            <Txt size={`ss`} tag="p" className={classes.paragraph}>
               ユーザーは、本サービスの利用にあたり、以下の各号の行為、またはそのおそれがある行為をしてはなりません。運営者は、ユーザーによる情報の送信行為が以下の各号のいずれかに該当、またはそのおそれがあると判断した場合には、ユーザーに事前に通知することなく、当該情報の全部または一部を削除することができるものとします。その場合、削除等に関する質問苦情は一切受け付けておりません。また、運営者は、本条に基づき運営者が行った措置に関連してユーザーに損害が生じたとしても一切の責任を負いません。
             </Txt>
             <ol className={classes.orderedList}>
@@ -211,8 +211,8 @@ const TermsPage = () => {
           <Section
             heading={
               <Heading
-                level={2}
-                visualLevel={1}
+                level={3}
+                visualLevel={3}
                 underline
                 className={classes.heading}
               >
@@ -243,8 +243,8 @@ const TermsPage = () => {
           <Section
             heading={
               <Heading
-                level={2}
-                visualLevel={1}
+                level={3}
+                visualLevel={3}
                 underline
                 className={classes.heading}
               >
@@ -268,8 +268,8 @@ const TermsPage = () => {
           <Section
             heading={
               <Heading
-                level={2}
-                visualLevel={1}
+                level={3}
+                visualLevel={3}
                 underline
                 className={classes.heading}
               >
@@ -303,8 +303,8 @@ const TermsPage = () => {
           <Section
             heading={
               <Heading
-                level={2}
-                visualLevel={1}
+                level={3}
+                visualLevel={3}
                 underline
                 className={classes.heading}
               >
@@ -313,15 +313,15 @@ const TermsPage = () => {
             }
             className={clsx(classes.section, classes.sectionMargin)}
           >
-            <Txt size={`s`} tag="p" className={classes.paragraph}>
+            <Txt size={`ss`} tag="p" className={classes.paragraph}>
               ユーザーは、運営者の定める退会手続により、本サービスから退会できるものとします。
             </Txt>
           </Section>
           <Section
             heading={
               <Heading
-                level={2}
-                visualLevel={1}
+                level={3}
+                visualLevel={3}
                 underline
                 className={classes.heading}
               >
@@ -348,8 +348,8 @@ const TermsPage = () => {
           <Section
             heading={
               <Heading
-                level={2}
-                visualLevel={1}
+                level={3}
+                visualLevel={3}
                 underline
                 className={classes.heading}
               >
@@ -358,15 +358,15 @@ const TermsPage = () => {
             }
             className={clsx(classes.section, classes.sectionMargin)}
           >
-            <Txt size={`s`} tag="p" className={classes.paragraph}>
+            <Txt size={`ss`} tag="p" className={classes.paragraph}>
               運営者は、ユーザーに通知することなく、本サービスの内容を変更しまたは本サービスの提供を中止することができるものとし、これによってユーザーに生じた損害について一切の責任を負いません。
             </Txt>
           </Section>
           <Section
             heading={
               <Heading
-                level={2}
-                visualLevel={1}
+                level={3}
+                visualLevel={3}
                 underline
                 className={classes.heading}
               >
@@ -375,15 +375,15 @@ const TermsPage = () => {
             }
             className={clsx(classes.section, classes.sectionMargin)}
           >
-            <Txt size={`s`} tag="p" className={classes.paragraph}>
+            <Txt size={`ss`} tag="p" className={classes.paragraph}>
               運営者は、必要と判断した場合には、ユーザーに通知することなくいつでも本規約を変更することができるものとします。なお、本規約の変更後、本サービスの利用を開始した場合には、当該ユーザーは変更後の規約に同意したものとみなします。
             </Txt>
           </Section>
           <Section
             heading={
               <Heading
-                level={2}
-                visualLevel={1}
+                level={3}
+                visualLevel={3}
                 underline
                 className={classes.heading}
               >
@@ -392,7 +392,7 @@ const TermsPage = () => {
             }
             className={clsx(classes.section, classes.sectionMargin)}
           >
-            <Txt size={`s`} tag="p" className={classes.paragraph}>
+            <Txt size={`ss`} tag="p" className={classes.paragraph}>
               運営者は、本サービスの利用によって取得する個人情報については、「
               <a href={ROUTING.privacyPolicy}>プライバシーポリシー</a>
               」に従い適切に取り扱うものとします。
@@ -401,8 +401,8 @@ const TermsPage = () => {
           <Section
             heading={
               <Heading
-                level={2}
-                visualLevel={1}
+                level={3}
+                visualLevel={3}
                 underline
                 className={classes.heading}
               >
@@ -411,15 +411,15 @@ const TermsPage = () => {
             }
             className={clsx(classes.section, classes.sectionMargin)}
           >
-            <Txt size={`s`} tag="p" className={classes.paragraph}>
+            <Txt size={`ss`} tag="p" className={classes.paragraph}>
               ユーザーと運営者との間の通知または連絡は、運営者の定める方法によって行うものとします。運営者は、ユーザーから、運営者が別途定める方式に従った変更届け出がない限り、現在登録されている連絡先が有効なものとみなして当該連絡先へ通知または連絡を行い、これらは発信時にユーザーへ到達したものとみなします。
             </Txt>
           </Section>
           <Section
             heading={
               <Heading
-                level={2}
-                visualLevel={1}
+                level={3}
+                visualLevel={3}
                 underline
                 className={classes.heading}
               >
@@ -428,15 +428,15 @@ const TermsPage = () => {
             }
             className={clsx(classes.section, classes.sectionMargin)}
           >
-            <Txt size={`s`} tag="p" className={classes.paragraph}>
+            <Txt size={`ss`} tag="p" className={classes.paragraph}>
               ユーザーは、利用契約上の地位または本規約に基づく権利もしくは義務を第三者に譲渡し、または担保に供することはできません。
             </Txt>
           </Section>
           <Section
             heading={
               <Heading
-                level={2}
-                visualLevel={1}
+                level={3}
+                visualLevel={3}
                 underline
                 className={classes.heading}
               >

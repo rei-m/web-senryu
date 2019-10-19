@@ -5,11 +5,13 @@ import NoIndexPageTemplate from '@src/components/templates/NoIndexPageTemplate';
 import SenryuForm from '@src/components/organisms/SenryuForm';
 import SenryuConfirmDialog from '@src/components/organisms/SenryuConfirmDialog';
 import Progress from '@src/components/atoms/Progress';
+import Txt from '@src/components/atoms/Txt';
 import { SenryuDraft, User } from '@src/domain';
 import { useAuthUser } from '@src/hooks/useAuthUser';
 import { useCreateSenryu } from '@src/hooks/useCreateSenryu';
 import { ROUTING } from '@src/constants/routing';
 import { NavMenu } from '@src/constants';
+import { theme } from '@src/styles/theme';
 
 export type Props = RouteComponentProps;
 
@@ -33,6 +35,13 @@ export type State = {
 };
 
 const useStyles = makeStyles(() => ({
+  cautionContainer: {
+    textAlign: 'left',
+    color: theme.palette.text.secondary,
+  },
+  form: {
+    marginTop: theme.spacing(2),
+  },
   progressContainer: {
     display: `flex`,
     justifyContent: `center`,
@@ -59,7 +68,24 @@ export const Presenter = ({
       content={
         user !== undefined && !isLoading ? (
           <>
-            <SenryuForm user={user} onSubmit={onSubmitForm} />
+            <div className={classes.cautionContainer}>
+              <Txt size="ss">
+                ※
+                <a
+                  href={ROUTING.guideline}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  ガイドライン
+                </a>
+                を守って投稿してください
+              </Txt>
+            </div>
+            <SenryuForm
+              user={user}
+              onSubmit={onSubmitForm}
+              className={classes.form}
+            />
             <SenryuConfirmDialog
               open={openConfirmDialog}
               senryu={senryu}
