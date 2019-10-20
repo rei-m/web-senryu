@@ -3,12 +3,13 @@ import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
 import Paper from '@material-ui/core/Paper';
-import CancelIcon from '@material-ui/icons/Cancel';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import MuiButton from '@material-ui/core/Button';
 import makeStyles from '@src/styles/makeStyles';
 import Heading from '@src/components/atoms/Heading';
 import JpDate from '@src/components/atoms/JpDate';
 import ConfirmTextField from '@src/components/molecules/ConfirmTextField';
-import DeleteButton from '@src/components/molecules/DeleteButton';
+import CloseButton from '@src/components/molecules/CloseButton';
 import AlertDialog from '@src/components/molecules/AlertDialog';
 import SenryuFuda from '@src/components/organisms/SenryuFuda';
 import { Senryu, UserId, SenryuId } from '@src/domain';
@@ -69,6 +70,30 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(2),
     textAlign: 'center',
   },
+  menu: {
+    position: 'absolute',
+    top: 28,
+    right: 8,
+    backgroundColor: 'white',
+    padding: theme.spacing(1),
+    boxShadow: theme.elevation(2),
+    '& > :nth-child(n+2)': {
+      marginTop: theme.spacing(1),
+    },
+    '& > :last-child': {
+      marginBottom: 0,
+    },
+  },
+  menuButton: {
+    fontSize: theme.fontSize.ss,
+  },
+  overlay: {
+    position: 'fixed',
+    height: '100vh',
+    width: '100vw',
+    top: 0,
+    left: 0,
+  },
 }));
 
 const SenryuModal = ({
@@ -79,7 +104,13 @@ const SenryuModal = ({
   onClickDelete,
   onClose,
 }: Props) => {
+  const [isMenuOpen, openMenu, closeMenu] = useBool(false);
+
   const [isConfirmDialogOpen, openConfirmDialog, closeConfirmDialog] = useBool(
+    false
+  );
+
+  const [isReportDialogOpen, openReportDialog, closeReportDialog] = useBool(
     false
   );
 
@@ -138,19 +169,46 @@ const SenryuModal = ({
               )}
               {canDelete && (
                 <div className={classes.deleteButtonContainer}>
-                  <DeleteButton
+                  <CloseButton
                     iconSize={`small`}
                     size={`small`}
-                    color={`secondary`}
-                    onClick={openConfirmDialog}
+                    onClick={onClose}
                   >
-                    削除する
-                  </DeleteButton>
+                    閉じる
+                  </CloseButton>
                 </div>
               )}
             </article>
           )}
-          <CancelIcon className={classes.cancelIcon} onClick={onClose} />
+          <MoreVertIcon className={classes.cancelIcon} onClick={openMenu} />
+          {isMenuOpen && (
+            <>
+              <div className={classes.overlay} onClick={closeMenu} />
+              <ul className={classes.menu}>
+                {canDelete && (
+                  <li>
+                    <MuiButton
+                      size="small"
+                      variant="text"
+                      onClick={openConfirmDialog}
+                      className={classes.menuButton}
+                    >
+                      投稿削除
+                    </MuiButton>
+                  </li>
+                )}
+                <li onClick={() => window.alert(111)}>
+                  <MuiButton
+                    size="small"
+                    variant="text"
+                    className={classes.menuButton}
+                  >
+                    違反報告
+                  </MuiButton>
+                </li>
+              </ul>
+            </>
+          )}
           <AlertDialog
             open={isConfirmDialogOpen}
             dialogTitle={`削除確認`}
