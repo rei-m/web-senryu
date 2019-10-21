@@ -7,6 +7,7 @@ export const SENRYU_1: Senryu = {
   geku: '雨宿り',
   ryugou: '柄井川柳',
   imageUrl: null,
+  comment: null,
   userId: 'mRE11qpK9KVCoNdxOj4JNZrPyvd2',
   createdAt: 1568818696489,
 };

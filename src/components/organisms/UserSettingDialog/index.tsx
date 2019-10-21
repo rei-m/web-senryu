@@ -10,6 +10,10 @@ import Heading from '@src/components/atoms/Heading';
 import TextField from '@src/components/molecules/TextField';
 import { User, UninitializedUser } from '@src/domain';
 import { isIncludeBlank } from '@src/utils';
+import {
+  USER_RYUGOU_LENGTH,
+  USER_DESCRIPTION_LENGTH,
+} from '@src/domain/constant';
 
 export type Props = {
   open: boolean;
@@ -57,12 +61,15 @@ const validateRyugou = (value: string): string | undefined => {
   if (isIncludeBlank(value)) {
     return '空文字は入力できません';
   }
+  if (USER_RYUGOU_LENGTH < value.length) {
+    return `${USER_RYUGOU_LENGTH}文字以下で入力してください`;
+  }
   return undefined;
 };
 
 const validateDescription = (value: string): string | undefined => {
-  if (80 < value.length) {
-    return '80文字以下で入力してください';
+  if (USER_DESCRIPTION_LENGTH < value.length) {
+    return `${USER_DESCRIPTION_LENGTH}文字以下で入力してください`;
   }
   return undefined;
 };

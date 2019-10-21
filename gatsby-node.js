@@ -23,8 +23,6 @@ const { resolve } = require('path');
 
 const config = require('./gatsby-node-impl');
 
-// exports.createPages = config.createPages;
-
 exports.onCreatePage = config.onCreatePage;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

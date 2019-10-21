@@ -59,7 +59,6 @@ const useStyles = makeStyles<{ width: number; size: `s` | `m` | `l` | `ll` }>(
       writingMode: `vertical-rl`,
       textOrientation: 'upright',
       wordBreak: 'keep-all',
-      height: '100%',
     },
     first: () => ({
       textAlign: 'start',
