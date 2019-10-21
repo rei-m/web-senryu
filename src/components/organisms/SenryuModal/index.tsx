@@ -125,6 +125,7 @@ const SenryuModal = ({
 
   const handleClickConfrimDelete = () => {
     closeConfirmDialog();
+    closeMenu();
     if (senryu) {
       onClickDelete(senryu.id);
     }

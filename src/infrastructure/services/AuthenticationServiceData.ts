@@ -99,6 +99,7 @@ export class AuthenticationServiceData implements AuthenticationService {
   }
 
   async delete() {
+    // TODO: https://firebase.google.com/docs/auth/web/manage-users?hl=ja#re-authenticate_a_user
     const currentUser = firebase.auth().currentUser;
     if (currentUser) {
       await currentUser.delete();

@@ -61,7 +61,7 @@ const TextField = ({
   ) : maxLength ? (
     <Counter size={`ss`} current={value.length} maximum={maxLength} />
   ) : (
-    undefined
+    <Txt size={`ss`}></Txt>
   );
   return (
     <MuiTextField
