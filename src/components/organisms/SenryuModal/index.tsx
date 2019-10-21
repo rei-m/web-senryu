@@ -12,9 +12,10 @@ import ConfirmTextField from '@src/components/molecules/ConfirmTextField';
 import CloseButton from '@src/components/molecules/CloseButton';
 import AlertDialog from '@src/components/molecules/AlertDialog';
 import SenryuFuda from '@src/components/organisms/SenryuFuda';
+import ReportDialog from '@src/components/organisms/ReportDialog';
+import { useBool } from '@src/hooks/useBool';
 import { Senryu, UserId, SenryuId } from '@src/domain';
 import { ROUTING } from '@src/constants/routing';
-import { useBool } from '@src/hooks/useBool';
 
 export type Props = {
   open: boolean;
@@ -197,10 +198,11 @@ const SenryuModal = ({
                     </MuiButton>
                   </li>
                 )}
-                <li onClick={() => window.alert(111)}>
+                <li>
                   <MuiButton
                     size="small"
                     variant="text"
+                    onClick={openReportDialog}
                     className={classes.menuButton}
                   >
                     違反報告
@@ -217,6 +219,11 @@ const SenryuModal = ({
             negativeButtonLabel={`戻る`}
             onClickPositive={handleClickConfrimDelete}
             onClose={closeConfirmDialog}
+          />
+          <ReportDialog
+            open={isReportDialogOpen}
+            senryuId={senryu ? senryu.id : undefined}
+            onClose={closeReportDialog}
           />
         </Paper>
       </Fade>
