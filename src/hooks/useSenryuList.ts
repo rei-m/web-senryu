@@ -83,6 +83,7 @@ export const useSenryuList = (
         setState({
           ...state,
           senryuList: updated,
+          totalCount: state.totalCount - 1,
         });
       }
     } catch (error) {

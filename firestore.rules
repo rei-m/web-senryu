@@ -45,27 +45,35 @@ service cloud.firestore {
       allow get;
       allow list: if request.query.limit <= 20;
       allow create: if validatePhrase(incomingData().jouku)
+        && incomingData().size() == 6
         && validatePhrase(incomingData().chuuku)
         && validatePhrase(incomingData().geku)
         && validateComment(incomingData().comment)
         && validateUserRef(incomingData().user)
         && (incomingData().createdAt is timestamp);
+      allow update: if isAuthenticated()
+        && currentData().user.ref == authUserPath()
+        && incomingData().size() == 8
+        && validateTextSize(incomingData().imageUrl, 1, 255)
+        && validateTextSize(incomingData().storageUri, 1, 255)
       allow delete: if isAuthenticated()
         && currentData().user.ref == authUserPath();
     }
     match /aggregate/count {
       allow get;
-      allow create, update: if incomingData().senryu is int;
+      allow create, update: if incomingData().size() == 1
+        && incomingData().senryu is int;
     }
     match /users/{userId} {
       allow get;
-      allow create, delete: if isAuthenticated()
-        && isUserAuthenticated(userId);
-      allow update: if isAuthenticated()
+      allow create, update: if isAuthenticated()
         && isUserAuthenticated(userId)
+        && incomingData().size() <= 3
         && incomingData().senryuCount is int
         && (incomingData().ryugou == null || validateRyugou(incomingData().ryugou))
         && (incomingData().description == null || validateUserDescription(incomingData().description));
+      allow delete: if isAuthenticated()
+        && isUserAuthenticated(userId);
     }
   }
 }

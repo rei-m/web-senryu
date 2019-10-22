@@ -123,7 +123,7 @@ export const Presenter = ({
             <Txt className={classes.error}>{error.message}</Txt>
           ) : senryuList && user ? (
             <>
-              <UserProfile user={user} />
+              <UserProfile user={isOwnPage && authUser ? authUser : user} />
               {isOwnPage && (
                 <div className={classes.buttonBox}>
                   <AccountButton

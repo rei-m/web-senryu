@@ -19,7 +19,7 @@ const typography = new Typography({
       boxSizing: 'border-box',
     },
     body: {
-      fontSize: theme.fontSize.m,
+      fontSize: theme.fontSize.s,
       color: theme.palette.text.primary,
       textAlign: 'center',
       textTransform: 'none',
