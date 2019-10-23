@@ -11,17 +11,32 @@ export const useDeleteAccount = (
   { authenticationService }: Deps = useDiContainer()
 ) => {
   const [isProcessing, startProcess, finsihProcess] = useBool(false);
+  const [
+    isRequireRecentLogin,
+    setIsRequireRecentLogin,
+    releaseIsRequireRecentLogin,
+  ] = useBool(false);
 
   const deleteAccount = useCallback(async () => {
     startProcess();
     try {
       await authenticationService.delete();
+      releaseIsRequireRecentLogin();
       finsihProcess();
     } catch (error) {
-      // TODO
-      console.error(error);
+      if (error.code && error.code === 'auth/requires-recent-login') {
+        setIsRequireRecentLogin();
+      } else {
+        console.error(error);
+        // TODO
+      }
     }
   }, []);
 
-  return { isProcessing, deleteAccount };
+  return {
+    isProcessing,
+    isRequireRecentLogin,
+    deleteAccount,
+    cancelDelationAccount: releaseIsRequireRecentLogin,
+  };
 };

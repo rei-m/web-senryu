@@ -112,7 +112,7 @@ export class AuthenticationServiceData implements AuthenticationService {
       responseType: 'blob',
     });
     const blob = new Blob([response.data], { type: 'image/jpeg' });
-    const storageRef = userStorageRef(`${userId}.jpg`);
+    const storageRef = userStorageRef(userId, `${userId}.jpg`);
     const fileSnapshot = await storageRef.put(blob);
     const imageUrl = await fileSnapshot.ref.getDownloadURL();
     return {

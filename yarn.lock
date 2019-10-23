@@ -7797,6 +7797,11 @@ gatsby-plugin-react-helmet@^3.1.13:
   dependencies:
     "@babel/runtime" "^7.6.3"
 
+gatsby-plugin-remove-console@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/gatsby-plugin-remove-console/-/gatsby-plugin-remove-console-0.0.2.tgz#384d467fb26d5345cdaae35ee4b1b83024f8aec4"
+  integrity sha512-luTmVMM7Iw9kClU9Rb9+iSbWeYu2zt9TUzD+n6jkBNPS564PhqtbsiYpiWkjvuy+REUPeMT4aX9N2qJO1GZQYw==
+
 gatsby-plugin-sharp@^2.2.32:
   version "2.2.32"
   resolved "https://registry.yarnpkg.com/gatsby-plugin-sharp/-/gatsby-plugin-sharp-2.2.32.tgz#54719b27886efd7f7c21f9bbd871ab51a9beee18"
