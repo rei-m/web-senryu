@@ -4,6 +4,7 @@ import NoIndexPageTemplate from '@src/components/templates/NoIndexPageTemplate';
 import AccountMenu from '@src/components/organisms/AccountMenu';
 import UserSettingDialog from '@src/components/organisms/UserSettingDialog';
 import ConfirmDeleteAccountDialog from '@src/components/organisms/ConfirmDeleteAccountDialog';
+import UserReAuthDialog from '@src/components/organisms/UserReAuthDialog';
 import AlertDialog, {
   Props as AlertDialogProps,
 } from '@src/components/molecules/AlertDialog';
@@ -81,7 +82,11 @@ export const Container = ({ presenter }: ContainerProps) => {
 
   const { signOut } = useSignOut();
 
-  const { deleteAccount } = useDeleteAccount();
+  const {
+    deleteAccount,
+    isRequireRecentLogin,
+    cancelDelationAccount,
+  } = useDeleteAccount();
 
   const handleClickSignOut = useCallback(() => {
     setAlertDialogType('signOut');
@@ -117,8 +122,8 @@ export const Container = ({ presenter }: ContainerProps) => {
       );
     } else if (alertDialogType === 'delete') {
       const handleClickPositive = () => {
-        deleteAccount();
         setAlertDialogType(null);
+        deleteAccount();
       };
       return (
         <ConfirmDeleteAccountDialog
@@ -127,10 +132,23 @@ export const Container = ({ presenter }: ContainerProps) => {
           onClose={closeAlertDialog}
         />
       );
+    } else if (isRequireRecentLogin) {
+      const handleReAuthFailre = (error: string) => {
+        console.dir(error);
+      };
+      return (
+        <UserReAuthDialog
+          open={isRequireRecentLogin}
+          contentText="アカウント削除前に認証をお願いいたします。認証完了後に削除処理を行います。"
+          onAuthSuccess={deleteAccount}
+          onAuthFailure={handleReAuthFailre}
+          onClose={cancelDelationAccount}
+        />
+      );
     } else {
       return null;
     }
-  }, [alertDialogType, isAlertDialogOpen]);
+  }, [alertDialogType, isAlertDialogOpen, isRequireRecentLogin]);
 
   return presenter({
     user: authUser ? authUser : null,

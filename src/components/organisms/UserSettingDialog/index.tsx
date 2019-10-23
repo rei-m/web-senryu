@@ -211,8 +211,8 @@ export const Container = ({
   });
 };
 
-const SenryuConfirmDialog = (props: Props) => (
+const UserSettingDialog = (props: Props) => (
   <Container {...props} presenter={Presenter} />
 );
 
-export default SenryuConfirmDialog;
+export default UserSettingDialog;

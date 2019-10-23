@@ -53,4 +53,5 @@ export const plugins: GatsbyPlugin[] = [
     },
   },
   `gatsby-plugin-no-sourcemaps`,
+  // `gatsby-plugin-remove-console`,
 ];
