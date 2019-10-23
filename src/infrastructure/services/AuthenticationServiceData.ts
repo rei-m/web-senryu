@@ -4,28 +4,39 @@ import { AuthenticationService } from '@src/domain/services';
 import { User, UninitializedUser, UserId } from '@src/domain';
 import { userCollection } from '../firestore';
 import { userStorageRef } from '../storage';
+import { AppError } from '@src/types';
+import { reasonToAppError } from '../utils';
 
 export class AuthenticationServiceData implements AuthenticationService {
+  private errorCallback: ((error: AppError) => void) | null = null;
+
   onAuthStateChanged(
     callback: (user: User | UninitializedUser | null) => void
   ) {
-    const unsubscribe = firebase.auth().onAuthStateChanged(fbUser => {
-      if (fbUser) {
-        // プロフィールは公開情報なのでauthじゃなくてfirestoreに保存
-        const userDocRef = userCollection().doc(fbUser.uid);
-        userDocRef.get().then(userDoc => {
-          const user = userDoc.data();
-          callback({
-            id: fbUser.uid,
-            ryugou: user ? user.ryugou : null,
-            description: user ? user.description : null,
-            profileImageUrl: user ? user.profileImageUrl : null,
+    const unsubscribe = firebase.auth().onAuthStateChanged(
+      fbUser => {
+        if (fbUser) {
+          // プロフィールは公開情報なのでauthじゃなくてfirestoreに保存
+          const userDocRef = userCollection().doc(fbUser.uid);
+          userDocRef.get().then(userDoc => {
+            const user = userDoc.data();
+            callback({
+              id: fbUser.uid,
+              ryugou: user ? user.ryugou : null,
+              description: user ? user.description : null,
+              profileImageUrl: user ? user.profileImageUrl : null,
+            });
           });
-        });
-      } else {
-        callback(null);
+        } else {
+          callback(null);
+        }
+      },
+      reason => {
+        if (this.errorCallback) {
+          this.errorCallback(reasonToAppError(reason, 'ユーザー'));
+        }
       }
-    });
+    );
 
     return unsubscribe;
   }
@@ -33,65 +44,81 @@ export class AuthenticationServiceData implements AuthenticationService {
   onProfileChanged(callback: (user: User) => void) {
     const currentUser = firebase.auth().currentUser;
     if (currentUser) {
-      // ちょっとだるい実装
-      const userDocRef = userCollection().doc(currentUser.uid);
-      const unsubscribe = userDocRef.onSnapshot(snapShot => {
-        const data = snapShot.data();
-        if (data) {
-          const user = {
-            id: currentUser.uid,
-            ryugou: data.ryugou,
-            description: data.description,
-            profileImageUrl: data.profileImageUrl,
-          };
-          callback(user);
+      try {
+        // ちょっとだるい実装
+        const userDocRef = userCollection().doc(currentUser.uid);
+        const unsubscribe = userDocRef.onSnapshot(snapShot => {
+          const data = snapShot.data();
+          if (data) {
+            const user = {
+              id: currentUser.uid,
+              ryugou: data.ryugou,
+              description: data.description,
+              profileImageUrl: data.profileImageUrl,
+            };
+            callback(user);
+          }
+        });
+        return unsubscribe;
+      } catch (reason) {
+        if (this.errorCallback) {
+          this.errorCallback(reasonToAppError(reason, 'ユーザー'));
         }
-      });
-      return unsubscribe;
+      }
     }
 
     return () => {};
   }
 
-  async initialize(user: User) {
-    const userDocRef = userCollection().doc(user.id);
-    await userDocRef.set({
-      ryugou: user.ryugou,
-      description: user.description,
-      senryuCount: 0,
-    });
+  onErrorOccurred(callback: (error: AppError) => void) {
+    this.errorCallback = callback;
+  }
 
-    if (user.profileImageUrl) {
-      const result = await this.uploadProfileImage(
-        userDocRef.id,
-        user.profileImageUrl
-      );
-      await userDocRef.update({
-        profileImageUrl: result.profileImageUrl,
-        storageUri: result.storageUri,
+  async initialize(user: User) {
+    try {
+      const userDocRef = userCollection().doc(user.id);
+      await userDocRef.set({
+        ryugou: user.ryugou,
+        description: user.description,
+        senryuCount: 0,
       });
+
+      if (user.profileImageUrl) {
+        const result = await this.uploadProfileImage(
+          userDocRef.id,
+          user.profileImageUrl
+        );
+        await userDocRef.update({
+          profileImageUrl: result.profileImageUrl,
+          storageUri: result.storageUri,
+        });
+      }
+    } catch (reason) {
+      throw reasonToAppError(reason, 'ユーザー');
     }
-    return;
   }
 
   async updateProfile(user: User) {
-    const userDocRef = userCollection().doc(user.id);
-    await userDocRef.update({
-      ryugou: user.ryugou,
-      description: user.description,
-    });
-
-    if (user.profileImageUrl) {
-      const result = await this.uploadProfileImage(
-        userDocRef.id,
-        user.profileImageUrl
-      );
+    try {
+      const userDocRef = userCollection().doc(user.id);
       await userDocRef.update({
-        profileImageUrl: result.profileImageUrl,
-        storageUri: result.storageUri,
+        ryugou: user.ryugou,
+        description: user.description,
       });
+
+      if (user.profileImageUrl) {
+        const result = await this.uploadProfileImage(
+          userDocRef.id,
+          user.profileImageUrl
+        );
+        await userDocRef.update({
+          profileImageUrl: result.profileImageUrl,
+          storageUri: result.storageUri,
+        });
+      }
+    } catch (reason) {
+      throw reasonToAppError(reason, 'ユーザー');
     }
-    return;
   }
 
   async signOut() {
@@ -99,10 +126,14 @@ export class AuthenticationServiceData implements AuthenticationService {
   }
 
   async delete() {
-    // TODO: https://firebase.google.com/docs/auth/web/manage-users?hl=ja#re-authenticate_a_user
+    // @see https://firebase.google.com/docs/auth/web/manage-users?hl=ja#re-authenticate_a_user
     const currentUser = firebase.auth().currentUser;
     if (currentUser) {
-      await currentUser.delete();
+      try {
+        await currentUser.delete();
+      } catch (reason) {
+        throw reasonToAppError(reason, 'ユーザー');
+      }
     }
     return;
   }

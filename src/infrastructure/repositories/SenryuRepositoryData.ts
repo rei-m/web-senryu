@@ -8,6 +8,7 @@ import {
   userCollection,
 } from '../firestore';
 import { senryuStorageRef } from '../storage';
+import { reasonToAppError } from '../utils';
 
 const dataToModel: (
   id: string,
@@ -31,96 +32,108 @@ const COUNT_MAX = 20;
 
 export class SenryuRepositoryData implements SenryuRepository {
   async findById(id: SenryuId) {
-    const snap = await senryuCollection()
-      .doc(id)
-      .get();
-    const data = snap.data();
-    if (data !== undefined) {
-      return Promise.resolve(dataToModel(id, data));
-    } else {
-      return Promise.reject('Not Found');
+    try {
+      const snap = await senryuCollection()
+        .doc(id)
+        .get();
+      const data = snap.data();
+      if (data !== undefined) {
+        return dataToModel(id, data);
+      } else {
+        throw reasonToAppError({ code: 'not-found' }, '川柳');
+      }
+    } catch (reason) {
+      throw reasonToAppError(reason, '川柳');
     }
   }
 
   async findByUserPerPage(userId: UserId, pageNo: number, base?: Senryu) {
-    const userSnap = await userCollection()
-      .doc(userId)
-      .get();
-    const userData = userSnap.data();
-    const count = userData !== undefined ? userData.senryuCount : 0;
-    const totalPages = Math.ceil(count / COUNT_MAX);
-    const query =
-      base === undefined
-        ? senryuCollection()
-            .where('user.ref', '==', userCollection().doc(userId))
-            .orderBy('createdAt', 'desc')
-            .limit(COUNT_MAX)
-        : senryuCollection()
-            .where('user.ref', '==', userCollection().doc(userId))
-            .orderBy('createdAt', 'desc')
-            .startAfter(new Date(base.createdAt))
-            .limit(COUNT_MAX);
-    const senryuSnap = await query.get();
-    const senryuData = senryuSnap.docs.map(doc =>
-      dataToModel(doc.id, doc.data())
-    );
-    const hasNextPage = COUNT_MAX * pageNo < count;
-    return {
-      currentPage: pageNo,
-      totalPages,
-      itemList: senryuData,
-      totalCount: count,
-      listPerPage: COUNT_MAX,
-      hasNextPage,
-    };
+    try {
+      const userSnap = await userCollection()
+        .doc(userId)
+        .get();
+      const userData = userSnap.data();
+      const count = userData !== undefined ? userData.senryuCount : 0;
+      const totalPages = Math.ceil(count / COUNT_MAX);
+      const query =
+        base === undefined
+          ? senryuCollection()
+              .where('user.ref', '==', userCollection().doc(userId))
+              .orderBy('createdAt', 'desc')
+              .limit(COUNT_MAX)
+          : senryuCollection()
+              .where('user.ref', '==', userCollection().doc(userId))
+              .orderBy('createdAt', 'desc')
+              .startAfter(new Date(base.createdAt))
+              .limit(COUNT_MAX);
+      const senryuSnap = await query.get();
+      const senryuData = senryuSnap.docs.map(doc =>
+        dataToModel(doc.id, doc.data())
+      );
+      const hasNextPage = COUNT_MAX * pageNo < count;
+      return {
+        currentPage: pageNo,
+        totalPages,
+        itemList: senryuData,
+        totalCount: count,
+        listPerPage: COUNT_MAX,
+        hasNextPage,
+      };
+    } catch (reason) {
+      throw reasonToAppError(reason, '川柳');
+    }
   }
 
   async findAllPerPage(pageNo: number, base?: Senryu) {
-    const countSnap = await aggregateCollection()
-      .doc(`count`)
-      .get();
-    const countData = countSnap.data();
-    const count = countData !== undefined ? countData.senryu : 0;
-    const totalPages = Math.ceil(count / COUNT_MAX);
-    const query =
-      base === undefined
-        ? senryuCollection()
-            .orderBy('createdAt', 'desc')
-            .limit(COUNT_MAX)
-        : senryuCollection()
-            .orderBy('createdAt', 'desc')
-            .startAfter(new Date(base.createdAt))
-            .limit(COUNT_MAX);
-    const senryuSnap = await query.get();
-    const senryuData = senryuSnap.docs.map(doc =>
-      dataToModel(doc.id, doc.data())
-    );
-    const hasNextPage = COUNT_MAX * pageNo < count;
-    return {
-      currentPage: pageNo,
-      totalPages,
-      itemList: senryuData,
-      totalCount: count,
-      listPerPage: COUNT_MAX,
-      hasNextPage,
-    };
+    try {
+      const countSnap = await aggregateCollection()
+        .doc(`count`)
+        .get();
+      const countData = countSnap.data();
+      const count = countData !== undefined ? countData.senryu : 0;
+      const totalPages = Math.ceil(count / COUNT_MAX);
+      const query =
+        base === undefined
+          ? senryuCollection()
+              .orderBy('createdAt', 'desc')
+              .limit(COUNT_MAX)
+          : senryuCollection()
+              .orderBy('createdAt', 'desc')
+              .startAfter(new Date(base.createdAt))
+              .limit(COUNT_MAX);
+      const senryuSnap = await query.get();
+      const senryuData = senryuSnap.docs.map(doc =>
+        dataToModel(doc.id, doc.data())
+      );
+      const hasNextPage = COUNT_MAX * pageNo < count;
+      return {
+        currentPage: pageNo,
+        totalPages,
+        itemList: senryuData,
+        totalCount: count,
+        listPerPage: COUNT_MAX,
+        hasNextPage,
+      };
+    } catch (reason) {
+      throw reasonToAppError(reason, '川柳');
+    }
   }
 
   async add(senryu: SenryuDraft) {
     // Transactionでまとめようと思ったけどDocId自前で生成する必要がる + そこまで厳密に整合性求めなくてもいいとこ（と思うことにした）なのでそのまま
-    try {
-      const data = {
-        jouku: senryu.jouku,
-        chuuku: senryu.chuuku,
-        geku: senryu.geku,
-        comment: senryu.comment,
-        user: {
-          ref: senryu.userId ? userCollection().doc(senryu.userId) : null,
-          ryugou: senryu.ryugou,
-        },
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      };
+    const data = {
+      jouku: senryu.jouku,
+      chuuku: senryu.chuuku,
+      geku: senryu.geku,
+      comment: senryu.comment,
+      user: {
+        ref: senryu.userId ? userCollection().doc(senryu.userId) : null,
+        ryugou: senryu.ryugou,
+      },
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    };
 
+    try {
       const senryuRef = await senryuCollection().add(data);
 
       await aggregateCollection()
@@ -156,32 +169,35 @@ export class SenryuRepositoryData implements SenryuRepository {
       }
 
       return senryuRef.id;
-    } catch (e) {
-      console.error(e);
-      throw e;
+    } catch (reason) {
+      throw reasonToAppError(reason, '川柳');
     }
   }
 
   async delete(senryuId: SenryuId) {
-    const senryu = await senryuCollection()
-      .doc(senryuId)
-      .get();
+    try {
+      const senryu = await senryuCollection()
+        .doc(senryuId)
+        .get();
 
-    const senryuData = senryu.data();
+      const senryuData = senryu.data();
 
-    if (senryuData) {
-      const userDoc = await senryuData.user.ref.get();
-      await userDoc.ref.update({
-        senryuCount: firebase.firestore.FieldValue.increment(-1),
-      });
+      if (senryuData) {
+        const userDoc = await senryuData.user.ref.get();
+        await userDoc.ref.update({
+          senryuCount: firebase.firestore.FieldValue.increment(-1),
+        });
+      }
+
+      await aggregateCollection()
+        .doc('count')
+        .update({
+          senryu: firebase.firestore.FieldValue.increment(-1),
+        });
+
+      await senryu.ref.delete();
+    } catch (reason) {
+      throw reasonToAppError(reason, '川柳');
     }
-
-    await aggregateCollection()
-      .doc('count')
-      .update({
-        senryu: firebase.firestore.FieldValue.increment(-1),
-      });
-
-    await senryu.ref.delete();
   }
 }
