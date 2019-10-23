@@ -137,12 +137,15 @@ export class SenryuRepositoryData implements SenryuRepository {
           });
       }
 
-      if (senryu.imageUrl) {
+      if (senryu.imageUrl && senryu.userId) {
         const response = await axios.get(senryu.imageUrl, {
           responseType: 'blob',
         });
         const blob = new Blob([response.data], { type: 'image/jpeg' });
-        const storageRef = senryuStorageRef(`${senryuRef.id}.jpg`);
+        const storageRef = senryuStorageRef(
+          senryu.userId,
+          `${senryuRef.id}.jpg`
+        );
         const fileSnapshot = await storageRef.put(blob);
         const imageUrl = await fileSnapshot.ref.getDownloadURL();
 
