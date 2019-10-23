@@ -6,3 +6,8 @@ export const senryuCollection = () => firebase.firestore().collection(`senryu`);
 
 export const aggregateCollection = () =>
   firebase.firestore().collection(`aggregate`);
+
+// https://firebase.google.com/docs/reference/js/firebase.firestore.html#firestoreerrorcode
+// not-found
+// unavailable
+// unauthenticated

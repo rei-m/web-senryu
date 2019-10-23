@@ -7,6 +7,9 @@ export type SiteMetaData = Readonly<{
   author: string;
 }>;
 
+/**
+ * ページャ用のコンテナタイプ
+ */
 export type Page<T> = Readonly<{
   currentPage: number;
   totalPages: number;
@@ -15,3 +18,17 @@ export type Page<T> = Readonly<{
   listPerPage: number;
   hasNextPage: boolean;
 }>;
+
+/**
+ * アプリケーション内の汎用的なエラー定義（手抜き）
+ */
+export type AppError = Readonly<{
+  code: AppErrorCode;
+  message: string;
+}>;
+
+export type AppErrorCode =
+  | 'not-found'
+  | 'unavailable'
+  | 'unauthenticated'
+  | 'unhandled';
