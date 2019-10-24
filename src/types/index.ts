@@ -32,3 +32,8 @@ export type AppErrorCode =
   | 'unavailable'
   | 'unauthenticated'
   | 'unhandled';
+
+/**
+ * 更新処理のStateMachineを表現する
+ */
+export type ProcessingState = 'waiting' | 'processing' | 'complete';
