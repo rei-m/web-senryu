@@ -1,25 +1,29 @@
 import React, { useState } from 'react';
-import { RouteComponentProps } from '@reach/router';
+import { RouteComponentProps, Redirect } from '@reach/router';
+
 import makeStyles from '@src/styles/makeStyles';
-import NoIndexPageTemplate from '@src/components/templates/NoIndexPageTemplate';
-import SenryuForm from '@src/components/organisms/SenryuForm';
-import SenryuConfirmDialog from '@src/components/organisms/SenryuConfirmDialog';
 import Progress from '@src/components/atoms/Progress';
 import Txt from '@src/components/atoms/Txt';
-import { SenryuDraft, User } from '@src/domain';
+import SenryuForm from '@src/components/organisms/SenryuForm';
+import SenryuConfirmDialog from '@src/components/organisms/SenryuConfirmDialog';
+import NoIndexPageTemplate from '@src/components/templates/NoIndexPageTemplate';
+
 import { useAuthUser } from '@src/hooks/useAuthUser';
 import { useCreateSenryu } from '@src/hooks/useCreateSenryu';
-import { ROUTING } from '@src/constants/routing';
+
+import { SenryuDraft, User } from '@src/domain';
+import { ProcessingState, AppError } from '@src/types';
 import { NavMenu } from '@src/constants';
-import { theme } from '@src/styles/theme';
+import { ROUTING } from '@src/constants/routing';
 
 export type Props = RouteComponentProps;
 
 export type PresenterProps = {
-  isLoading: boolean;
+  processingState: ProcessingState;
   user?: User | null;
   senryu?: SenryuDraft;
-  openConfirmDialog: boolean;
+  confirmDialogOpen: boolean;
+  error: AppError | null;
   onSubmitForm: (value: SenryuDraft) => void;
   onClickPost: (value: SenryuDraft) => void;
   onCloseConfirmDialog: () => void;
@@ -31,13 +35,18 @@ export type ContainerProps = Props & {
 
 export type State = {
   senryu?: SenryuDraft;
-  openConfirm: boolean;
+  confirmOpen: boolean;
 };
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(theme => ({
   cautionContainer: {
     textAlign: 'left',
     color: theme.palette.text.secondary,
+  },
+  errorContainer: {
+    textAlign: 'left',
+    color: theme.palette.error.main,
+    paddingBottom: theme.spacing(2),
   },
   form: {
     marginTop: theme.spacing(2),
@@ -51,10 +60,11 @@ const useStyles = makeStyles(() => ({
 }));
 
 export const Presenter = ({
-  isLoading,
+  processingState,
   user,
   senryu,
-  openConfirmDialog,
+  confirmDialogOpen,
+  error,
   onSubmitForm,
   onClickPost,
   onCloseConfirmDialog,
@@ -66,70 +76,82 @@ export const Presenter = ({
       title={`投稿`}
       navMenu={NavMenu.CreateSenryu}
       content={
-        user !== undefined && !isLoading ? (
-          <>
-            <div className={classes.cautionContainer}>
-              <Txt size="ss">
-                ※
-                <a
-                  href={ROUTING.guideline}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  ガイドライン
-                </a>
-                を守って投稿してください
-              </Txt>
+        <>
+          {processingState === 'waiting' ? (
+            <>
+              {error && (
+                <div className={classes.errorContainer}>
+                  <Txt size="s">{error.message}</Txt>
+                </div>
+              )}
+              <div className={classes.cautionContainer}>
+                <Txt size="ss">
+                  ※
+                  <a
+                    href={ROUTING.guideline}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    ガイドライン
+                  </a>
+                  を守って投稿してください
+                </Txt>
+              </div>
+              {user && (
+                <SenryuForm
+                  user={user}
+                  onSubmit={onSubmitForm}
+                  className={classes.form}
+                />
+              )}
+            </>
+          ) : processingState === 'complete' ? (
+            <Redirect
+              from={ROUTING.senryuNew}
+              to={ROUTING.senryu}
+              state={{ message: '投稿に成功しました！' }}
+              noThrow
+            />
+          ) : (
+            <div className={classes.progressContainer}>
+              <Progress />
             </div>
-            <SenryuForm
-              user={user}
-              onSubmit={onSubmitForm}
-              className={classes.form}
-            />
-            <SenryuConfirmDialog
-              open={openConfirmDialog}
-              senryu={senryu}
-              onClickPost={onClickPost}
-              onClose={onCloseConfirmDialog}
-            />
-          </>
-        ) : (
-          <div className={classes.progressContainer}>
-            <Progress />
-          </div>
-        )
+          )}
+          <SenryuConfirmDialog
+            open={confirmDialogOpen}
+            senryu={senryu}
+            onClickPost={onClickPost}
+            onClose={onCloseConfirmDialog}
+          />
+        </>
       }
     />
   );
 };
 
-export const Container = ({ navigate, presenter }: ContainerProps) => {
+export const Container = ({ presenter }: ContainerProps) => {
   const user = useAuthUser();
-  const { isProcessing, createSenryu } = useCreateSenryu();
-  const [state, setState] = useState<State>({ openConfirm: false });
+  const { processingState, error, createSenryu } = useCreateSenryu();
+  const [state, setState] = useState<State>({ confirmOpen: false });
 
   const handleSubmitForm = (value: SenryuDraft) => {
-    setState({ ...state, senryu: value, openConfirm: true });
+    setState({ ...state, senryu: value, confirmOpen: true });
   };
 
   const handleClickPost = async (value: SenryuDraft) => {
-    // setState({ ...state, openConfirm: false });
-    // TODO: エラーハンドリング
     await createSenryu(value);
-    if (navigate) {
-      navigate(ROUTING.senryu, { state: { message: '投稿に成功しました！' } });
-    }
   };
 
   const handleClose = () => {
-    setState({ ...state, openConfirm: false });
+    setState({ ...state, confirmOpen: false });
   };
 
   return presenter({
-    isLoading: isProcessing,
+    processingState,
     user,
     senryu: state.senryu,
-    openConfirmDialog: state.openConfirm,
+    confirmDialogOpen: state.confirmOpen,
+    error,
     onSubmitForm: handleSubmitForm,
     onClickPost: handleClickPost,
     onCloseConfirmDialog: handleClose,
