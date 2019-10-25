@@ -1,41 +1,60 @@
 import { useCallback } from 'react';
 import { AuthenticationService } from '@src/domain/services';
-import { useDiContainer } from './useDiContainer';
+import { AppError, ProcessingState } from '@src/types';
+import { useAppError } from './useAppError';
 import { useBool } from './useBool';
+import { useDiContainer } from './useDiContainer';
+import { useProcessingState } from './useProcessingState';
 
 type Deps = {
   authenticationService: AuthenticationService;
 };
 
+type Return = {
+  processingState: ProcessingState;
+  isRequireRecentLogin: boolean;
+  error: AppError | null;
+  deleteAccount: () => Promise<void>;
+  cancelDelationAccount: () => void;
+};
+
 export const useDeleteAccount = (
   { authenticationService }: Deps = useDiContainer()
-) => {
-  const [isProcessing, startProcess, finsihProcess] = useBool(false);
+): Return => {
+  const [
+    processingState,
+    waitProcess,
+    startProcess,
+    completeProcess,
+  ] = useProcessingState();
   const [
     isRequireRecentLogin,
     setIsRequireRecentLogin,
     releaseIsRequireRecentLogin,
   ] = useBool(false);
+  const [error, setError, cleanError] = useAppError();
 
   const deleteAccount = useCallback(async () => {
     startProcess();
     try {
       await authenticationService.delete();
       releaseIsRequireRecentLogin();
-      finsihProcess();
+      cleanError();
+      completeProcess();
     } catch (error) {
-      if (error.code && error.code === 'auth/requires-recent-login') {
+      if (error.code && error.code === 'requires-recent-login') {
         setIsRequireRecentLogin();
       } else {
-        console.error(error);
-        // TODO
+        setError(error);
+        waitProcess();
       }
     }
   }, []);
 
   return {
-    isProcessing,
+    processingState,
     isRequireRecentLogin,
+    error,
     deleteAccount,
     cancelDelationAccount: releaseIsRequireRecentLogin,
   };

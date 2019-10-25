@@ -1,56 +1,61 @@
 import { useEffect, useState, useCallback } from 'react';
 import { User, UninitializedUser } from '@src/domain';
 import { AuthenticationService } from '@src/domain/services';
+import { AppError } from '@src/types';
+import { useAppError } from './useAppError';
 import { useDiContainer } from './useDiContainer';
 
 type Deps = {
   authenticationService: AuthenticationService;
 };
 
-type State = {
+type Return = {
   user: User | UninitializedUser | null;
+  error: AppError | null;
+  initializeUser: (newUser: User) => Promise<void>;
 };
 
 export const useFirebaseUser = (
   { authenticationService }: Deps = useDiContainer()
-) => {
-  const [state, setState] = useState<State>({
-    user: null,
-  });
+): Return => {
+  const [user, setUser] = useState<User | UninitializedUser | null>(null);
+  const [error, setError, cleanError] = useAppError();
 
   useEffect(() => {
-    const callback = (user: User | UninitializedUser | null) => {
-      setState({ user });
+    const callback = (received: User | UninitializedUser | null) => {
+      cleanError();
+      setUser(received);
     };
     const unsubscribe = authenticationService.onAuthStateChanged(callback);
 
+    authenticationService.onErrorOccurred(setError);
+
     return () => {
-      console.info(`firebase: unsubscribe onAuthStateChanged`);
       unsubscribe();
     };
   }, []);
 
   useEffect(() => {
-    const callback = (user: User) => {
-      setState({ user });
+    const callback = (received: User) => {
+      cleanError();
+      setUser(received);
     };
     const unsubscribe = authenticationService.onProfileChanged(callback);
 
     return () => {
-      console.info(`firebase: unsubscribe onProfileChanged`);
       unsubscribe();
     };
-  }, [state.user !== null]);
+  }, [user !== null]);
 
   const initializeUser = useCallback(async (newUser: User) => {
     try {
-      authenticationService.initialize(newUser);
-      setState({ user: newUser });
+      await authenticationService.initialize(newUser);
+      setUser(newUser);
+      cleanError();
     } catch (error) {
-      // TODO
-      console.error(error);
+      setError(error);
     }
   }, []);
 
-  return { ...state, initializeUser };
+  return { user, error, initializeUser };
 };

@@ -14,10 +14,12 @@ import {
   USER_RYUGOU_LENGTH,
   USER_DESCRIPTION_LENGTH,
 } from '@src/domain/constant';
+import { AppError } from '@src/types';
 
 export type Props = {
   open: boolean;
   initialUser: User | UninitializedUser;
+  authError: AppError | null;
   onClickPost: (user: User) => void;
   onClose?: () => void;
 };
@@ -41,10 +43,14 @@ const useStyles = makeStyles(theme => ({
   text: {
     fontSize: theme.fontSize.s,
   },
+  error: {
+    color: theme.palette.error.main,
+  },
 }));
 
 export type PresenterProps = {
   open: boolean;
+  authError: AppError | null;
   onChangeField: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onClickPost: (e: React.SyntheticEvent<HTMLElement>) => void;
   onClose?: () => void;
@@ -89,6 +95,7 @@ export const Presenter = ({
   open,
   user,
   error,
+  authError,
   onChangeField,
   onClickPost,
   onClose,
@@ -102,6 +109,11 @@ export const Presenter = ({
         </Heading>
       </DialogTitle>
       <DialogContent>
+        {authError && (
+          <DialogContentText className={classes.error}>
+            {authError.message}
+          </DialogContentText>
+        )}
         <DialogContentText
           className={classes.text}
           classes={{ root: classes.text }}
@@ -148,6 +160,7 @@ export const Presenter = ({
 export const Container = ({
   open,
   initialUser,
+  authError,
   onClickPost,
   onClose,
   presenter,
@@ -203,6 +216,7 @@ export const Container = ({
 
   return presenter({
     open,
+    authError,
     user: state.user,
     error: state.error,
     onChangeField: handleChangeField,

@@ -8,7 +8,7 @@ export const AppAuthContext = React.createContext<{
 }>({});
 
 const AppAuthProvider: React.FC<{}> = ({ children }) => {
-  const { user, initializeUser } = useFirebaseUser();
+  const { user, error, initializeUser } = useFirebaseUser();
   return (
     <AppAuthContext.Provider
       value={{
@@ -20,6 +20,7 @@ const AppAuthProvider: React.FC<{}> = ({ children }) => {
         <UserSettingDialog
           open={user.ryugou === null}
           initialUser={user}
+          authError={error}
           onClickPost={initializeUser}
         />
       )}

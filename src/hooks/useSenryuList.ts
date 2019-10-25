@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Senryu, SenryuId } from '@src/domain';
 import { SenryuRepository } from '@src/domain/repositories';
-import { useDiContainer } from './useDiContainer';
+import { AppError } from '@src/types';
+import { useAppError } from './useAppError';
 import { useBool } from './useBool';
+import { useDiContainer } from './useDiContainer';
 
 type Deps = {
   senryuRepository: SenryuRepository;
@@ -16,19 +18,29 @@ type State = {
   totalCount: number;
 };
 
+type Return = {
+  isLoading: boolean;
+  isMoreLoading: boolean;
+  error: AppError | null;
+  fetchNextPage: () => Promise<void>;
+  deleteSenryu: (senryuId: SenryuId) => Promise<void>;
+} & State;
+
 export const useSenryuList = (
   { senryuRepository }: Deps = useDiContainer()
-) => {
+): Return => {
   const [state, setState] = useState<State>({
     currentPage: 0,
     hasNextPage: false,
     totalPages: 0,
     totalCount: 0,
   });
+  const [isLoading, startLoad, finishLoad] = useBool(true);
   const [isMoreLoading, startMoreLoad, finsihMoreLoad] = useBool(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setError, clearError] = useAppError();
 
   useEffect(() => {
+    startLoad();
     senryuRepository
       .findAllPerPage(1)
       .then(page => {
@@ -39,9 +51,11 @@ export const useSenryuList = (
           totalCount: page.totalCount,
           senryuList: page.itemList,
         });
+        finishLoad();
       })
-      .catch(reason => {
-        setError(new Error(reason));
+      .catch(error => {
+        setError(error);
+        finishLoad();
       });
   }, []);
 
@@ -65,10 +79,10 @@ export const useSenryuList = (
         totalCount: result.totalCount,
         senryuList: [...state.senryuList, ...result.itemList],
       });
-
+      clearError();
       finsihMoreLoad();
     } catch (error) {
-      setError(new Error(error));
+      setError(error);
       finsihMoreLoad();
     }
   };
@@ -86,11 +100,18 @@ export const useSenryuList = (
           totalCount: state.totalCount - 1,
         });
       }
+      clearError();
     } catch (error) {
-      // TODO
-      console.error(error);
+      setError(error);
     }
   };
 
-  return { ...state, isMoreLoading, error, fetchNextPage, deleteSenryu };
+  return {
+    ...state,
+    isLoading,
+    isMoreLoading,
+    error,
+    fetchNextPage,
+    deleteSenryu,
+  };
 };
