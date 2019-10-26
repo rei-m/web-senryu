@@ -38,7 +38,10 @@ export class AuthenticationServiceData implements AuthenticationService {
       }
     );
 
-    return unsubscribe;
+    return () => {
+      this.errorCallback = null;
+      unsubscribe();
+    };
   }
 
   onProfileChanged(callback: (user: User) => void) {
@@ -132,6 +135,13 @@ export class AuthenticationServiceData implements AuthenticationService {
       try {
         await currentUser.delete();
       } catch (reason) {
+        if (reason.code && reason.code === 'auth/requires-recent-login') {
+          throw {
+            code: 'requires-recent-login',
+            message:
+              '前回サインインから時間が経っているため、再度サインインが必要です',
+          } as AppError;
+        }
         throw reasonToAppError(reason, 'ユーザー');
       }
     }

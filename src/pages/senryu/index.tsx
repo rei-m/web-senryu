@@ -15,6 +15,7 @@ import { useSenryuList } from '@src/hooks/useSenryuList';
 import { Senryu, UserId, SenryuId, User } from '@src/domain';
 import { ROUTING } from '@src/constants/routing';
 import { NavMenu } from '@src/constants';
+import { AppError } from '@src/types';
 
 export type Props = RouteComponentProps;
 
@@ -27,7 +28,7 @@ export type PresenterProps = {
   isSenryuModalOpen: boolean;
   currentSenryu: Senryu | null;
   flashMessage?: string;
-  error: Error | null;
+  error: AppError | null;
   onClickSenryu: (senryu: Senryu) => void;
   onClickMore: () => void;
   onClickUserName: (userId: UserId) => void;
@@ -155,19 +156,23 @@ export const Container = ({
   presenter,
 }: ContainerProps) => {
   const authUser = useAuthUser();
+
   const {
     senryuList,
     totalCount,
     hasNextPage,
-    error,
     isMoreLoading,
+    error,
     fetchNextPage,
     deleteSenryu,
   } = useSenryuList();
+
   const [currentSenryu, displaySenryu] = useState<null | Senryu>(null);
+
   const [isSenryuModalOpen, openSenryuModal, closeSenryuModal] = useBool(
     currentSenryu !== null
   );
+
   const handleClickSenryu = (senryu: Senryu) => {
     displaySenryu(senryu);
     openSenryuModal();

@@ -31,7 +31,8 @@ export type AppErrorCode =
   | 'not-found'
   | 'unavailable'
   | 'unauthenticated'
-  | 'unhandled';
+  | 'unhandled'
+  | 'requires-recent-login';
 
 /**
  * 更新処理のStateMachineを表現する

@@ -10,12 +10,13 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import makeStyles from '@src/styles/makeStyles';
 import Heading from '@src/components/atoms/Heading';
 import { ROUTING } from '@src/constants/routing';
+import { AppError } from '@src/types';
 
 export type Props = {
   open: boolean;
   contentText: string | React.ReactElement;
   onAuthSuccess: () => void;
-  onAuthFailure: (error: string) => void;
+  onAuthFailure: (error: AppError) => void;
   onClose: () => void;
 };
 
@@ -24,7 +25,7 @@ export type PresenterProps = {
   contentText: string | React.ReactElement;
   providerIdList: Array<string>;
   onAuthSuccess: () => void;
-  onAuthFailure: (error: any) => void;
+  onAuthFailure: (error: AppError) => void;
   onClose: () => void;
 };
 
@@ -66,11 +67,16 @@ export const Presenter = ({
                 signInOptions: providerIdList,
                 callbacks: {
                   signInSuccessWithAuthResult: function(_authResult: any) {
+                    onClose();
                     onAuthSuccess();
                     return false;
                   },
                   signInFailure: function(error: firebaseui.auth.AuthUIError) {
-                    onAuthFailure(error.message);
+                    onClose();
+                    onAuthFailure({
+                      code: 'unauthenticated',
+                      message: error.message,
+                    });
                     return Promise.resolve();
                   },
                 },
