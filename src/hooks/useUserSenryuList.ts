@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Senryu, UserId, User, SenryuId } from '@src/domain';
+import { Senryu, SenryuId, User, UserId } from '@src/domain';
 import { SenryuRepository, UserRepository } from '@src/domain/repositories';
-import { useDiContainer } from './useDiContainer';
+import { AppError } from '@src/types';
+import { useAppError } from './useAppError';
 import { useBool } from './useBool';
+import { useDiContainer } from './useDiContainer';
 
 type Deps = {
   userRepository: UserRepository;
@@ -18,20 +20,30 @@ type State = {
   totalCount: number;
 };
 
+type Return = {
+  isLoading: boolean;
+  isMoreLoading: boolean;
+  error: AppError | null;
+  fetchNextPage: () => Promise<void>;
+  deleteSenryu: (senryuId: SenryuId) => Promise<void>;
+} & State;
+
 export const useUserSenryuList = (
   userId: UserId,
   { userRepository, senryuRepository }: Deps = useDiContainer()
-) => {
+): Return => {
   const [state, setState] = useState<State>({
     currentPage: 0,
     hasNextPage: false,
     totalPages: 0,
     totalCount: 0,
   });
+  const [isLoading, startLoad, finishLoad] = useBool(true);
   const [isMoreLoading, startMoreLoad, finsihMoreLoad] = useBool(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setError, clearError] = useAppError();
 
   useEffect(() => {
+    startLoad();
     Promise.all([
       userRepository.findById(userId),
       senryuRepository.findByUserPerPage(userId, 1),
@@ -45,9 +57,11 @@ export const useUserSenryuList = (
           totalCount: page.totalCount,
           senryuList: page.itemList,
         });
+        finishLoad();
       })
-      .catch(reason => {
-        setError(new Error(reason));
+      .catch(error => {
+        setError(error);
+        finishLoad();
       });
   }, []);
 
@@ -73,10 +87,10 @@ export const useUserSenryuList = (
         totalCount: result.totalCount,
         senryuList: [...state.senryuList, ...result.itemList],
       });
-
+      clearError();
       finsihMoreLoad();
     } catch (error) {
-      setError(new Error(error));
+      setError(error);
       finsihMoreLoad();
     }
   };
@@ -94,11 +108,18 @@ export const useUserSenryuList = (
           totalCount: state.totalCount - 1,
         });
       }
+      clearError();
     } catch (error) {
-      // TODO
-      console.error(error);
+      setError(error);
     }
   };
 
-  return { ...state, isMoreLoading, error, fetchNextPage, deleteSenryu };
+  return {
+    ...state,
+    isLoading,
+    isMoreLoading,
+    error,
+    fetchNextPage,
+    deleteSenryu,
+  };
 };

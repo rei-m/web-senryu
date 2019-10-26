@@ -1,5 +1,5 @@
 /**
- * ユーザー
+ * ユーザー（という名前はよくないけど妥協）
  */
 export type UserId = string;
 

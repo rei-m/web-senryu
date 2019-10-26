@@ -20,6 +20,7 @@ import { useUserSenryuList } from '@src/hooks/useUserSenryuList';
 import { User, Senryu, UserId, SenryuId } from '@src/domain';
 import { ROUTING } from '@src/constants/routing';
 import { NavMenu } from '@src/constants';
+import { AppError } from '@src/types';
 
 export type Props = {
   id: string;
@@ -35,7 +36,7 @@ export type PresenterProps = {
   isMoreLoading: boolean;
   isSenryuModalOpen: boolean;
   currentSenryu: Senryu | null;
-  error: Error | null;
+  error: AppError | null;
   isSettingDialogOpen: boolean;
   onClickSenryu: (senryu: Senryu) => void;
   onClickMore: () => void;
@@ -178,6 +179,7 @@ export const Presenter = ({
                 <UserSettingDialog
                   open={isSettingDialogOpen}
                   initialUser={authUser}
+                  authError={null}
                   onClickPost={onClickPostProfile}
                   onClose={onCloseUserSettingDialog}
                 />

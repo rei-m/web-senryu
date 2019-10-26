@@ -99,6 +99,7 @@ const Layout: React.FC<Props> = ({ user, title, navMenu, children }) => {
         <UserSettingDialog
           open={isSettingDialogOpen}
           initialUser={user}
+          authError={null}
           onClickPost={handleClickPostProfile}
           onClose={closeSettingDialog}
         />
