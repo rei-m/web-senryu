@@ -1,6 +1,7 @@
 import { useContext } from 'react';
-import { AppAuthContext } from '@src/contexts/AppAuthProvider';
+import { AppAuthContext, AppAuthState } from '@src/contexts/AppAuthProvider';
 import { User } from '@src/domain';
 
-export const useAuthUser: () => User | null | undefined = () =>
-  useContext(AppAuthContext).user;
+export const useAuthUser: (context: AppAuthState) => User | null | undefined = (
+  context = useContext(AppAuthContext)
+) => context.user;
