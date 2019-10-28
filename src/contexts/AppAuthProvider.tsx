@@ -3,9 +3,11 @@ import UserSettingDialog from '@src/components/organisms/UserSettingDialog';
 import { User } from '@src/domain';
 import { useFirebaseUser } from '@src/hooks/useFirebaseUser';
 
-export const AppAuthContext = React.createContext<{
+export type AppAuthState = {
   user?: User | null;
-}>({});
+};
+
+export const AppAuthContext = React.createContext<AppAuthState>({});
 
 const AppAuthProvider: React.FC<{}> = ({ children }) => {
   const { user, error, initializeUser } = useFirebaseUser();

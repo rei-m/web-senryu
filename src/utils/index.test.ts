@@ -12,6 +12,11 @@ describe('utility functions', () => {
       expect(actual).toBeTruthy();
     });
 
+    it('should return true when empty', () => {
+      const actual = isBlankOrEmpty('');
+      expect(actual).toBeTruthy();
+    });
+
     it('should return false when not blank', () => {
       const actual = isBlankOrEmpty('a');
       expect(actual).toBeFalsy();
