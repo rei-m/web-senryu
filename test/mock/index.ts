@@ -1,4 +1,6 @@
 import { Senryu, User } from '@src/domain';
+import { SenryuRepository } from '@src/domain/repositories';
+import { AuthenticationService } from '@src/domain/services';
 
 export const SENRYU_1: Senryu = {
   id: 'abcdefg',
@@ -18,3 +20,9 @@ export const USER_1: User = {
   description: '川柳を始めた人',
   profileImageUrl: null,
 };
+
+export const genMockSenryuRepository = () =>
+  jest.genMockFromModule<SenryuRepository>('@src/domain/repositories');
+
+export const genMockAuthenticationService = () =>
+  jest.genMockFromModule<AuthenticationService>('@src/domain/services');
