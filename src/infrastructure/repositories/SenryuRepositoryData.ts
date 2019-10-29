@@ -5,6 +5,7 @@ import { SenryuRepository } from '@src/domain/repositories';
 import {
   senryuCollection,
   aggregateCollection,
+  aggregateCountUsersCollection,
   userCollection,
 } from '../firestore';
 import { senryuStorageRef } from '../storage';
@@ -49,12 +50,12 @@ export class SenryuRepositoryData implements SenryuRepository {
 
   async findByUserPerPage(userId: UserId, pageNo: number, base?: Senryu) {
     try {
-      const userSnap = await userCollection()
+      const aggregateSnap = await aggregateCountUsersCollection()
         .doc(userId)
         .get();
-      const userData = userSnap.data();
-      const count = userData !== undefined ? userData.senryuCount : 0;
-      const totalPages = Math.ceil(count / COUNT_MAX);
+      const aggregateData = aggregateSnap.data();
+      const totalCount = aggregateData !== undefined ? aggregateData.senryu : 0;
+      const totalPages = Math.ceil(totalCount / COUNT_MAX);
       const query =
         base === undefined
           ? senryuCollection()
@@ -70,12 +71,12 @@ export class SenryuRepositoryData implements SenryuRepository {
       const senryuData = senryuSnap.docs.map(doc =>
         dataToModel(doc.id, doc.data())
       );
-      const hasNextPage = COUNT_MAX * pageNo < count;
+      const hasNextPage = COUNT_MAX * pageNo < totalCount;
       return {
         currentPage: pageNo,
         totalPages,
         itemList: senryuData,
-        totalCount: count,
+        totalCount,
         listPerPage: COUNT_MAX,
         hasNextPage,
       };
@@ -86,12 +87,12 @@ export class SenryuRepositoryData implements SenryuRepository {
 
   async findAllPerPage(pageNo: number, base?: Senryu) {
     try {
-      const countSnap = await aggregateCollection()
+      const aggregateSnap = await aggregateCollection()
         .doc(`count`)
         .get();
-      const countData = countSnap.data();
-      const count = countData !== undefined ? countData.senryu : 0;
-      const totalPages = Math.ceil(count / COUNT_MAX);
+      const aggregateData = aggregateSnap.data();
+      const totalCount = aggregateData !== undefined ? aggregateData.senryu : 0;
+      const totalPages = Math.ceil(totalCount / COUNT_MAX);
       const query =
         base === undefined
           ? senryuCollection()
@@ -105,12 +106,12 @@ export class SenryuRepositoryData implements SenryuRepository {
       const senryuData = senryuSnap.docs.map(doc =>
         dataToModel(doc.id, doc.data())
       );
-      const hasNextPage = COUNT_MAX * pageNo < count;
+      const hasNextPage = COUNT_MAX * pageNo < totalCount;
       return {
         currentPage: pageNo,
         totalPages,
         itemList: senryuData,
-        totalCount: count,
+        totalCount,
         listPerPage: COUNT_MAX,
         hasNextPage,
       };
@@ -143,10 +144,10 @@ export class SenryuRepositoryData implements SenryuRepository {
         });
 
       if (senryu.userId) {
-        await userCollection()
+        await aggregateCountUsersCollection()
           .doc(senryu.userId)
           .update({
-            senryuCount: firebase.firestore.FieldValue.increment(1),
+            senryu: firebase.firestore.FieldValue.increment(1),
           });
       }
 
@@ -183,10 +184,11 @@ export class SenryuRepositoryData implements SenryuRepository {
       const senryuData = senryu.data();
 
       if (senryuData) {
-        const userDoc = await senryuData.user.ref.get();
-        await userDoc.ref.update({
-          senryuCount: firebase.firestore.FieldValue.increment(-1),
-        });
+        await aggregateCountUsersCollection()
+          .doc(senryuData.user.ref.id)
+          .update({
+            senryu: firebase.firestore.FieldValue.increment(-1),
+          });
       }
 
       await aggregateCollection()

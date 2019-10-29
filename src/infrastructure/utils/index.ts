@@ -1,6 +1,7 @@
 import { AppError, AppErrorCode } from '@src/types';
 
 export const reasonToAppError = (reason: any, model: string): AppError => {
+  console.error(reason);
   switch (reason.code as AppErrorCode | undefined) {
     case 'not-found':
       return {
