@@ -139,7 +139,9 @@ export const Container = ({ presenter }: ContainerProps) => {
   };
 
   const handleClickPost = async (value: SenryuDraft) => {
-    await createSenryu(value);
+    if (processingState === 'waiting') {
+      await createSenryu(value);
+    }
   };
 
   const handleClose = () => {

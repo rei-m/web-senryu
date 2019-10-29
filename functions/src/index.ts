@@ -18,9 +18,31 @@ export const onSenryuDeleted = functions.firestore
     return;
   });
 
+export const onUserCreated = functions.auth
+  .user()
+  .onCreate(async (user, _context) => {
+    await admin
+      .firestore()
+      .collection('aggregate/count/users')
+      .doc(user.uid)
+      .set({
+        senryu: 0,
+      });
+    return;
+  });
+
 export const onUserDeleted = functions.auth
   .user()
   .onDelete(async (user, _context) => {
+    const aggregateDoc = await admin
+      .firestore()
+      .collection('aggregate/count/users')
+      .doc(user.uid)
+      .get();
+    if (aggregateDoc.exists) {
+      await aggregateDoc.ref.delete();
+    }
+
     const userDoc = await admin
       .firestore()
       .collection('users')

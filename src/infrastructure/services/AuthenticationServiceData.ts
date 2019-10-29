@@ -83,7 +83,6 @@ export class AuthenticationServiceData implements AuthenticationService {
       await userDocRef.set({
         ryugou: user.ryugou,
         description: user.description,
-        senryuCount: 0,
       });
 
       if (user.profileImageUrl) {

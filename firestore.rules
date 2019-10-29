@@ -64,12 +64,18 @@ service cloud.firestore {
       allow create, update: if incomingData().size() == 1
         && incomingData().senryu is int;
     }
+    match /aggregate/count/users/{userId} {
+      allow get;
+      allow create, update: if isAuthenticated()
+        && isUserAuthenticated(userId)
+        && incomingData().size() == 1
+        && incomingData().senryu is int;
+    }
     match /users/{userId} {
       allow get;
       allow create, update: if isAuthenticated()
         && isUserAuthenticated(userId)
         && incomingData().size() <= 3
-        && incomingData().senryuCount is int
         && (incomingData().ryugou == null || validateRyugou(incomingData().ryugou))
         && (incomingData().description == null || validateUserDescription(incomingData().description));
       allow delete: if isAuthenticated()
