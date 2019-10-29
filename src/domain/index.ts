@@ -7,7 +7,7 @@ export type User = Readonly<{
   id: UserId;
   ryugou: string;
   description: string | null;
-  profileImageUrl: string | null; // プロフ画像は未実装
+  profileImageUrl: string | null; // TODO: プロフ画像は未実装
 }>;
 
 export type UninitializedUser = Readonly<{

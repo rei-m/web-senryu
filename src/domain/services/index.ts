@@ -1,7 +1,7 @@
 import { User, UninitializedUser } from '..';
 import { AppError } from '@src/types';
 
-// これは中途半端なIFになってしまったのでよくない・・・
+// これは臭いものをまとめて中途半端なIFになってしまったのでよくない・・・
 export interface AuthenticationService {
   onAuthStateChanged: (
     callback: (user: User | UninitializedUser | null) => void
