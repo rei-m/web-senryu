@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { User, UninitializedUser } from '@src/domain';
 import { AuthenticationService } from '@src/domain/services';
 import { AppError } from '@src/types';
@@ -12,10 +12,9 @@ type Deps = {
 type Return = {
   user: User | UninitializedUser | null;
   error: AppError | null;
-  initializeUser: (newUser: User) => Promise<void>;
 };
 
-export const useFirebaseUser = (
+export const useAuthenticationSubscriber = (
   { authenticationService }: Deps = useDiContainer()
 ): Return => {
   const [user, setUser] = useState<User | UninitializedUser | null>(null);
@@ -47,15 +46,5 @@ export const useFirebaseUser = (
     };
   }, [user !== null]);
 
-  const initializeUser = useCallback(async (newUser: User) => {
-    try {
-      await authenticationService.initialize(newUser);
-      setUser(newUser);
-      cleanError();
-    } catch (error) {
-      setError(error);
-    }
-  }, []);
-
-  return { user, error, initializeUser };
+  return { user, error };
 };
