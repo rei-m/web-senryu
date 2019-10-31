@@ -16,6 +16,7 @@ type Return = {
   senryu?: Senryu;
 };
 
+// TODO: 未使用
 export const useSenryu = (
   senryuId: SenryuId,
   { senryuRepository }: Deps = useDiContainer()
