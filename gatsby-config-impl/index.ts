@@ -2,8 +2,18 @@ import { SiteMetaData } from '../src/types';
 import { GatsbyPlugin } from './types';
 import { APP_NAME } from '@src/constants';
 
+const {
+  NODE_ENV,
+  URL: NETLIFY_SITE_URL = 'https://www.example.com',
+  DEPLOY_PRIME_URL: NETLIFY_DEPLOY_URL = NETLIFY_SITE_URL,
+  CONTEXT: NETLIFY_ENV = NODE_ENV,
+} = process.env;
+const isNetlifyProduction = NETLIFY_ENV === 'production';
+const siteUrl = isNetlifyProduction ? NETLIFY_SITE_URL : NETLIFY_DEPLOY_URL;
+
 export const siteMetadata: SiteMetaData = {
   title: APP_NAME,
+  siteUrl,
   description: `${APP_NAME}は誰でも気軽に川柳を投稿できるサイトです。暮らしの中でのふと感じたことや、思ったこと、感動したことなどを川柳で詠んでみませんか。`,
   author: `@rei-m`,
 };
@@ -54,4 +64,26 @@ export const plugins: GatsbyPlugin[] = [
   },
   `gatsby-plugin-no-sourcemaps`,
   `gatsby-plugin-remove-console`,
+  `gatsby-plugin-sitemap`,
+  {
+    resolve: 'gatsby-plugin-robots-txt',
+    options: {
+      resolveEnv: () => NETLIFY_ENV,
+      env: {
+        production: {
+          policy: [{ userAgent: '*', disallow: ['/'] }], // TODO: 後で修正
+        },
+        'branch-deploy': {
+          policy: [{ userAgent: '*', disallow: ['/'] }],
+          sitemap: null,
+          host: null,
+        },
+        'deploy-preview': {
+          policy: [{ userAgent: '*', disallow: ['/'] }],
+          sitemap: null,
+          host: null,
+        },
+      },
+    },
+  },
 ];

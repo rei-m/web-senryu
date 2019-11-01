@@ -206,7 +206,9 @@ export const Container = ({
     isSenryuModalOpen,
     currentSenryu,
     flashMessage:
-      location && location.state.message ? location.state.message : undefined,
+      location && location.state && location.state.message
+        ? location.state.message
+        : undefined,
     error,
     onClickSenryu: handleClickSenryu,
     onClickMore: fetchNextPage,

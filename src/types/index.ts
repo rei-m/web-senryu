@@ -3,6 +3,7 @@
  */
 export type SiteMetaData = Readonly<{
   title: string;
+  siteUrl: string;
   description: string;
   author: string;
 }>;
