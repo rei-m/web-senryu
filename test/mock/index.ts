@@ -1,5 +1,5 @@
 import { Senryu, User } from '@src/domain';
-import { SenryuRepository } from '@src/domain/repositories';
+import { SenryuRepository, UserRepository } from '@src/domain/repositories';
 import { AuthenticationService } from '@src/domain/services';
 
 export const SENRYU_1: Senryu = {
@@ -26,3 +26,6 @@ export const genMockSenryuRepository = () =>
 
 export const genMockAuthenticationService = () =>
   jest.genMockFromModule<AuthenticationService>('@src/domain/services');
+
+export const genMockUserRepository = () =>
+  jest.genMockFromModule<UserRepository>('@src/domain/repositories');

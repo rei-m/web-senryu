@@ -31,6 +31,7 @@ const dataToModel: (
 
 const COUNT_MAX = 20;
 
+// TODO: firebaseにからむところのテストは別途調べる（エミュレーター起動する？firebase自体DIする？）
 export class SenryuRepositoryData implements SenryuRepository {
   async findById(id: SenryuId) {
     try {
