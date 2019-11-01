@@ -1,13 +1,19 @@
 import { renderHook, act } from '@testing-library/react-hooks';
 import { Senryu } from '@src/domain';
-import { SenryuRepository } from '@src/domain/repositories';
 import { AppError } from '@src/types';
-import { useSenryuList } from './useSenryuList';
-import { SENRYU_1, genMockSenryuRepository } from '@test/mock';
+import { useUserSenryuList } from './useUserSenryuList';
+import {
+  USER_1,
+  SENRYU_1,
+  genMockSenryuRepository,
+  genMockUserRepository,
+} from '@test/mock';
+import { SenryuRepository, UserRepository } from '@src/domain/repositories';
 
 describe('hooks', () => {
-  describe('useSenryuList', () => {
+  describe('useUserSenryuList', () => {
     let senryuRepository: SenryuRepository;
+    let userRepository: UserRepository;
 
     const firstList = Array.from<Senryu>({ length: 20 })
       .fill(SENRYU_1)
@@ -19,7 +25,9 @@ describe('hooks', () => {
 
     beforeEach(() => {
       senryuRepository = genMockSenryuRepository();
-      senryuRepository.findAllPerPage = jest.fn(pageNo => {
+      userRepository = genMockUserRepository();
+
+      senryuRepository.findByUserPerPage = jest.fn((_userId, pageNo) => {
         if (pageNo === 1) {
           return Promise.resolve({
             currentPage: 1,
@@ -41,11 +49,13 @@ describe('hooks', () => {
         }
       });
       senryuRepository.delete = jest.fn(_senryuId => Promise.resolve());
+
+      userRepository.findById = jest.fn(_userId => Promise.resolve(USER_1));
     });
 
     it('should return senryu list', async () => {
       const { result, waitForNextUpdate } = renderHook(() =>
-        useSenryuList({ senryuRepository })
+        useUserSenryuList(USER_1.id, { senryuRepository, userRepository })
       );
 
       await waitForNextUpdate();
@@ -68,16 +78,21 @@ describe('hooks', () => {
       expect(isLoading).toEqual(false);
       expect(isMoreLoading).toEqual(false);
       expect(error).toBeNull();
-      expect(senryuRepository.findAllPerPage).toHaveBeenCalledWith(1);
+      expect(senryuRepository.findByUserPerPage).toHaveBeenCalledWith(
+        USER_1.id,
+        1
+      );
+      expect(userRepository.findById).toHaveBeenCalledWith(USER_1.id);
     });
 
     it('can catch error when fetch failed', async () => {
       const fetchError: AppError = { code: 'unhandled', message: 'error' };
-      senryuRepository.findAllPerPage = jest.fn(_pageNo =>
+      senryuRepository.findByUserPerPage = jest.fn((_userId, _pageNo) =>
         Promise.reject(fetchError)
       );
+
       const { result, waitForNextUpdate } = renderHook(() =>
-        useSenryuList({ senryuRepository })
+        useUserSenryuList(USER_1.id, { senryuRepository, userRepository })
       );
 
       await waitForNextUpdate();
@@ -85,12 +100,16 @@ describe('hooks', () => {
       const { isLoading, error } = result.current;
       expect(isLoading).toEqual(false);
       expect(error).toEqual(fetchError);
-      expect(senryuRepository.findAllPerPage).toHaveBeenCalledWith(1);
+      expect(senryuRepository.findByUserPerPage).toHaveBeenCalledWith(
+        USER_1.id,
+        1
+      );
+      expect(userRepository.findById).toHaveBeenCalledWith(USER_1.id);
     });
 
     it('should return next page ', async () => {
       const { result, waitForNextUpdate } = renderHook(() =>
-        useSenryuList({ senryuRepository })
+        useUserSenryuList(USER_1.id, { senryuRepository, userRepository })
       );
 
       await waitForNextUpdate();
@@ -110,7 +129,8 @@ describe('hooks', () => {
       expect(result.current.totalCount).toEqual(30);
       expect(result.current.isLoading).toEqual(false);
       expect(result.current.isMoreLoading).toEqual(false);
-      expect(senryuRepository.findAllPerPage).toHaveBeenCalledWith(
+      expect(senryuRepository.findByUserPerPage).toHaveBeenCalledWith(
+        USER_1.id,
         2,
         firstList.slice(-1)[0]
       );
@@ -119,7 +139,7 @@ describe('hooks', () => {
     it('can catch error when fetch next page failed', async () => {
       const fetchError: AppError = { code: 'unhandled', message: 'error' };
 
-      senryuRepository.findAllPerPage = jest.fn(pageNo => {
+      senryuRepository.findByUserPerPage = jest.fn((_userId, pageNo) => {
         if (pageNo === 1) {
           return Promise.resolve({
             currentPage: 1,
@@ -133,8 +153,9 @@ describe('hooks', () => {
           return Promise.reject(fetchError);
         }
       });
+
       const { result, waitForNextUpdate } = renderHook(() =>
-        useSenryuList({ senryuRepository })
+        useUserSenryuList(USER_1.id, { senryuRepository, userRepository })
       );
 
       await waitForNextUpdate();
@@ -154,7 +175,8 @@ describe('hooks', () => {
       expect(result.current.totalCount).toEqual(30);
       expect(result.current.isMoreLoading).toEqual(false);
       expect(result.current.error).toEqual(fetchError);
-      expect(senryuRepository.findAllPerPage).toHaveBeenCalledWith(
+      expect(senryuRepository.findByUserPerPage).toHaveBeenCalledWith(
+        USER_1.id,
         2,
         firstList.slice(-1)[0]
       );
@@ -162,7 +184,7 @@ describe('hooks', () => {
 
     it('can delete senryu', async () => {
       const { result, waitForNextUpdate } = renderHook(() =>
-        useSenryuList({ senryuRepository })
+        useUserSenryuList(USER_1.id, { senryuRepository, userRepository })
       );
 
       await waitForNextUpdate();
@@ -187,7 +209,7 @@ describe('hooks', () => {
       );
 
       const { result, waitForNextUpdate } = renderHook(() =>
-        useSenryuList({ senryuRepository })
+        useUserSenryuList(USER_1.id, { senryuRepository, userRepository })
       );
 
       await waitForNextUpdate();
