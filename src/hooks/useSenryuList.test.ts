@@ -1,76 +1,24 @@
 import { renderHook, act } from '@testing-library/react-hooks';
 import { Senryu } from '@src/domain';
+import { SenryuRepository } from '@src/domain/repositories';
 import { AppError } from '@src/types';
 import { useSenryuList } from './useSenryuList';
 import { SENRYU_1, genMockSenryuRepository } from '@test/mock';
 
 describe('hooks', () => {
   describe('useSenryuList', () => {
-    it('should return senryu list', async () => {
-      const senryuRepository = genMockSenryuRepository();
-      senryuRepository.findAllPerPage = jest.fn(_pageNo =>
-        Promise.resolve({
-          currentPage: 1,
-          totalPages: 2,
-          totalCount: 30,
-          hasNextPage: true,
-          listPerPage: 20,
-          itemList: [SENRYU_1],
-        })
-      );
-      const { result, waitForNextUpdate } = renderHook(() =>
-        useSenryuList({ senryuRepository })
-      );
+    let senryuRepository: SenryuRepository;
 
-      await waitForNextUpdate();
+    const firstList = Array.from<Senryu>({ length: 20 })
+      .fill(SENRYU_1)
+      .map((s, i) => ({ ...s, id: `${s.id}${i}` }));
 
-      const {
-        currentPage,
-        hasNextPage,
-        senryuList,
-        totalPages,
-        totalCount,
-        isLoading,
-        isMoreLoading,
-        error,
-      } = result.current;
-      expect(currentPage).toEqual(1);
-      expect(hasNextPage).toEqual(true);
-      expect(senryuList).toEqual([SENRYU_1]);
-      expect(totalPages).toEqual(2);
-      expect(totalCount).toEqual(30);
-      expect(isLoading).toEqual(false);
-      expect(isMoreLoading).toEqual(false);
-      expect(error).toBeNull();
-      expect(senryuRepository.findAllPerPage).toHaveBeenCalledWith(1);
-    });
+    const secondList = Array.from<Senryu>({ length: 10 })
+      .fill(SENRYU_1)
+      .map((s, i) => ({ ...s, id: `${s.id}${20 + i}` }));
 
-    it('can catch error when fetch failed', async () => {
-      const senryuRepository = genMockSenryuRepository();
-      const fetchError: AppError = { code: 'unhandled', message: 'error' };
-      senryuRepository.findAllPerPage = jest.fn(_pageNo =>
-        Promise.reject(fetchError)
-      );
-      const { result, waitForNextUpdate } = renderHook(() =>
-        useSenryuList({ senryuRepository })
-      );
-
-      await waitForNextUpdate();
-
-      const { isLoading, error } = result.current;
-      expect(isLoading).toEqual(false);
-      expect(error).toEqual(fetchError);
-      expect(senryuRepository.findAllPerPage).toHaveBeenCalledWith(1);
-    });
-
-    it('should return next page ', async () => {
-      const senryuRepository = genMockSenryuRepository();
-      const firstList = Array.from<Senryu>({ length: 20 })
-        .fill(SENRYU_1)
-        .map((s, i) => ({ ...s, id: `${s.id}${i}` }));
-      const secondList = Array.from<Senryu>({ length: 10 })
-        .fill(SENRYU_1)
-        .map((s, i) => ({ ...s, id: `${s.id}${20 + i}` }));
+    beforeEach(() => {
+      senryuRepository = genMockSenryuRepository();
       senryuRepository.findAllPerPage = jest.fn(pageNo => {
         if (pageNo === 1) {
           return Promise.resolve({
@@ -92,6 +40,55 @@ describe('hooks', () => {
           });
         }
       });
+      senryuRepository.delete = jest.fn(_senryuId => Promise.resolve());
+    });
+
+    it('should return senryu list', async () => {
+      const { result, waitForNextUpdate } = renderHook(() =>
+        useSenryuList({ senryuRepository })
+      );
+
+      await waitForNextUpdate();
+
+      const {
+        currentPage,
+        hasNextPage,
+        senryuList,
+        totalPages,
+        totalCount,
+        isLoading,
+        isMoreLoading,
+        error,
+      } = result.current;
+      expect(currentPage).toEqual(1);
+      expect(hasNextPage).toEqual(true);
+      expect(senryuList).toEqual(firstList);
+      expect(totalPages).toEqual(2);
+      expect(totalCount).toEqual(30);
+      expect(isLoading).toEqual(false);
+      expect(isMoreLoading).toEqual(false);
+      expect(error).toBeNull();
+      expect(senryuRepository.findAllPerPage).toHaveBeenCalledWith(1);
+    });
+
+    it('can catch error when fetch failed', async () => {
+      const fetchError: AppError = { code: 'unhandled', message: 'error' };
+      senryuRepository.findAllPerPage = jest.fn(_pageNo =>
+        Promise.reject(fetchError)
+      );
+      const { result, waitForNextUpdate } = renderHook(() =>
+        useSenryuList({ senryuRepository })
+      );
+
+      await waitForNextUpdate();
+
+      const { isLoading, error } = result.current;
+      expect(isLoading).toEqual(false);
+      expect(error).toEqual(fetchError);
+      expect(senryuRepository.findAllPerPage).toHaveBeenCalledWith(1);
+    });
+
+    it('should return next page ', async () => {
       const { result, waitForNextUpdate } = renderHook(() =>
         useSenryuList({ senryuRepository })
       );
@@ -120,10 +117,6 @@ describe('hooks', () => {
     });
 
     it('can catch error when fetch next page failed', async () => {
-      const senryuRepository = genMockSenryuRepository();
-      const firstList = Array.from<Senryu>({ length: 20 })
-        .fill(SENRYU_1)
-        .map((s, i) => ({ ...s, id: `${s.id}${i}` }));
       const fetchError: AppError = { code: 'unhandled', message: 'error' };
 
       senryuRepository.findAllPerPage = jest.fn(pageNo => {
@@ -168,22 +161,6 @@ describe('hooks', () => {
     });
 
     it('can delete senryu', async () => {
-      const senryuRepository = genMockSenryuRepository();
-      const firstList = Array.from<Senryu>({ length: 20 })
-        .fill(SENRYU_1)
-        .map((s, i) => ({ ...s, id: `${s.id}${i}` }));
-      senryuRepository.findAllPerPage = jest.fn(_pageNo =>
-        Promise.resolve({
-          currentPage: 1,
-          totalPages: 1,
-          totalCount: 20,
-          hasNextPage: false,
-          listPerPage: 20,
-          itemList: firstList,
-        })
-      );
-      senryuRepository.delete = jest.fn(_senryuId => Promise.resolve());
-
       const { result, waitForNextUpdate } = renderHook(() =>
         useSenryuList({ senryuRepository })
       );
@@ -198,27 +175,13 @@ describe('hooks', () => {
 
       const { senryuList, totalCount } = result.current;
       expect(senryuList).toEqual([firstList[0], ...firstList.slice(2)]);
-      expect(totalCount).toEqual(19);
+      expect(totalCount).toEqual(29);
       expect(senryuRepository.delete).toHaveBeenCalledWith(firstList[1].id);
     });
 
     it('can catch error when delete senryu failed', async () => {
-      const senryuRepository = genMockSenryuRepository();
-      const firstList = Array.from<Senryu>({ length: 20 })
-        .fill(SENRYU_1)
-        .map((s, i) => ({ ...s, id: `${s.id}${i}` }));
       const deleteError: AppError = { code: 'unhandled', message: 'error' };
 
-      senryuRepository.findAllPerPage = jest.fn(_pageNo =>
-        Promise.resolve({
-          currentPage: 1,
-          totalPages: 1,
-          totalCount: 20,
-          hasNextPage: false,
-          listPerPage: 20,
-          itemList: firstList,
-        })
-      );
       senryuRepository.delete = jest.fn(_senryuId =>
         Promise.reject(deleteError)
       );
@@ -237,7 +200,7 @@ describe('hooks', () => {
 
       const { senryuList, totalCount, error } = result.current;
       expect(senryuList).toEqual(firstList);
-      expect(totalCount).toEqual(20);
+      expect(totalCount).toEqual(30);
       expect(error).toEqual(deleteError);
       expect(senryuRepository.delete).toHaveBeenCalledWith(firstList[1].id);
     });

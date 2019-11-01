@@ -1,13 +1,16 @@
 import { renderHook } from '@testing-library/react-hooks';
 import { User, UninitializedUser } from '@src/domain';
+import { AuthenticationService } from '@src/domain/services';
 import { AppError } from '@src/types';
 import { useAuthenticationSubscriber } from './useAuthenticationSubscriber';
 import { genMockAuthenticationService, USER_1 } from '@test/mock';
 
 describe('hooks', () => {
   describe('useAuthenticationSubscriber', () => {
-    it('should return authentication user', () => {
-      const authenticationService = genMockAuthenticationService();
+    let authenticationService: AuthenticationService;
+
+    beforeEach(() => {
+      authenticationService = genMockAuthenticationService();
       authenticationService.onAuthStateChanged = (
         callback: (user: User | UninitializedUser | null) => void
       ) => () => {
@@ -22,7 +25,9 @@ describe('hooks', () => {
       authenticationService.onErrorOccurred = (
         _callback: (error: AppError) => void
       ) => {};
+    });
 
+    it('should return authentication user', () => {
       const { result } = renderHook(() =>
         useAuthenticationSubscriber({
           authenticationService,

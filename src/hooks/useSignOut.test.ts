@@ -1,17 +1,21 @@
 import { renderHook, act } from '@testing-library/react-hooks';
+import { AuthenticationService } from '@src/domain/services';
 import { AppError } from '@src/types';
 import { useSignOut } from './useSignOut';
 import { genMockAuthenticationService } from '@test/mock';
 
 describe('hooks', () => {
   describe('useSignOut', () => {
+    let authenticationService: AuthenticationService;
+
+    beforeEach(() => {
+      authenticationService = genMockAuthenticationService();
+      authenticationService.signOut = jest.fn(() => Promise.resolve());
+    });
+
     it('should return initial state', () => {
-      const authenticationService = genMockAuthenticationService();
-      authenticationService.signOut = () => Promise.resolve();
       const { result } = renderHook(() =>
-        useSignOut({
-          authenticationService,
-        })
+        useSignOut({ authenticationService })
       );
       const { processingState, error } = result.current;
       expect(processingState).toEqual('waiting');
@@ -19,14 +23,12 @@ describe('hooks', () => {
     });
 
     it('can sign out', async () => {
-      const authenticationService = genMockAuthenticationService();
-      authenticationService.signOut = jest.fn(() => Promise.resolve());
       const { result, waitForNextUpdate } = renderHook(() =>
-        useSignOut({
-          authenticationService,
-        })
+        useSignOut({ authenticationService })
       );
+
       const { signOut } = result.current;
+
       act(() => {
         signOut();
       });
@@ -40,16 +42,16 @@ describe('hooks', () => {
     });
 
     it('can catch error when sign out failed', async () => {
-      const authenticationService = genMockAuthenticationService();
       const signOutError: AppError = { code: 'unhandled', message: 'error' };
 
       authenticationService.signOut = () => Promise.reject(signOutError);
+
       const { result, waitForNextUpdate } = renderHook(() =>
-        useSignOut({
-          authenticationService,
-        })
+        useSignOut({ authenticationService })
       );
+
       const { signOut } = result.current;
+
       act(() => {
         signOut();
       });
