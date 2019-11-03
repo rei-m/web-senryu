@@ -1,11 +1,11 @@
 import { graphql, useStaticQuery } from 'gatsby';
 import { SiteMetaData } from '@src/types';
 
-export interface QueryData {
+export type QueryData = {
   site: {
     siteMetadata: SiteMetaData;
   };
-}
+};
 
 export const useSiteMetaData = (): QueryData =>
   useStaticQuery(
@@ -14,6 +14,7 @@ export const useSiteMetaData = (): QueryData =>
         site {
           siteMetadata {
             title
+            siteUrl
             description
             author
           }

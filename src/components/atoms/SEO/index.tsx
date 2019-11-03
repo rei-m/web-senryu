@@ -1,6 +1,6 @@
 import React from 'react';
 import Helmet from 'react-helmet';
-import { useStaticQuery, graphql } from 'gatsby';
+import { useSiteMetaData } from '@src/hooks/useSiteMetaData';
 
 export type Props = {
   title?: string;
@@ -20,19 +20,7 @@ const SEO = ({
   meta = [],
   noIndex = false,
 }: Props) => {
-  const { site } = useStaticQuery(
-    graphql`
-      query SEOQuery {
-        site {
-          siteMetadata {
-            title
-            description
-            author
-          }
-        }
-      }
-    `
-  );
+  const { site } = useSiteMetaData();
 
   const metaDescription = description || site.siteMetadata.description;
 
@@ -81,7 +69,11 @@ const SEO = ({
         lang,
       }}
       title={title}
-      titleTemplate={`%s / ${site.siteMetadata.title}`}
+      titleTemplate={
+        title !== site.siteMetadata.title
+          ? `%s / ${site.siteMetadata.title}`
+          : undefined
+      }
       meta={metaData}
     />
   );
