@@ -42,6 +42,9 @@ const useStyles = makeStyles(theme => ({
     bottom: 0,
     boxShadow: theme.shadows['4'],
     zIndex: 1,
+    [theme.breakpoints.up('sm')]: {
+      display: 'none',
+    },
   },
 }));
 
