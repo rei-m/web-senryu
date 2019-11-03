@@ -40,7 +40,9 @@ export const AuthPagePresenter = ({ signInSuccessUrl }: PresenterProps) => (
     content={
       <StyledFirebaseAuth
         uiConfig={{ ...uiConfig, signInSuccessUrl }}
-        firebaseAuth={firebase.auth()}
+        firebaseAuth={
+          typeof window !== 'undefined' ? firebase.auth() : undefined
+        }
       />
     }
   />
