@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "senryudev"
+    "default": "senryudev",
+    "production": "senryu-8247d"
   }
 }
