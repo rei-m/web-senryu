@@ -97,7 +97,7 @@ export const Presenter = ({
                   を守って投稿してください
                 </Txt>
               </div>
-              {user && (
+              {user !== undefined && (
                 <SenryuForm
                   user={user}
                   onSubmit={onSubmitForm}
