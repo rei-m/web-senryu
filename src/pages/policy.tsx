@@ -139,7 +139,7 @@ const PolicyPage = () => {
             heading={
               <Heading
                 level={3}
-                visualLevel={1}
+                visualLevel={3}
                 underline
                 className={classes.heading}
               >

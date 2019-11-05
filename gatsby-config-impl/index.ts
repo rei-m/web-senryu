@@ -1,6 +1,7 @@
 import { SiteMetaData } from '../src/types';
 import { GatsbyPlugin } from './types';
 import { APP_NAME } from '@src/constants';
+import { ROUTING } from '@src/constants/routing';
 
 const {
   NODE_ENV,
@@ -71,7 +72,19 @@ export const plugins: GatsbyPlugin[] = [
       resolveEnv: () => NETLIFY_ENV,
       env: {
         production: {
-          policy: [{ userAgent: '*', disallow: ['/'] }], // TODO: 後で修正
+          policy: [
+            { userAgent: '*', allow: '/' },
+            {
+              userAgent: '*',
+              disallow: [
+                ROUTING.account,
+                ROUTING.auth,
+                ROUTING.senryuNew,
+                ROUTING.privacyPolicy,
+                ROUTING.termsOfService,
+              ],
+            },
+          ],
         },
         'branch-deploy': {
           policy: [{ userAgent: '*', disallow: ['/'] }],

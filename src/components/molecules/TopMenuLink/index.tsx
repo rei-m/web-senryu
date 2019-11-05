@@ -19,6 +19,7 @@ const useStyles = makeStyles(theme => ({
     border: `1px solid ${theme.palette.grey[300]}`,
     padding: theme.spacing(2),
     borderRadius: theme.spacing(2),
+    backgroundColor: theme.palette.common.white,
     minWidth: 208,
     [theme.breakpoints.up('md')]: {
       maxWidth: 208,
@@ -91,7 +92,7 @@ const TopMenuLink = ({
     <div className={clsx(classes.root, className)}>
       <Link to={to}>
         <span className={classes.iconWrapper}>{icon}</span>
-        <Txt size={`ll`} className={classes.label}>
+        <Txt size={`l`} className={classes.label}>
           {label}
         </Txt>
         <Txt tag={`p`} size={`s`} className={classes.description}>

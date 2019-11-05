@@ -82,14 +82,14 @@ const IndexPage = () => {
               <TopMenuLink
                 to={ROUTING.senryuNew}
                 label="川柳を投稿する"
-                description="会員登録不要で気軽に川柳を投稿できます。"
+                description="会員登録不要で川柳を投稿できます。"
                 icon={<EditIcon />}
                 className={classes.link}
               />
               <TopMenuLink
                 to={ROUTING.senryu}
                 label="川柳を見る"
-                description={`今までに投稿された川柳を見ることができます。`}
+                description="今までに投稿された川柳を見ることができます。"
                 icon={<PeopleIcon />}
                 className={classes.link}
               />
