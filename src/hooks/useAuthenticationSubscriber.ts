@@ -10,14 +10,14 @@ type Deps = {
 };
 
 type Return = {
-  user: User | UninitializedUser | null;
+  user?: User | UninitializedUser | null;
   error: AppError | null;
 };
 
 export const useAuthenticationSubscriber = (
   { authenticationService }: Deps = useDiContainer()
 ): Return => {
-  const [user, setUser] = useState<User | UninitializedUser | null>(null);
+  const [user, setUser] = useState<User | UninitializedUser | null>();
   const [error, setError, cleanError] = useAppError();
 
   useEffect(() => {

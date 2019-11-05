@@ -79,7 +79,7 @@ const Layout: React.FC<Props> = ({ user, title, navMenu, children }) => {
           <Drawer
             isInitialDisplay={isDisplayDrawer}
             open={isOpenDrawer}
-            user={user ? user : null}
+            user={user}
             onClickSetting={openSettingDialog}
             onClose={closeDrawer}
           />

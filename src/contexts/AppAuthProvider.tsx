@@ -16,7 +16,7 @@ const AppAuthProvider: React.FC<{}> = ({ children }) => {
   return (
     <AppAuthContext.Provider
       value={{
-        user: user ? (user.ryugou === null ? null : user) : null,
+        user: user ? (user.ryugou === null ? null : user) : user,
       }}
     >
       {children}

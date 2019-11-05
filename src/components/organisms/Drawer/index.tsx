@@ -20,7 +20,7 @@ import { ROUTING } from '@src/constants/routing';
 export type Props = {
   isInitialDisplay: boolean;
   open: boolean;
-  user: User | null;
+  user?: User | null;
   onClickSetting: () => void;
   onClose: () => void;
 };
@@ -152,6 +152,7 @@ const Drawer = ({
             component={Link}
             to={ROUTING.auth}
             activeClassName={classes.active}
+            disabled={user === undefined}
           >
             <ListItemIcon>
               <AccountCircleIcon />
