@@ -5,6 +5,7 @@ import { AppError } from '@src/types';
 import { useAppError } from './useAppError';
 import { useBool } from './useBool';
 import { useDiContainer } from './useDiContainer';
+import { useSafeResolve } from './useSafeResolve';
 
 type Deps = {
   senryuRepository: SenryuRepository;
@@ -22,13 +23,14 @@ type Return = {
   isLoading: boolean;
   isMoreLoading: boolean;
   error: AppError | null;
-  fetchNextPage: () => Promise<void>;
-  deleteSenryu: (senryuId: SenryuId) => Promise<void>;
+  fetchNextPage: () => void;
+  deleteSenryu: (senryuId: SenryuId) => void;
 } & State;
 
 export const useSenryuList = (
   { senryuRepository }: Deps = useDiContainer()
 ): Return => {
+  const { safeResolve } = useSafeResolve();
   const [state, setState] = useState<State>({
     currentPage: 0,
     hasNextPage: false,
@@ -41,9 +43,8 @@ export const useSenryuList = (
 
   useEffect(() => {
     startLoad();
-    senryuRepository
-      .findAllPerPage(1)
-      .then(page => {
+    safeResolve(senryuRepository.findAllPerPage(1))(
+      page => {
         setState({
           currentPage: page.currentPage,
           hasNextPage: page.hasNextPage,
@@ -52,58 +53,64 @@ export const useSenryuList = (
           senryuList: page.itemList,
         });
         finishLoad();
-      })
-      .catch(error => {
+      },
+      error => {
         setError(error);
         finishLoad();
-      });
+      }
+    );
   }, []);
 
-  const fetchNextPage = async () => {
+  const fetchNextPage = () => {
     if (!state.senryuList) {
       return;
     }
 
     startMoreLoad();
 
-    try {
-      const result = await senryuRepository.findAllPerPage(
+    safeResolve(
+      senryuRepository.findAllPerPage(
         state.currentPage + 1,
         state.senryuList.slice(-1)[0]
-      );
-
-      setState({
-        currentPage: result.currentPage,
-        hasNextPage: result.hasNextPage,
-        totalPages: result.totalPages,
-        totalCount: result.totalCount,
-        senryuList: [...state.senryuList, ...result.itemList],
-      });
-      clearError();
-      finsihMoreLoad();
-    } catch (error) {
-      setError(error);
-      finsihMoreLoad();
-    }
+      )
+    )(
+      result => {
+        setState({
+          currentPage: result.currentPage,
+          hasNextPage: result.hasNextPage,
+          totalPages: result.totalPages,
+          totalCount: result.totalCount,
+          senryuList: [...state.senryuList, ...result.itemList],
+        });
+        clearError();
+        finsihMoreLoad();
+      },
+      error => {
+        setError(error);
+        finsihMoreLoad();
+      }
+    );
   };
 
-  const deleteSenryu = async (senryuId: SenryuId) => {
-    try {
-      await senryuRepository.delete(senryuId);
-      if (state.senryuList) {
-        const updated = state.senryuList.filter(
-          senryu => senryu.id !== senryuId
-        );
-        setState({
-          ...state,
-          senryuList: updated,
-          totalCount: state.totalCount - 1,
-        });
+  const deleteSenryu = (senryuId: SenryuId) => {
+    safeResolve(senryuRepository.delete(senryuId))(
+      () => {
+        if (state.senryuList) {
+          const updated = state.senryuList.filter(
+            senryu => senryu.id !== senryuId
+          );
+          setState({
+            ...state,
+            senryuList: updated,
+            totalCount: state.totalCount - 1,
+          });
+        }
+        clearError();
+      },
+      error => {
+        setError(error);
       }
-      clearError();
-    } catch (error) {
-      setError(error);
-    }
+    );
   };
 
   return {

@@ -1,6 +1,5 @@
 import React from 'react';
 import firebase from 'firebase/app';
-import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -8,8 +7,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import makeStyles from '@src/styles/makeStyles';
+import FirebaseAuthUI from '@src/components/organisms/FirebaseAuthUI';
 import Heading from '@src/components/atoms/Heading';
-import { ROUTING } from '@src/constants/routing';
 import { AppError } from '@src/types';
 
 export type Props = {
@@ -59,29 +58,23 @@ export const Presenter = ({
         {0 < providerIdList.length ? (
           <>
             <DialogContentText>{contentText}</DialogContentText>
-            <StyledFirebaseAuth
-              uiConfig={{
-                signInFlow: 'popup',
-                tosUrl: ROUTING.termsOfService,
-                privacyPolicyUrl: ROUTING.privacyPolicy,
-                signInOptions: providerIdList,
-                callbacks: {
-                  signInSuccessWithAuthResult: function(_authResult: any) {
-                    onClose();
-                    onAuthSuccess();
-                    return false;
-                  },
-                  signInFailure: function(error: firebaseui.auth.AuthUIError) {
-                    onClose();
-                    onAuthFailure({
-                      code: 'unauthenticated',
-                      message: error.message,
-                    });
-                    return Promise.resolve();
-                  },
+            <FirebaseAuthUI
+              callbacks={{
+                signInSuccessWithAuthResult: function(_authResult: any) {
+                  onClose();
+                  onAuthSuccess();
+                  return false;
+                },
+                signInFailure: function(error: firebaseui.auth.AuthUIError) {
+                  onClose();
+                  onAuthFailure({
+                    code: 'unauthenticated',
+                    message: error.message,
+                  });
+                  return Promise.resolve();
                 },
               }}
-              firebaseAuth={firebase.auth()}
+              providerIdList={providerIdList}
               className={classes.form}
             />
           </>
