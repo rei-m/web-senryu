@@ -44,7 +44,7 @@ export const useAuthenticationSubscriber = (
     return () => {
       unsubscribe();
     };
-  }, [user]);
+  }, [user !== null || user !== undefined]);
 
   return { user, error };
 };
