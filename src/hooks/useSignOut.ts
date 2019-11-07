@@ -4,6 +4,7 @@ import { AppError, ProcessingState } from '@src/types';
 import { useAppError } from './useAppError';
 import { useDiContainer } from './useDiContainer';
 import { useProcessingState } from './useProcessingState';
+import { useSafeResolve } from './useSafeResolve';
 
 type Deps = {
   authenticationService: AuthenticationService;
@@ -12,7 +13,7 @@ type Deps = {
 type Return = {
   processingState: ProcessingState;
   error: AppError | null;
-  signOut: () => Promise<void>;
+  signOut: () => void;
 };
 
 export const useSignOut = (
@@ -25,17 +26,20 @@ export const useSignOut = (
     completeProcess,
   ] = useProcessingState();
   const [error, setError, cleanError] = useAppError();
+  const { safeResolve } = useSafeResolve();
 
-  const signOut = useCallback(async () => {
+  const signOut = useCallback(() => {
     startProcess();
-    try {
-      await authenticationService.signOut();
-      cleanError();
-      completeProcess();
-    } catch (error) {
-      setError(error);
-      waitProcess();
-    }
+    safeResolve(authenticationService.signOut())(
+      () => {
+        cleanError();
+        completeProcess();
+      },
+      error => {
+        setError(error);
+        waitProcess();
+      }
+    );
   }, []);
 
   return { processingState, error, signOut };

@@ -5,6 +5,7 @@ import { AppError, ProcessingState } from '@src/types';
 import { useAppError } from './useAppError';
 import { useDiContainer } from './useDiContainer';
 import { useProcessingState } from './useProcessingState';
+import { useSafeResolve } from './useSafeResolve';
 
 type Deps = {
   authenticationService: AuthenticationService;
@@ -13,7 +14,7 @@ type Deps = {
 type Return = {
   processingState: ProcessingState;
   error: AppError | null;
-  updateProfile: (user: User) => Promise<void>;
+  updateProfile: (user: User) => void;
 };
 
 export const useUpdateProfile = (
@@ -26,17 +27,20 @@ export const useUpdateProfile = (
     completeProcess,
   ] = useProcessingState();
   const [error, setError, cleanError] = useAppError();
+  const { safeResolve } = useSafeResolve();
 
-  const updateProfile = useCallback(async (user: User) => {
+  const updateProfile = useCallback((user: User) => {
     startProcess();
-    try {
-      await authenticationService.updateProfile(user);
-      cleanError();
-      completeProcess();
-    } catch (error) {
-      setError(error);
-      waitProcess();
-    }
+    safeResolve(authenticationService.updateProfile(user))(
+      () => {
+        cleanError();
+        completeProcess();
+      },
+      error => {
+        setError(error);
+        waitProcess();
+      }
+    );
   }, []);
 
   return { processingState, error, updateProfile };

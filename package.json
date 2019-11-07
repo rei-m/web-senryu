@@ -37,8 +37,8 @@
     "typography": "^0.16.19"
   },
   "devDependencies": {
-    "@babel/core": "^7.7.0",
-    "@ljharb/eslint-config": "^14.1.0",
+    "@babel/core": "^7.7.2",
+    "@ljharb/eslint-config": "^15.0.0",
     "@storybook/addon-actions": "^5.2.5",
     "@storybook/addon-links": "^5.2.5",
     "@storybook/addon-storyshots": "^5.2.5",
@@ -46,7 +46,7 @@
     "@storybook/react": "^5.2.5",
     "@testing-library/react-hooks": "^3.2.1",
     "@types/jest": "^24.0.22",
-    "@types/react-dom": "^16.9.3",
+    "@types/react-dom": "^16.9.4",
     "@types/react-helmet": "^5.0.14",
     "@types/react-image-crop": "^8.1.2",
     "@types/react-test-renderer": "^16.9.1",

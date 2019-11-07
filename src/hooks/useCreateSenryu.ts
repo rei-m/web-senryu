@@ -5,6 +5,7 @@ import { AppError, ProcessingState } from '@src/types';
 import { useAppError } from './useAppError';
 import { useDiContainer } from './useDiContainer';
 import { useProcessingState } from './useProcessingState';
+import { useSafeResolve } from './useSafeResolve';
 
 type Deps = {
   senryuRepository: SenryuRepository;
@@ -13,7 +14,7 @@ type Deps = {
 type Return = {
   processingState: ProcessingState;
   error: AppError | null;
-  createSenryu: (senryu: SenryuDraft) => Promise<void>;
+  createSenryu: (senryu: SenryuDraft) => void;
 };
 
 export const useCreateSenryu = (
@@ -26,17 +27,20 @@ export const useCreateSenryu = (
     completeProcess,
   ] = useProcessingState();
   const [error, setError, cleanError] = useAppError();
+  const { safeResolve } = useSafeResolve();
 
-  const createSenryu = useCallback(async (senryu: SenryuDraft) => {
+  const createSenryu = useCallback((senryu: SenryuDraft) => {
     startProcess();
-    try {
-      await senryuRepository.add(senryu);
-      cleanError();
-      completeProcess();
-    } catch (error) {
-      setError(error);
-      waitProcess();
-    }
+    safeResolve(senryuRepository.add(senryu))(
+      () => {
+        cleanError();
+        completeProcess();
+      },
+      reason => {
+        setError(reason);
+        waitProcess();
+      }
+    );
   }, []);
 
   return { processingState, error, createSenryu };
