@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import firebase from 'firebase/app';
-import firebaseui from '../../../../custom_modules/firebaseui';
 import { ROUTING } from '@src/constants/routing';
 
 import '../../../../custom_modules/firebaseui/firebaseui.css';
@@ -9,28 +8,32 @@ export type Props = {
   signInSuccessUrl?: string;
   callbacks?: {
     signInSuccessWithAuthResult: (authResult: any) => boolean;
-    signInFailure: (error: firebaseui.auth.AuthUIError) => Promise<void>;
+    signInFailure: (error: any) => Promise<void>;
   };
   providerIdList?: Array<string>;
   className?: string;
 };
+
+let provideUI: any;
+
+if (typeof window !== `undefined`) {
+  const firebaseui = require('../../../../custom_modules/firebaseui');
+  let ui: any;
+  provideUI = () => {
+    if (!ui) {
+      ui = new firebaseui.auth.AuthUI(firebase.auth());
+    }
+    return ui;
+  };
+} else {
+  provideUI = () => null;
+}
 
 const uiConfig = {
   // Will use popup for IDP Providers sign-in flow instead of the default, redirect.
   signInFlow: 'popup',
   tosUrl: ROUTING.termsOfService,
   privacyPolicyUrl: ROUTING.privacyPolicy,
-};
-
-let ui: firebaseui.auth.AuthUI;
-
-const provideUi = () => {
-  if (!ui) {
-    ui = new firebaseui.auth.AuthUI(
-      typeof window !== 'undefined' ? firebase.auth() : undefined
-    );
-  }
-  return ui;
 };
 
 const FirebaseAuthUI = ({
@@ -50,12 +53,15 @@ const FirebaseAuthUI = ({
 
   useEffect(() => {
     if (authFormRef.current) {
-      provideUi().start(authFormRef.current, {
-        ...uiConfig,
-        signInOptions: providerIdList,
-        signInSuccessUrl,
-        callbacks,
-      });
+      const ui = provideUI();
+      if (ui) {
+        ui.start(authFormRef.current, {
+          ...uiConfig,
+          signInOptions: providerIdList,
+          signInSuccessUrl,
+          callbacks,
+        });
+      }
     }
   }, []);
 
