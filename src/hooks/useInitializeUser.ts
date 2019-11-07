@@ -5,6 +5,7 @@ import { AppError, ProcessingState } from '@src/types';
 import { useAppError } from './useAppError';
 import { useDiContainer } from './useDiContainer';
 import { useProcessingState } from './useProcessingState';
+import { useSafeResolve } from './useSafeResolve';
 
 type Deps = {
   authenticationService: AuthenticationService;
@@ -13,7 +14,7 @@ type Deps = {
 type Return = {
   processingState: ProcessingState;
   error: AppError | null;
-  initializeUser: (newUser: User) => Promise<void>;
+  initializeUser: (newUser: User) => void;
 };
 
 export const useInitializeUser = (
@@ -26,17 +27,20 @@ export const useInitializeUser = (
     completeProcess,
   ] = useProcessingState();
   const [error, setError, cleanError] = useAppError();
+  const { safeResolve } = useSafeResolve();
 
-  const initializeUser = useCallback(async (newUser: User) => {
+  const initializeUser = useCallback((newUser: User) => {
     startProcess();
-    try {
-      await authenticationService.initialize(newUser);
-      cleanError();
-      completeProcess();
-    } catch (error) {
-      setError(error);
-      waitProcess();
-    }
+    safeResolve(authenticationService.initialize(newUser))(
+      () => {
+        cleanError();
+        completeProcess();
+      },
+      error => {
+        setError(error);
+        waitProcess();
+      }
+    );
   }, []);
 
   return { processingState, error, initializeUser };

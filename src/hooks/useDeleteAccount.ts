@@ -5,6 +5,7 @@ import { useAppError } from './useAppError';
 import { useBool } from './useBool';
 import { useDiContainer } from './useDiContainer';
 import { useProcessingState } from './useProcessingState';
+import { useSafeResolve } from './useSafeResolve';
 
 type Deps = {
   authenticationService: AuthenticationService;
@@ -14,7 +15,7 @@ type Return = {
   processingState: ProcessingState;
   isRequireRecentLogin: boolean;
   error: AppError | null;
-  deleteAccount: () => Promise<void>;
+  deleteAccount: () => void;
   cancelDelationAccount: () => void;
 };
 
@@ -33,22 +34,25 @@ export const useDeleteAccount = (
     releaseIsRequireRecentLogin,
   ] = useBool(false);
   const [error, setError, cleanError] = useAppError();
+  const { safeResolve } = useSafeResolve();
 
-  const deleteAccount = useCallback(async () => {
+  const deleteAccount = useCallback(() => {
     startProcess();
-    try {
-      await authenticationService.delete();
-      releaseIsRequireRecentLogin();
-      cleanError();
-      completeProcess();
-    } catch (error) {
-      if (error.code && error.code === 'requires-recent-login') {
-        setIsRequireRecentLogin();
-      } else {
-        setError(error);
-        waitProcess();
+    safeResolve(authenticationService.delete())(
+      () => {
+        releaseIsRequireRecentLogin();
+        cleanError();
+        completeProcess();
+      },
+      error => {
+        if (error.code && error.code === 'requires-recent-login') {
+          setIsRequireRecentLogin();
+        } else {
+          setError(error);
+          waitProcess();
+        }
       }
-    }
+    );
   }, []);
 
   return {

@@ -5,6 +5,7 @@ import { AppError } from '@src/types';
 import { useAppError } from './useAppError';
 import { useBool } from './useBool';
 import { useDiContainer } from './useDiContainer';
+import { useSafeResolve } from './useSafeResolve';
 
 type Deps = {
   userRepository: UserRepository;
@@ -24,8 +25,8 @@ type Return = {
   isLoading: boolean;
   isMoreLoading: boolean;
   error: AppError | null;
-  fetchNextPage: () => Promise<void>;
-  deleteSenryu: (senryuId: SenryuId) => Promise<void>;
+  fetchNextPage: () => void;
+  deleteSenryu: (senryuId: SenryuId) => void;
 } & State;
 
 export const useUserSenryuList = (
@@ -41,14 +42,17 @@ export const useUserSenryuList = (
   const [isLoading, startLoad, finishLoad] = useBool(true);
   const [isMoreLoading, startMoreLoad, finsihMoreLoad] = useBool(false);
   const [error, setError, clearError] = useAppError();
+  const { safeResolve } = useSafeResolve();
 
   useEffect(() => {
     startLoad();
-    Promise.all([
-      userRepository.findById(userId),
-      senryuRepository.findByUserPerPage(userId, 1),
-    ])
-      .then(([user, page]) => {
+    safeResolve(
+      Promise.all([
+        userRepository.findById(userId),
+        senryuRepository.findByUserPerPage(userId, 1),
+      ])
+    )(
+      ([user, page]) => {
         setState({
           user,
           currentPage: page.currentPage,
@@ -58,60 +62,64 @@ export const useUserSenryuList = (
           senryuList: page.itemList,
         });
         finishLoad();
-      })
-      .catch(error => {
+      },
+      error => {
         setError(error);
         finishLoad();
-      });
+      }
+    );
   }, []);
 
-  const fetchNextPage = async () => {
+  const fetchNextPage = () => {
     if (!state.senryuList) {
       return;
     }
 
     startMoreLoad();
-
-    try {
-      const result = await senryuRepository.findByUserPerPage(
+    safeResolve(
+      senryuRepository.findByUserPerPage(
         userId,
         state.currentPage + 1,
         state.senryuList.slice(-1)[0]
-      );
-
-      setState({
-        user: state.user,
-        currentPage: result.currentPage,
-        hasNextPage: result.hasNextPage,
-        totalPages: result.totalPages,
-        totalCount: result.totalCount,
-        senryuList: [...state.senryuList, ...result.itemList],
-      });
-      clearError();
-      finsihMoreLoad();
-    } catch (error) {
-      setError(error);
-      finsihMoreLoad();
-    }
+      )
+    )(
+      result => {
+        setState({
+          user: state.user,
+          currentPage: result.currentPage,
+          hasNextPage: result.hasNextPage,
+          totalPages: result.totalPages,
+          totalCount: result.totalCount,
+          senryuList: [...state.senryuList, ...result.itemList],
+        });
+        clearError();
+        finsihMoreLoad();
+      },
+      error => {
+        setError(error);
+        finsihMoreLoad();
+      }
+    );
   };
 
-  const deleteSenryu = async (senryuId: SenryuId) => {
-    try {
-      await senryuRepository.delete(senryuId);
-      if (state.senryuList) {
-        const updated = state.senryuList.filter(
-          senryu => senryu.id !== senryuId
-        );
-        setState({
-          ...state,
-          senryuList: updated,
-          totalCount: state.totalCount - 1,
-        });
+  const deleteSenryu = (senryuId: SenryuId) => {
+    safeResolve(senryuRepository.delete(senryuId))(
+      () => {
+        if (state.senryuList) {
+          const updated = state.senryuList.filter(
+            senryu => senryu.id !== senryuId
+          );
+          setState({
+            ...state,
+            senryuList: updated,
+            totalCount: state.totalCount - 1,
+          });
+        }
+      },
+      error => {
+        setError(error);
       }
-      clearError();
-    } catch (error) {
-      setError(error);
-    }
+    );
   };
 
   return {
