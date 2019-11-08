@@ -10,6 +10,7 @@ import wrapWithProvider from './wrap-with-provider';
 export const wrapRootElement = wrapWithProvider;
 
 import firebase from 'firebase/app';
+import 'firebase/analytics';
 
 export const onClientEntry = () => {
   const config = {
@@ -19,7 +20,9 @@ export const onClientEntry = () => {
     projectId: process.env.GATSBY_FB_PROJECT_ID,
     storageBucket: process.env.GATSBY_FB_STORAGE_BUCKET,
     messagingSenderId: process.env.GATSBY_FB_MESSAGING_SENDER_ID,
-    appId: process.env.GATSBY_FB_APP_ID
+    appId: process.env.GATSBY_FB_APP_ID,
+    measurementId: process.env.GATSBY_FB_MEASUREMENT_ID,
   };
   firebase.initializeApp(config);
+  firebase.analytics();
 };
