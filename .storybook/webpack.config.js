@@ -38,7 +38,6 @@ module.exports = ({ config }) => {
     ...config.resolve.alias,
     '@src': resolve(__dirname, '../src'),
     '@test': resolve(__dirname, '../test'),
-    '@helper': resolve(__dirname, '../helper'),
     'gatsby': resolve(__dirname, '../__mocks__/gatsby'),
   }
 
