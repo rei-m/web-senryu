@@ -73,9 +73,9 @@ export const plugins: GatsbyPlugin[] = [
       env: {
         production: {
           policy: [
-            { userAgent: '*', allow: '/' },
             {
               userAgent: '*',
+              allow: '/',
               disallow: [
                 ROUTING.account,
                 ROUTING.auth,
