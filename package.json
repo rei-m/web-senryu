@@ -60,7 +60,7 @@
     "babel-plugin-require-context-hook": "^1.0.0",
     "babel-plugin-transform-remove-console": "^6.9.4",
     "babel-preset-gatsby": "^0.2.20",
-    "codecov": "^3.6.1",
+    "codecov": "^3.6.5",
     "eslint": "^6.6.0",
     "eslint-config-prettier": "^6.5.0",
     "eslint-plugin-node": "^10.0.0",
